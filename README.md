@@ -14,15 +14,19 @@ ada32_toolkit/
 │   ├── dlls/              # Ada32.dll, Dbaol32.dll, and related DLLs
 │   ├── executables/       # Production-ready executables
 │   └── star_us_50_32/     # Alternative Ada32 implementation
-├── src/                   # Source code
+├── src/                   # Source code (C programs)
 │   ├── production/        # Working, production-ready code
-│   ├── research/          # Experimental research code
+│   ├── research/          # Experimental research code (57 files)
 │   └── analysis/          # Binary analysis and format tools
+├── research/              # Python research scripts
+│   └── python/           # 20+ Python analysis and encoding scripts
 ├── tests/                 # Test data and archived outputs
 │   ├── fixtures/          # Test input files
-│   └── output_archive/    # Historical test outputs
+│   └── output_archive/    # Historical test outputs (106 files)
 ├── docs/                  # Documentation
 ├── golden_tests_immutable/ # Reference data (DO NOT MODIFY)
+├── build_tools/           # Docker, build scripts, configuration
+├── legacy/                # Archived directories and old files
 └── docker-compose.yml     # Development environment
 ```
 
