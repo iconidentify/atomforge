@@ -7,7 +7,7 @@ This directory contains the original research materials and reference implementa
 ### star_tool/
 Original STAR tool implementation (US 50/32 version)
 - **ADA.BIN**: Core ADA binary
-- **ADA32.DLL**: Main ADA32 library
+- **ADA32.DLL**: Main ADA32 library (103KB, 1999) - **Ada32.dll v1**
 - **DIAG.EXE**: Diagnostic executable
 - **ATOMS.ADA**: Atom definitions
 - **MASTER.TOL**: Master tolerance file
@@ -16,12 +16,8 @@ Original STAR tool implementation (US 50/32 version)
 ### dbviewer_original/
 Original DBViewer application and supporting libraries
 - **Dbview.exe**: Main DBViewer executable
-- **Ada32.dll**: ADA32 runtime library
+- **Ada32.dll**: ADA32 runtime library (239KB, 1997) - **Ada32.dll v2**
 - **Supporting DLLs**: Image processing and system libraries
-
-### dbviewer_docker/
-**DUPLICATE** - Identical to dbviewer_original/ (same MD5 hashes, different timestamps)
-Consider removing this directory to avoid confusion
 
 ### Additional Files
 - **Ada.bin**: Additional ADA binary for research
