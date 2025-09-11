@@ -20,7 +20,8 @@ Original DBViewer application and supporting libraries
 - **Supporting DLLs**: Image processing and system libraries
 
 ### dbviewer_docker/
-Docker-compatible version of DBViewer (same contents as dbviewer_original)
+**DUPLICATE** - Identical to dbviewer_original/ (same MD5 hashes, different timestamps)
+Consider removing this directory to avoid confusion
 
 ### Additional Files
 - **Ada.bin**: Additional ADA binary for research

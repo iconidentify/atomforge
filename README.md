@@ -101,9 +101,10 @@ uni_start_stream <00x>
 - `tests/fixtures/clean_32-105.txt` - Working input file
 
 ### Research Materials
-- `research_materials/star_tool/` - Original STAR tool implementation
-- `research_materials/dbviewer_original/` - Original DBViewer application
-- `research_materials/dbviewer_docker/` - Docker-compatible DBViewer version
+- `research_materials/star_tool/` - STAR tool with Ada32.dll v1 (103KB, 1999)
+- `research_materials/dbviewer_original/` - DBViewer with Ada32.dll v2 (239KB, 1997)
+- `research_materials/dbviewer_docker/` - **DUPLICATE** of dbviewer_original/
+- `research_materials/Ada32_exports.json` - Function exports for Ada32.dll v2
 - `research_materials/README.md` - Documentation of research materials
 
 ## Development
