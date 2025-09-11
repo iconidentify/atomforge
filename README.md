@@ -12,21 +12,20 @@ This project provides tools and research for converting AOL atom stream text fil
 ada32_toolkit/
 ├── bin/                    # Executables and DLLs
 │   ├── dlls/              # Ada32.dll, Dbaol32.dll, and related DLLs
-│   ├── executables/       # Production-ready executables
-│   └── star_us_50_32/     # Alternative Ada32 implementation
+│   └── executables/       # Production-ready executables
 ├── src/                   # Source code (C programs)
 │   ├── production/        # Working, production-ready code
 │   ├── research/          # Experimental research code (57 files)
 │   └── analysis/          # Binary analysis and format tools
 ├── research/              # Python research scripts
 │   └── python/           # 20+ Python analysis and encoding scripts
+├── research_materials/   # Original reference implementations and research materials
 ├── tests/                 # Test data and archived outputs
 │   ├── fixtures/          # Test input files
 │   └── output_archive/    # Historical test outputs (106 files)
 ├── docs/                  # Documentation
 ├── golden_tests_immutable/ # Reference data (DO NOT MODIFY)
 ├── build_tools/           # Docker, build scripts, configuration
-├── legacy/                # Archived directories and old files
 └── docker-compose.yml     # Development environment
 ```
 
@@ -100,6 +99,12 @@ uni_start_stream <00x>
 ### Reference Data
 - `golden_tests_immutable/32-105.str` - 356-byte target format (IMMUTABLE)
 - `tests/fixtures/clean_32-105.txt` - Working input file
+
+### Research Materials
+- `research_materials/star_tool/` - Original STAR tool implementation
+- `research_materials/dbviewer_original/` - Original DBViewer application
+- `research_materials/dbviewer_docker/` - Docker-compatible DBViewer version
+- `research_materials/README.md` - Documentation of research materials
 
 ## Development
 
