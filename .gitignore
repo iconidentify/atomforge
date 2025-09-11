@@ -1,0 +1,26 @@
+# Test outputs
+test_output/
+*.log
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Wine/Docker logs
+*.tmp
+bridge_debug.txt
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Ada32 DLL files (keep for reference but don't track changes)
+Ada32.dll
+Ada32.bin

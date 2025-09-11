@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  ada32-wine:
+    platform: linux/amd64
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: ada32-toolkit
+    volumes:
+      - ./golden_tests:/ada32_toolkit/golden_tests:rw
+      - ./output:/ada32_toolkit/output:rw
+      - ./input:/ada32_toolkit/input:rw
+      - ./test_output:/ada32_toolkit/test_output:rw
+    working_dir: /ada32_toolkit
+    environment:
+      - PYTHONPATH=/ada32_toolkit
+      - WINEARCH=win32
+      - WINEPREFIX=/wine
+    # Keep container running for interactive use
+    stdin_open: true
+    tty: true
+    command: bash

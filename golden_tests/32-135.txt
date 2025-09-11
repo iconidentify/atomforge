@@ -1,0 +1,31 @@
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<< GID:   32-135 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+uni_start_stream <00x>
+  man_start_object <independent, "Software Update">
+    mat_object_id <32-135>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <ornament, "">
+      mat_size <40, 21>
+      mat_relative_tag <1>
+      man_append_data <"The area you are entering requires the America Online World Wide Web browser.  For you to access the b">
+      man_append_data <"rowser, we need to add some additional files to your America Online software.  We can do this automatically fo">
+      man_append_data <72x, 20x, 79x, 6fx, 75x, 20x, 61x, 74x, 20x, 74x, 68x, 69x, 73x, 20x, 74x, 69x, 6dx, 65x, 2ex, 7fx, 7fx, 53x, 65x, 6cx, 65x, 63x, 74x, 20x, 22x, 55x, 70x, 64x, 61x, 74x, 65x, 22x, 20x, 62x, 65x, 6cx, 6fx, 77x, 20x, 74x, 6fx, 20x, 62x, 65x, 67x, 69x, 6ex, 20x, 61x, 64x, 64x, 69x, 6ex, 67x, 20x, 74x, 68x, 65x, 20x, 77x, 65x, 62x, 20x, 62x, 72x, 6fx, 77x, 73x, 65x, 72x, 2ex, 20x, 20x, 54x, 68x, 69x, 73x, 20x, 70x, 72x, 6fx, 63x, 65x, 73x, 73x, 20x, 77x, 69x, 6cx, 6cx, 20x, 74x, 61x, 6bx, 65x, 20x, 61x, 70x, 70x, 72x, 6fx, 78x, 69x, 6dx, 61x, 74x>
+      man_append_data <"ely 9 minutes at 9600 baud, 6 minutes at 14,400 baud, or 3 minutes at 28,000 baud.  Immediately after the upda">
+      man_append_data <74x, 65x, 20x, 63x, 6fx, 6dx, 70x, 6cx, 65x, 74x, 65x, 73x, 2cx, 20x, 79x, 6fx, 75x, 20x, 77x, 69x, 6cx, 6cx, 20x, 65x, 6ex, 74x, 65x, 72x, 20x, 74x, 68x, 65x, 20x, 61x, 72x, 65x, 61x, 20x, 79x, 6fx, 75x, 20x, 68x, 61x, 76x, 65x, 20x, 72x, 65x, 71x, 75x, 65x, 73x, 74x, 65x, 64x, 2ex, 7fx, 7fx, 49x, 66x, 20x, 79x, 6fx, 75x, 20x, 77x, 6fx, 75x, 6cx, 64x, 20x, 70x, 72x, 65x, 66x, 65x, 72x, 20x, 74x, 6fx, 20x, 75x, 70x, 64x, 61x, 74x, 65x, 20x, 79x, 6fx, 75x, 72x, 20x, 73x, 6fx, 66x, 74x, 77x, 61x, 72x, 65x, 20x, 61x, 74x, 20x, 61x, 6ex, 6fx, 74x>
+      man_append_data <68x, 65x, 72x, 20x, 74x, 69x, 6dx, 65x, 2cx, 20x, 73x, 65x, 6cx, 65x, 63x, 74x, 20x, 22x, 43x, 61x, 6ex, 63x, 65x, 6cx, 22x, 20x, 62x, 65x, 6cx, 6fx, 77x, 2ex, 7fx, 7fx, 49x, 66x, 20x, 66x, 6fx, 72x, 20x, 61x, 6ex, 79x, 20x, 72x, 65x, 61x, 73x, 6fx, 6ex, 20x, 74x, 68x, 69x, 73x, 20x, 75x, 70x, 64x, 61x, 74x, 65x, 20x, 69x, 73x, 20x, 69x, 6ex, 74x, 65x, 72x, 72x, 75x, 70x, 74x, 65x, 64x, 2cx, 20x, 70x, 6cx, 65x, 61x, 73x, 65x, 20x, 63x, 6fx, 6dx, 70x, 6cx, 65x, 74x, 65x, 6cx, 79x, 20x, 65x, 78x, 69x, 74x, 20x, 61x, 6ex, 64x, 20x, 72x, 65x, 73x>
+      man_append_data <74x, 61x, 72x, 74x, 20x, 41x, 6dx, 65x, 72x, 69x, 63x, 61x, 20x, 4fx, 6ex, 6cx, 69x, 6ex, 65x, 2ex, 20x, 20x, 54x, 68x, 69x, 73x, 20x, 77x, 69x, 6cx, 6cx, 20x, 61x, 6cx, 6cx, 6fx, 77x, 20x, 75x, 73x, 20x, 74x, 6fx, 20x, 63x, 6fx, 6dx, 70x, 6cx, 65x, 74x, 65x, 20x, 61x, 64x, 64x, 69x, 6ex, 67x, 20x, 74x, 68x, 65x, 20x, 6ex, 65x, 77x, 20x, 66x, 75x, 6ex, 63x, 74x, 69x, 6fx, 6ex, 61x, 6cx, 69x, 74x, 79x, 2ex, 7fx, 7fx, 59x, 6fx, 75x, 20x, 77x, 69x, 6cx, 6cx, 20x, 6ex, 6fx, 74x, 20x, 69x, 6ex, 63x, 75x, 72x, 20x, 61x, 6ex, 79x, 20x, 72x, 65x, 67x>
+      man_append_data <"ular hourly charges during this update.">
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "Update">
+        mat_relative_tag <2>
+        mat_bool_default <yes>
+      man_start_sibling <trigger, "Cancel">
+        mat_relative_tag <3>
+      man_end_object <>
+    man_end_object <>
+  man_update_display <>
+  uni_wait_off <>
+uni_end_stream <00x>
+

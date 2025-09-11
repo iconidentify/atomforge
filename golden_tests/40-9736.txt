@@ -1,0 +1,15 @@
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<< GID:   40-9736 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+uni_start_stream <00x>
+  man_start_object <independent, "Invalid Access">
+    mat_object_id <40-9736>
+    mat_style_id <40-9736>
+    mat_orientation <vff>
+    mat_position <center_center>
+    man_start_object <ornament, "">
+      mat_size <30, 4>
+      man_append_data <"You do not have access to this area.">
+    man_end_object <>
+  man_update_display <>
+  uni_wait_off <>
+uni_end_stream <00x>
+

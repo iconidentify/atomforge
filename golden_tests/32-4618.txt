@@ -1,0 +1,49 @@
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<< GID:   32-4618 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+uni_start_stream <00x>
+  man_start_object <independent, "Add Favorite Place">
+    mat_object_id <32-4618>
+    mat_orientation <vcf>
+    mat_position <center_center>
+    man_start_object <editable_view, "Enter the Place's Description:">
+      mat_size <40, 1, 72>
+      mat_relative_tag <1>
+      mat_bool_writeable <yes>
+      mat_validation <128>
+    man_start_sibling <editable_view, "Enter the Internet Address:">
+      mat_size <40, 1>
+      mat_relative_tag <2>
+      mat_vertical_spacing <5>
+      mat_bool_writeable <yes>
+      mat_validation <128>
+    man_start_sibling <trigger, "OK">
+      mat_title_width <7>
+      mat_bool_default <yes>
+      act_replace_select_action
+        <
+        uni_start_stream <>
+        de_validate <display_msg | terminate>
+        de_start_extraction <00x>
+        man_set_context_relative <1>
+        de_get_data_pointer <>
+        var_string_set_from_atom <A>
+        man_change_context_relative <2>
+        de_get_data_pointer <>
+        var_string_set_from_atom <B>
+        man_end_context <>
+        de_end_extraction <>
+        morg_set_bookmark_close_form <>
+        man_set_context_globalid <32-4619>
+        man_set_context_relative <1>
+        var_string_get <B>
+        uni_use_last_atom_string <morg_set_bookmark_url>
+        var_string_get <A>
+        uni_use_last_atom_string <morg_add_bookmark>
+        man_end_context <>
+        man_end_context <>
+      uni_end_stream <>
+      >
+  man_end_object <>
+man_update_display <>
+uni_wait_off <>
+uni_end_stream <00x>
+

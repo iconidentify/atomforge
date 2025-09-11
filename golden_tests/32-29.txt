@@ -1,0 +1,50 @@
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<< GID:   32-29 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+uni_start_stream <00x>
+  man_start_object <independent, "Untitled">
+    mat_orientation <hef>
+    mat_position <center_center>
+    mat_style_id <32-29>
+    man_make_focus <>
+    man_start_object <org_group, "">
+      mat_orientation <vct>
+      man_start_object <trigger, "Reply">
+        mat_relative_tag <4>
+        mat_art_id <1-0-1290>
+        man_make_focus <>
+      man_start_sibling <trigger, "Forward">
+        mat_relative_tag <7>
+        mat_art_id <1-0-1293>
+      man_start_sibling <trigger, "Reply to All">
+        mat_relative_tag <5>
+        mat_art_id <1-0-1291>
+      man_end_object <>
+    man_start_sibling <org_group, "">
+      mat_orientation <vcf>
+      man_start_object <view, "">
+        mat_size <47>
+        mat_relative_tag <1>
+        mat_bool_writeable <yes>
+      man_start_sibling <org_group, "">
+        mat_orientation <hef>
+        man_start_object <ornament, "">
+          mat_art_id <1-0-1280>
+          mat_bool_disabled <yes>
+          mat_bool_hidden <yes>
+        man_start_sibling <trigger, "Download File">
+          mat_relative_tag <2>
+          mat_bool_disabled <yes>
+          mat_bool_hidden <yes>
+        man_start_sibling <trigger, "Download Later">
+          mat_relative_tag <10>
+          mat_bool_disabled <yes>
+          mat_bool_hidden <yes>
+        man_start_sibling <trigger, "">
+          mat_relative_tag <3>
+          mat_art_id <1-0-1280>
+          mat_bool_default <yes>
+        man_end_object <>
+      man_end_object <>
+    man_end_object <>
+  man_update_display <>
+uni_end_stream <00x>
+
