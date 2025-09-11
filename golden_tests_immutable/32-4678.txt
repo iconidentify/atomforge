@@ -1,0 +1,145 @@
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<< GID:   32-4678 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+uni_start_stream <00x>
+  man_start_object <independent, "Personal Filing Cabinet Preferences">
+    mat_object_id <32-4678>
+    mat_style_id <32-4678>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <ornament, "">
+      mat_size <50, 5>
+      man_append_data <"These settings control when you will be warned about your Personal Filing Cabinet's size or free space (fragmentation). If you find that you are seeing these warnings too often, you may want to change the settings. Selecting Reset will return them to the default values.">
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <ornament, "">
+        mat_size <35, 1>
+        man_append_data <"Issue warning about the PFC if file size reaches ">
+      man_end_object <>
+      man_start_object <selectable_range, "">
+        mat_relative_tag <12>
+        mat_minimum <1>
+        mat_maximum <1000>
+        mat_increment <1>
+      man_end_object <>
+      man_start_object <ornament, "">
+        mat_size <10, 1>
+        man_append_data <"megabytes">
+      man_end_object <>
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <ornament, "">
+        mat_size <35, 1>
+        man_append_data <"Issue warning about the PFC if free space reaches ">
+      man_end_object <>
+      man_start_object <selectable_range, "">
+        mat_relative_tag <13>
+        mat_minimum <1>
+        mat_maximum <100>
+        mat_increment <1>
+      man_end_object <>
+      man_start_object <ornament, "">
+        mat_size <10, 1>
+        man_append_data <"percent">
+      man_end_object <>
+    man_start_sibling <ornament, "">
+      mat_art_id <1-0-1369>
+      mat_bool_disabled <yes>
+    man_start_sibling <static_multilist, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "Confirm before deleting single items">
+        mat_relative_tag <1>
+      man_end_object <>
+    man_start_sibling <static_multilist, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "Confirm before deleting multiple items">
+        mat_relative_tag <2>
+        mat_value <1>
+      man_end_object <>
+    man_start_sibling <ornament, "">
+      mat_art_id <1-0-1369>
+      mat_bool_disabled <yes>
+    man_start_sibling <org_group, "">
+      mat_orientation <hce>
+      man_start_object <trigger, "OK">
+        mat_bool_default <yes>
+        act_replace_select_action
+          <
+          uni_start_stream <>
+            de_start_extraction <>
+            man_set_context_relative <1>
+            idb_start_obj <"b">
+            idb_atr_globalid <20-0-91>
+            de_get_data_value <>
+            uni_use_last_atom_value <idb_append_data>
+            idb_end_obj <>
+            man_end_context <>
+            man_set_context_relative <2>
+            idb_start_obj <"b">
+            idb_atr_globalid <20-0-92>
+            de_get_data_value <>
+            uni_use_last_atom_value <idb_append_data>
+            idb_end_obj <>
+            man_end_context <>
+            man_set_context_relative <12>
+            idb_start_obj <"b">
+            idb_atr_globalid <20-0-291>
+            de_get_data_value <>
+            uni_use_last_atom_value <idb_append_data>
+            idb_end_obj <>
+            man_end_context <>
+            man_set_context_relative <13>
+            idb_start_obj <"b">
+            idb_atr_globalid <20-0-292>
+            de_get_data_value <>
+            uni_use_last_atom_value <idb_append_data>
+            idb_end_obj <>
+            man_end_context <>
+            de_end_extraction <>
+            man_close <>
+          man_update_display <>
+        uni_end_stream <>
+        >
+    man_start_sibling <trigger, "Reset">
+      act_replace_select_action
+        <
+        uni_start_stream <>
+          man_set_context_relative <12>
+          mat_value <10>
+          man_end_context <>
+          man_set_context_relative <13>
+          mat_value <35>
+          man_end_context <>
+        man_update_display <>
+      uni_end_stream <>
+      >
+  man_start_sibling <trigger, "Cancel">
+    act_replace_select_action
+      <
+      uni_start_stream <00x>
+        man_close_update <>
+      uni_end_stream <00x>
+      >
+  man_end_object <>
+man_end_object <>
+man_update_display <>
+man_set_context_relative <1>
+act_get_db_value <14x, 00x, 00x, 5bx>
+uni_use_last_atom_value <mat_value>
+man_end_context <>
+man_set_context_relative <2>
+act_get_db_value <14x, 00x, 00x, 5cx>
+uni_use_last_atom_value <mat_value>
+man_end_context <>
+man_set_context_relative <12>
+act_get_db_value <14x, 00x, 01x, 23x>
+uni_use_last_atom_value <mat_value>
+man_end_context <>
+man_set_context_relative <13>
+act_get_db_value <14x, 00x, 01x, 24x>
+uni_use_last_atom_value <mat_value>
+man_end_context <>
+man_update_display <>
+man_end_context <>
+uni_wait_off <>
+uni_end_stream <00x>
+

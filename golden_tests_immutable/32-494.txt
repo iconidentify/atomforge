@@ -1,0 +1,109 @@
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<< GID:   32-494 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+uni_start_stream <00x>
+  man_start_object <independent, "Customize Modem">
+    mat_object_id <32-494>
+    mat_orientation <vff>
+    mat_bool_modal <yes>
+    man_start_object <dynamic_list, "">
+      mat_orientation <vff>
+      mat_relative_tag <1>
+      mat_sort_order <alphabetical>
+      fm_start <>
+      fm_item_type <25x>
+      fm_item_set <0>
+      fm_item_type <23x>
+      fm_item_set <73>
+      fm_item_type <24x>
+      fm_item_set <84>
+      fm_set_relative_path <"MPM">
+      fm_get_first_file <"*.MDM">
+      uni_save_result <>
+      uni_start_loop <>
+      uni_get_result <>
+      if_last_return_true_then <1>
+      man_start_object <trigger, "">
+        uni_get_result <>
+        var_string_set_from_atom <A>
+        var_string_save <A, 10>
+        fm_item_type <06x>
+        uni_get_result <>
+        uni_use_last_atom_string <fm_item_set>
+        fm_item_get <filespec>
+        fm_item_type <22x>
+        uni_use_last_atom_string <fm_item_set>
+        fm_ini_read_data <>
+        uni_use_last_atom_string <mat_title>
+      man_end_object <>
+      fm_get_next_file <>
+      uni_save_result <>
+      uni_end_loop <>
+      uni_sync_skip <1>
+      fm_end <>
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "Commands">
+        act_replace_select_action
+          <
+          uni_start_stream <00x>
+            uni_wait_on <>
+            uni_invoke_no_context <32-476>
+          uni_end_stream <00x>
+          >
+      man_start_sibling <trigger, "Result Codes">
+        act_replace_select_action
+          <
+          uni_start_stream <00x>
+            uni_wait_on <>
+            uni_invoke_no_context <32-477>
+          uni_end_stream <00x>
+          >
+      man_start_sibling <trigger, "Advanced">
+        mat_bool_default <yes>
+        act_replace_select_action
+          <
+          uni_start_stream <00x>
+            uni_wait_on <>
+            uni_invoke_no_context <32-492>
+          uni_end_stream <00x>
+          >
+      man_start_sibling <trigger, "New Modem">
+        mat_bool_disabled <yes>
+      man_start_sibling <trigger, "Cancel">
+        act_replace_select_action
+          <
+          uni_start_stream <00x>
+            man_close_update <>
+          uni_end_stream <00x>
+          >
+      man_end_object <>
+    man_end_object <>
+  man_update_display <>
+  idb_set_context <20-0-45>
+  idb_atr_offset <0>
+  idb_get_string <>
+  uni_save_result <>
+  man_set_context_relative <1>
+  fm_start <>
+  fm_item_type <25x>
+  fm_item_set <0>
+  fm_item_type <23x>
+  fm_item_set <73>
+  fm_item_type <24x>
+  fm_item_set <84>
+  fm_set_relative_path <"MPM">
+  fm_item_type <06x>
+  uni_get_result <>
+  uni_use_last_atom_string <fm_item_set>
+  fm_item_get <filespec>
+  fm_item_type <22x>
+  uni_use_last_atom_string <fm_item_set>
+  fm_ini_read_data <>
+  uni_use_last_atom_string <man_get_index_by_title>
+  uni_use_last_atom_value <mat_value>
+  man_end_context <>
+  idb_end_context <>
+man_update_display <>
+fm_end <>
+uni_wait_off <>
+uni_end_stream <00x>
+

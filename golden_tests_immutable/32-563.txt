@@ -1,0 +1,54 @@
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<< GID:   32-563 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+uni_start_stream <00x>
+  man_start_object <independent, "New Location">
+    mat_object_id <32-563>
+    mat_orientation <vff>
+    mat_bool_modal <yes>
+    man_start_object <ornament, "">
+      mat_size <30, 3>
+      man_append_data <53x, 65x, 6cx, 65x, 63x, 74x, 20x, 61x, 20x, 6ex, 61x, 6dx, 65x, 20x, 66x, 6fx, 72x, 20x, 74x, 68x, 65x, 20x, 6ex, 65x, 77x, 20x, 6cx, 6fx, 63x, 61x, 74x, 69x, 6fx, 6ex, 2ex, 7fx, 59x, 6fx, 75x, 72x, 20x, 70x, 68x, 6fx, 6ex, 65x, 20x, 6ex, 75x, 6dx, 62x, 65x, 72x, 20x, 61x, 6ex, 64x, 20x, 6ex, 65x, 74x, 77x, 6fx, 72x, 6bx, 20x, 73x, 65x, 74x, 74x, 69x, 6ex, 67x, 73x, 7fx, 77x, 69x, 6cx, 6cx, 20x, 62x, 65x, 20x, 73x, 61x, 76x, 65x, 64x, 20x, 75x, 6ex, 64x, 65x, 72x, 20x, 74x, 68x, 69x, 73x, 20x, 6ex, 61x, 6dx, 65x, 2ex>
+    man_start_sibling <editable_view, "">
+      mat_size <30, 1, 20>
+      mat_relative_tag <1>
+      mat_bool_vertical_scroll <no>
+      mat_bool_resize_horizontal <no>
+      mat_bool_writeable <yes>
+      mat_validation <128>
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "OK">
+        mat_bool_default <yes>
+        act_replace_select_action
+          <
+          uni_start_stream <>
+            man_set_context_relative <1>
+            de_start_extraction <00x>
+          de_validate <display_msg | terminate>
+          de_get_data_pointer <>
+          uni_use_last_atom_string <ccl_new_location>
+          de_end_extraction <>
+          man_end_context <>
+          man_close_update <>
+          man_set_context_globalid <32-239>
+          man_set_context_relative <16>
+          act_get_db_value <14x, 00x, 00x, 2ex>
+          uni_use_last_atom_value <mat_value>
+          man_end_context <>
+          man_end_context <>
+          uni_invoke_local <32-577>
+        uni_end_stream <>
+        >
+    man_start_sibling <trigger, "Cancel">
+      act_replace_select_action
+        <
+        uni_start_stream <>
+          var_string_null <A>
+          man_close_update <>
+        uni_end_stream <>
+        >
+    man_end_object <>
+  man_end_object <>
+man_update_display <>
+uni_wait_off <>
+uni_end_stream <00x>
+

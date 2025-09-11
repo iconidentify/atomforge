@@ -1,0 +1,42 @@
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<< GID:   32-486 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+uni_start_stream <00x>
+  man_set_response_id <2104838>
+  man_start_object <independent, "Get a Member's Profile">
+    mat_object_id <32-486>
+    mat_orientation <vcf>
+    man_start_object <org_group, "">
+      mat_orientation <hff>
+      man_start_object <ornament, "">
+        mat_art_id <1-0-1389>
+      man_end_object <>
+      man_start_object <ornament, "">
+        mat_width <32>
+        mat_height <2>
+        mat_capacity <512>
+        man_append_data <45x, 6ex, 74x, 65x, 72x, 20x, 74x, 68x, 65x, 20x, 73x, 63x, 72x, 65x, 65x, 6ex, 20x, 6ex, 61x, 6dx, 65x, 20x, 6fx, 66x, 20x, 74x, 68x, 65x, 20x, 6dx, 65x, 6dx, 62x, 65x, 72x, 7fx>
+        man_append_data <"whose profile you would like to view.">
+      man_end_object <>
+    man_start_sibling <editable_view, "">
+      mat_relative_tag <1>
+      mat_size <14, 1, 10>
+    man_start_sibling <trigger, "OK">
+      mat_bool_default <yes>
+      act_replace_select_action
+        <
+        uni_start_stream <>
+          uni_wait_on <>
+          de_start_extraction <>
+          buf_set_token <ji>
+          man_set_context_relative <1>
+          de_get_data <33>
+          man_end_context <>
+          de_end_extraction <>
+          buf_close_buffer <>
+          man_close_update <>
+        uni_end_stream <>
+        >
+    man_end_object <>
+  man_update_display <>
+  uni_wait_off <>
+uni_end_stream <>
+

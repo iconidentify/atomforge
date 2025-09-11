@@ -1,0 +1,57 @@
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<< GID:   32-118 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+uni_start_stream <00x>
+  man_start_object <independent, "People">
+    mat_object_id <32-118>
+    mat_orientation <hff>
+    mat_position <center_center>
+    man_start_object <dynamic_list, "">
+      mat_orientation <vff>
+      mat_size <15, 11>
+      mat_relative_tag <1>
+      mat_bool_resize_horizontal <no>
+      mat_bool_default_send <no>
+      act_replace_select_action
+        <
+        uni_start_stream_wait_on <00x>
+        de_ez_send_list_text <69x, 64x, 01x, 00x, 00x, 00x, 01x>
+        >
+    man_start_sibling <org_group, "">
+      mat_orientation <vft>
+      man_start_object <ornament, "">
+        mat_art_id <1-0-1333>
+        mat_bool_disabled <yes>
+      man_start_sibling <trigger, "Message">
+        mat_bool_default <yes>
+        act_replace_select_action
+          <
+          uni_start_stream <>
+            uni_wait_on <>
+            de_start_extraction <00x>
+            man_set_context_relative <1>
+            de_get_data_pointer <>
+            uni_save_result <>
+            de_end_extraction <>
+            uni_invoke_no_context <32-225>
+            man_set_context_globalid <32-225>
+            man_place_cursor <2>
+            man_set_context_relative <1>
+            uni_get_result <>
+            uni_use_last_atom_string <var_string_trim_spaces>
+            uni_use_last_atom_string <man_append_data>
+            man_end_context <>
+          man_update_display <>
+          buf_close_buffer <>
+          uni_wait_off <>
+        uni_end_stream <>
+        >
+    man_start_sibling <trigger, "Info">
+      act_replace_select_action
+        <
+        uni_start_stream_wait_on <00x>
+        de_ez_send_list_text <69x, 64x, 01x, 00x, 00x, 00x, 01x>
+        >
+    man_end_object <>
+  man_end_object <>
+man_update_display <>
+uni_end_stream <00x>
+

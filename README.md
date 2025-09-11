@@ -1,84 +1,135 @@
-# Ada32 Toolkit
+# AOL Ada32 Toolkit
+
+A comprehensive toolkit for working with AOL's Ada32.dll atom stream compilation system.
 
 ## Overview
 
-This toolkit provides reverse engineering tools and utilities for working with Ada32.dll and its FDO (Flap Data Objects) binary format. The project successfully reverse-engineered the Ada32.dll calling conventions and built a perfect binary FDO encoder.
+This project provides tools and research for converting AOL atom stream text files (.txt) to binary stream files (.str) using the original Ada32.dll functions. Our research has successfully created a functional compiler that produces 413-byte binary files containing complete atom stream data.
 
-## Key Achievements
+## Repository Structure
 
-🎯 **Perfect FDO Encoder**: 100% byte-for-byte accurate conversion from .txt atom stream format to binary .str FDO format  
-🔧 **Working Ada32.dll Integration**: Successfully calling Ada32.dll functions through Wine emulation  
-📊 **Format Analysis**: Complete understanding of FDO binary structure and control sequences  
-🐳 **Docker Environment**: Cross-platform Wine-based testing environment for 32-bit DLL execution
+```
+ada32_toolkit/
+├── bin/                    # Executables and DLLs
+│   ├── dlls/              # Ada32.dll, Dbaol32.dll, and related DLLs
+│   ├── executables/       # Production-ready executables
+│   └── star_us_50_32/     # Alternative Ada32 implementation
+├── src/                   # Source code
+│   ├── production/        # Working, production-ready code
+│   ├── research/          # Experimental research code
+│   └── analysis/          # Binary analysis and format tools
+├── tests/                 # Test data and archived outputs
+│   ├── fixtures/          # Test input files
+│   └── output_archive/    # Historical test outputs
+├── docs/                  # Documentation
+├── golden_tests_immutable/ # Reference data (DO NOT MODIFY)
+└── docker-compose.yml     # Development environment
+```
 
 ## Quick Start
 
-### Perfect FDO Encoding
-```bash
-# Convert .txt atom stream to binary .str FDO format
-python3 perfect_fdo_encoder.py golden_tests/32-105.txt output.str
-# Result: Perfect 356-byte match with golden file
+### Prerequisites
+- Docker and Docker Compose
+- Git
+
+### Running the Compiler
+
+1. **Start the development environment:**
+   ```bash
+   docker-compose run --rm ada32-wine bash
+   ```
+
+2. **Compile the production tool:**
+   ```bash
+   cd /ada32_toolkit
+   i686-w64-mingw32-gcc -o bin/executables/atom_compiler.exe src/production/ada32_production_test.c
+   ```
+
+3. **Run the compiler:**
+   ```bash
+   wine bin/executables/atom_compiler.exe
+   ```
+
+This will convert `tests/fixtures/clean_32-105.txt` to a 413-byte binary .str file.
+
+## Current Capabilities
+
+### ✅ Working Features
+- **Complete .txt to .str compilation** - Produces 413-byte binary files
+- **Ada32.dll integration** - All major functions mapped and working
+- **Content validation** - Output contains all UI elements and text data
+- **Cross-platform development** - Works on macOS/Linux via Docker + Wine
+- **Format analysis** - Comprehensive understanding of binary structures
+
+### ⚠️ Limitations
+- **413-byte vs 356-byte format** - Cannot produce the compressed 356-byte FDO format
+- **Database functions** - Dbaol32.dll functions crash in current environment
+
+## File Formats
+
+### Input Format (.txt)
+Text-based atom stream format:
+```
+uni_start_stream <00x>
+  man_start_object <independent, "Public Rooms in People Connection">
+  ...
 ```
 
-### Ada32.dll Compilation via Docker
-```bash
-# Compile using real Ada32.dll through Wine
-python3 working_compiler.py golden_tests/32-105.txt output.str
-# Produces uncompressed FDO format (4,111 bytes)
-```
+### Output Format (.str)
+- **413-byte format**: Complete binary atom stream (✅ Working)
+- **356-byte format**: Compressed FDO format (❌ Target, not yet achievable)
 
-## Project Structure
+## Key Files
 
-### Core Files
-- `perfect_fdo_encoder.py` - 100% accurate FDO encoder using exact byte templates
-- `working_compiler.py` - Ada32.dll integration for compilation via Docker/Wine
-- `ada32_bridge.c` - C bridge program for calling Ada32.dll functions
-- `golden_template_extractor.py` - Tool for extracting exact byte patterns from golden files
+### Production Code
+- `src/production/ada32_production_test.c` - Main compiler implementation
+- `src/production/atom_compiler.c` - Simplified compiler interface
 
-### Docker Infrastructure
-- `Dockerfile` - Ubuntu 22.04 + Wine environment for 32-bit DLL support
-- `docker-compose.yml` - Orchestration for ada32-wine service
-- `run_tests.sh` - Comprehensive test runner for all golden file pairs
+### Research Code
+- `src/research/test_refined_chaining.c` - Advanced function chaining experiments
+- `src/research/test_reverse_chaining.c` - Alternative compilation approaches
 
 ### Analysis Tools
-- `fdo_encoder.py` - Original FDO encoder (97% accuracy)
-- `dll_interface_wine.py` - Python interface to Ada32.dll via Wine
-- `Ada32_exports.json` - Complete function export analysis of Ada32.dll
+- `src/analysis/analyze_format_differences.c` - Binary format comparison
+- `src/analysis/manual_compression.c` - Compression algorithm research
 
-### Test Data
-- `golden_tests/` - 60+ .txt/.str file pairs for validation
+### Reference Data
+- `golden_tests_immutable/32-105.str` - 356-byte target format (IMMUTABLE)
+- `tests/fixtures/clean_32-105.txt` - Working input file
 
-## Technical Discoveries
+## Development
 
-### FDO Format Structure
-- **Magic Header**: `40 01` (consistent across all files)
-- **Control Sequences**: Fixed byte patterns between variable text content
-- **Binary Encoding**: Direct text-to-binary mapping with embedded control bytes
-- **Footer Pattern**: Consistent `...40 02` termination sequence
+### Environment Setup
+The project uses Docker with Wine emulation to run Windows DLLs on Linux/macOS:
 
-### Ada32.dll Function Analysis
-- **Working Functions**: `AdaInitialize`, `AdaAssembleAtomStream`
-- **Calling Convention**: `__cdecl` (not `__stdcall`)
-- **Output Format**: Uncompressed FDO with debug formatting
-- **Wine Compatibility**: Some functions crash due to GUI dependencies
+```bash
+# Start development environment
+docker-compose run --rm ada32-wine bash
 
-### Key Insight: Not Compression, But Encoding
-The mystery was solved: golden .str files aren't "compressed" versions of Ada32.dll output - they're different encoding formats:
-- **Ada32.dll**: Produces debug/development format (4,111 bytes)
-- **Golden .str**: Production binary FDO format (356 bytes)
-- **Same content, different encoding**
+# Compile Windows executable
+i686-w64-mingw32-gcc -o output.exe source.c
 
-## Development History
+# Run with Wine
+wine output.exe
+```
 
-1. **Initial Docker Setup**: Created Wine-based environment for Ada32.dll execution
-2. **DLL Reverse Engineering**: Analyzed function exports, calling conventions, behaviors  
-3. **Format Discovery**: Identified FDO structure through binary analysis
-4. **Template Extraction**: Built exact byte-pattern templates from golden files
-5. **Perfect Encoder**: Achieved 100% accuracy using template-based approach
+### Testing
+Test fixtures are located in `tests/fixtures/` and should not be modified. All test outputs are archived in `tests/output_archive/` for historical reference.
 
-## Status
+## Documentation
 
-✅ **Complete**: Perfect FDO encoding pipeline working  
-✅ **Complete**: Ada32.dll integration and analysis  
-✅ **Complete**: Format reverse engineering  
-📋 **Future**: Extend to other AOL Protocol formats
+- **[Research Findings](docs/RESEARCH_FINDINGS.md)** - Comprehensive analysis of Ada32.dll and related DLLs
+- **[Golden Tests README](golden_tests_immutable/README.md)** - Information about immutable reference data
+
+## Contributing
+
+When working on this project:
+
+1. **Test data is immutable** - Never modify files in `golden_tests_immutable/`
+2. **Archive outputs** - Save test results to `tests/output_archive/` with descriptive names
+3. **Document findings** - Update `docs/RESEARCH_FINDINGS.md` with new discoveries
+4. **Preserve functionality** - Ensure the 413-byte compilation capability is maintained
+
+## License
+
+This project is for educational and research purposes, working with legacy AOL software components.

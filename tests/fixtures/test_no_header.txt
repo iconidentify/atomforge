@@ -1,0 +1,6 @@
+uni_start_stream <00x>
+  man_start_object <independent, "Public Rooms in People Connection">
+    mat_object_id <32-105>
+    mat_orientation <vcf>
+    mat_position <center_center>
+uni_end_stream <00x>
