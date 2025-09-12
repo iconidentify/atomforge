@@ -44,10 +44,10 @@ ada32_fdo_compiler/
 │   └── analyze_format_differences.c # Format analysis
 ├── bin/                     # Executables and libraries
 │   ├── ada32_compiler.exe   # Working executable
-│   └── dlls/                # Required DLLs
-│       ├── Ada32.dll        # Core compilation library
-│       ├── Dbaol32.dll      # Database functions
-│       └── Supersub.dll     # Support library
+│   └── dlls/                # Essential Ada32.dll dependencies
+│       ├── Ada32.dll        # Core compilation library (239KB)
+│       ├── Ada.bin          # Token definition file (121KB)
+│       └── GIDINFO.INF      # Configuration file (25 bytes)
 ├── golden_tests_immutable/  # Reference data + sample inputs (DO NOT MODIFY)
 ├── research_materials/      # Original AOL tools (reference only)
 └── docker-compose.yml       # Build environment
@@ -92,7 +92,8 @@ Use the comprehensive reference data in `golden_tests_immutable/` to validate co
 
 The `research_materials/` directory contains original AOL tools for reference:
 - **STAR Tool** - Alternative Ada32.dll implementation
-- **DBViewer** - Original database viewer application
+- **DBViewer** - Original database viewer application (full installation)
 - **Ada32_exports.json** - Function export definitions
+- **Essential files** - Ada.bin, GIDINFO.INF, and other dependencies (copied to bin/dlls/)
 
 These are preserved for research purposes but are not required for core compilation functionality.
