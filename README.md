@@ -11,27 +11,47 @@ This repository contains the essential functionality for FDO (Flap Data Object) 
 ### Prerequisites
 - Docker and Docker Compose
 - Git
+- Python 3.6+
 
 ### Usage
 
-1. **Start the compilation environment:**
-   ```bash
-   docker-compose run --rm ada32-wine bash
-   ```
+#### Option 1: Simple Python Harness (Recommended)
+```bash
+python fdo_compile.py input.txt [output.str]
+```
 
-2. **Compile FDO to binary:**
-   ```bash
-   cd /ada32_fdo_compiler
-   wine bin/ada32_compiler.exe input.txt output.str
-   ```
+This automatically:
+- ✅ Builds/starts Docker container
+- ✅ Escapes special characters (& → 26x)
+- ✅ Runs compilation with Ada32.dll
+- ✅ Returns compiled .str file
+
+#### Option 2: Manual Docker Usage
+```bash
+# Build and run container
+docker-compose run --rm ada32-wine bash
+
+# Inside container, compile manually
+cd /ada32_fdo_compiler
+wine bin/ada32_compiler.exe input.txt output.str
+```
 
 ## Architecture
 
 ### Core Components
 - **Ada32.dll** (239KB) - Original AOL compilation library
 - **ada32_compiler.exe** - Working C compilation tool
+- **fdo_compile.py** - Python harness for automated compilation
 - **Wine x86 Emulation** - Cross-platform Windows compatibility
 - **Docker Containerized** - Isolated, reproducible environment
+
+### Python Harness Features
+The `fdo_compile.py` script provides:
+- **Automatic Docker Management** - Builds and runs containers transparently
+- **Character Escaping** - Converts `&` to `26x` (required by Ada32.dll)
+- **Cross-Platform** - Works on Mac ARM, Linux, Windows
+- **Simple Interface** - Single command compilation
+- **Error Handling** - Clear error messages and cleanup
 
 ### Directory Structure
 ```
@@ -50,7 +70,9 @@ ada32_fdo_compiler/
 │       └── GIDINFO.INF      # Configuration file (25 bytes)
 ├── golden_tests_immutable/  # Reference data + sample inputs (DO NOT MODIFY)
 ├── research_materials/      # Original AOL tools (reference only)
-└── docker-compose.yml       # Build environment
+├── fdo_compile.py           # Python harness for automated compilation
+├── docker-compose.yml       # Build environment
+└── Dockerfile               # Docker container definition
 ```
 
 ## Key Features
