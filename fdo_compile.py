@@ -59,9 +59,10 @@ class FDOCompiler:
     def build_docker_image(self):
         """Build the Docker image if it doesn't exist"""
         print("🔨 Building Docker image...")
+        build_tools_dir = Path(os.getcwd()) / "build_tools"
         result = subprocess.run([
             "docker-compose", "build"
-        ], cwd=os.getcwd(), capture_output=True, text=True)
+        ], cwd=str(build_tools_dir), capture_output=True, text=True)
 
         if result.returncode != 0:
             print(f"❌ Docker build failed: {result.stderr}")

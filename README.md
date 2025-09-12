@@ -29,10 +29,11 @@ This automatically:
 #### Option 2: Manual Docker Usage
 ```bash
 # Build and run container
+cd build_tools
 docker-compose run --rm ada32-wine bash
 
 # Inside container, compile manually
-cd /ada32_fdo_compiler
+cd /ada32_toolkit
 wine bin/ada32_compiler.exe input.txt output.str
 ```
 
@@ -71,8 +72,9 @@ ada32_fdo_compiler/
 ├── golden_tests_immutable/  # Reference data + sample inputs (DO NOT MODIFY)
 ├── research_materials/      # Original AOL tools (reference only)
 ├── fdo_compile.py           # Python harness for automated compilation
-├── docker-compose.yml       # Build environment
-└── Dockerfile               # Docker container definition
+└── build_tools/             # Docker build configuration
+    ├── docker-compose.yml   # Container orchestration
+    └── Dockerfile           # Container definition
 ```
 
 ## Key Features
