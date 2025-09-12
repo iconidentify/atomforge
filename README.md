@@ -22,7 +22,7 @@ This repository contains the essential functionality for FDO (Flap Data Object) 
 2. **Compile FDO to binary:**
    ```bash
    cd /ada32_fdo_compiler
-   wine bin/ada32_compiler.exe
+   wine bin/ada32_compiler.exe input.txt output.str
    ```
 
 ## Architecture
@@ -37,10 +37,7 @@ This repository contains the essential functionality for FDO (Flap Data Object) 
 ```
 ada32_fdo_compiler/
 ├── src/production/          # Core C source code
-│   ├── ada32_compiler.c     # Main compiler implementation
-│   ├── ada32_production_test.c # Production test code
-│   ├── simple_compiler.c    # Simplified compiler interface
-│   └── fdo_compiler.c       # Alternative compiler
+│   └── ada32_compiler.c     # ✅ MAIN PRODUCTION COMPILER (Ada32.dll + Wine)
 ├── src/analysis/            # Analysis and debugging tools
 │   ├── ada32_debugger.c     # Debugging utilities
 │   ├── ada32_diagnostic.c   # Diagnostic tools
