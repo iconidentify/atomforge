@@ -1,4 +1,0 @@
-uni_start_stream <00x>
-man_start_object <independent, "Test">
-mat_object_id <32-1>
-uni_end_stream <00x>

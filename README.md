@@ -48,9 +48,8 @@ ada32_fdo_compiler/
 │       ├── Ada32.dll        # Core compilation library
 │       ├── Dbaol32.dll      # Database functions
 │       └── Supersub.dll     # Support library
-├── golden_tests_immutable/  # Reference data (DO NOT MODIFY)
+├── golden_tests_immutable/  # Reference data + sample inputs (DO NOT MODIFY)
 ├── research_materials/      # Original AOL tools (reference only)
-├── test_fixtures/           # Sample input files
 └── docker-compose.yml       # Build environment
 ```
 
@@ -87,7 +86,7 @@ This represents the working FDO compilation pipeline using authentic Ada32.dll. 
 
 ## Testing
 
-Use the test fixtures in `test_fixtures/` or the comprehensive reference data in `golden_tests_immutable/` to validate compilation.
+Use the comprehensive reference data in `golden_tests_immutable/` to validate compilation.
 
 ## Research Materials
 
