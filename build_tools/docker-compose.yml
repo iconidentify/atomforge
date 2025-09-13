@@ -8,10 +8,10 @@ services:
       dockerfile: build_tools/Dockerfile
     container_name: ada32-toolkit
     volumes:
-      - ..:/ada32_toolkit:rw
-    working_dir: /ada32_toolkit
+      - ..:/atomforge:rw
+    working_dir: /atomforge
     environment:
-      - PYTHONPATH=/ada32_toolkit
+      - PYTHONPATH=/atomforge
       - WINEARCH=win32
       - WINEPREFIX=/wine
     # Keep container running for interactive use

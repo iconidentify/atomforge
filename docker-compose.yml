@@ -1,0 +1,8 @@
+services:
+  atomforge:
+    build: .
+    platform: linux/amd64
+    container_name: atomforge
+    ports:
+      - "8000:8000"
+    restart: unless-stopped

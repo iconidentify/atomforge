@@ -54,7 +54,7 @@ app = FastAPI(
 
 # Mount static files for web interface
 static_paths = [
-    "/ada32_toolkit/api/static",
+    "/atomforge/api/static",  # Inside container
     "../static", 
     "static"
 ]
@@ -75,7 +75,7 @@ compiler = FDOCompiler()
 async def web_interface():
     """Serve the web interface"""
     static_paths = [
-        "/ada32_toolkit/api/static/index.html",
+        "/atomforge/api/static/index.html",  # Inside container
         "../static/index.html",
         "static/index.html"
     ]
@@ -109,7 +109,7 @@ def load_golden_examples() -> List[ExampleResponse]:
     
     # Look for golden test files
     golden_paths = [
-        "/ada32_toolkit/golden_tests_immutable/*.txt",
+        "/atomforge/golden_tests_immutable/*.txt",  # Inside container
         "../golden_tests_immutable/*.txt",
         "../../golden_tests_immutable/*.txt"
     ]
