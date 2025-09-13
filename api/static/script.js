@@ -1,4 +1,4 @@
-// FDO Compiler Web Interface
+// AtomForge Web Interface
 class FDOCompiler {
     constructor() {
         this.apiEndpoint = '/compile';

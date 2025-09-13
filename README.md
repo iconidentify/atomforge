@@ -1,163 +1,194 @@
 # AtomForge
 
-**AtomForge** - A powerful toolkit for forging atom streams, transforming text-based FDO definitions into optimized binary formats using the Ada32.dll compilation engine. Available as both a command-line forge and HTTP REST API.
+A professional FDO compilation toolkit that converts text-based FDO definitions into optimized binary formats using the Ada32.dll compilation engine. Available as both a command-line interface and HTTP REST API.
 
 ## Overview
 
-**AtomForge** is a precision toolkit for crafting perfect atom streams. Like a master blacksmith forging metal into intricate shapes, AtomForge transforms raw FDO text definitions into highly optimized binary formats using the powerful Ada32.dll compilation engine.
+AtomForge provides a complete toolchain for FDO (Form Definition Object) compilation, utilizing the authentic Ada32.dll library through Wine containerization. The system transforms textual FDO source code into binary stream formats with cross-platform compatibility.
 
-**Forge Features:**
-- 🔨 **Command Line Forge** - Powerful Python harness for precision compilation
-- 🌐 **HTTP REST API** - Containerized web service for remote atom crafting
-- 🐳 **Docker Forged** - Wine environment with Ada32.dll perfectly tempered
-- 📁 **Shared Architecture** - Reusable compiler module across all interfaces
-- ⚡ **Binary Mastery** - Preserves authentic FDO binary craftsmanship
+## Features
+
+- **Command Line Interface** - Direct compilation via Python harness
+- **HTTP REST API** - Web service with JSON interface and browser UI
+- **Docker Containerization** - Isolated Wine environment with Ada32.dll
+- **Cross-Platform Support** - Works on macOS (ARM64), Linux, and Windows
+- **Authentic Compilation** - Uses original Ada32.dll for binary output compatibility
 
 ## Quick Start
 
 ### Prerequisites
+
 - Docker and Docker Compose
 - Git
-- Python 3.6+
+- Python 3.8+ (for CLI usage)
 
-### Usage
+### Command Line Usage
 
-#### Command Line Interface
 ```bash
-# Compile FDO text to binary
+# Clone the repository
+git clone <repository-url>
+cd ada32_toolkit
+
+# Compile FDO file
 python fdo_compile.py input.txt [output.fdo]
 ```
 
-This automatically:
-- ✅ Builds/starts Docker container
-- ✅ Escapes special characters (& → 26x)  
-- ✅ Runs compilation with Ada32.dll
-- ✅ Returns compiled .fdo file
+The CLI tool automatically:
+- Builds Docker container if needed
+- Escapes special characters (& becomes 26x)
+- Runs Ada32.dll compilation
+- Outputs compiled binary file
 
-#### HTTP REST API
+### API/Web Interface Usage
+
 ```bash
-# Start the API service
+# Navigate to API directory
 cd api
-docker-compose up --build
 
-# API available at http://localhost:8000
+# Create Python virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install fastapi uvicorn
+
+# Start the server
+python -m src.api_server
 ```
 
-**Compile via API:**
+The web interface will be available at:
+- **Main Interface**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/api
+- **Health Check**: http://localhost:8000/health
+
+### API Integration
+
 ```bash
+# Compile via HTTP POST
 curl -X POST http://localhost:8000/compile \
   -H "Content-Type: application/json" \
   -d '{"source": "uni_start_stream <00x>\n  man_start_object <independent, \"Test\">\n  man_end_object <>\nuni_end_stream <>"}' \
   --output compiled.fdo
 
-# Check health
+# Check service health
 curl http://localhost:8000/health
-```
-
-**API Features:**
-- 🌐 Clean REST endpoints at `/compile` and `/health`
-- 📄 Swagger UI documentation at http://localhost:8000/
-- 🔄 Binary response for successful compilation
-- 📝 Detailed JSON error responses for failures
-- ⚡ Fast Wine-based execution inside container
-
-#### Manual Docker Usage
-```bash
-# Build and run container
-cd build_tools
-docker-compose run --rm ada32-wine bash
-
-# Inside container, compile manually
-cd /ada32_toolkit
-wine bin/atomforge.exe input.txt output.str
 ```
 
 ## Architecture
 
 ### Core Components
-- **Ada32.dll** (239KB) - FDO compilation library
-- **atomforge.exe** - Working C compilation tool
-- **fdo_compile.py** - Python harness for automated compilation
-- **Wine x86 Emulation** - Cross-platform Windows compatibility
-- **Docker Containerized** - Isolated, reproducible environment
 
-### Python Harness Features
-The `fdo_compile.py` script provides:
-- **Automatic Docker Management** - Builds and runs containers transparently
-- **Character Escaping** - Converts `&` to `26x` (required by Ada32.dll)
-- **Cross-Platform** - Works on Mac ARM, Linux, Windows
-- **Simple Interface** - Single command compilation
-- **Error Handling** - Clear error messages and cleanup
+- **Ada32.dll** - Original FDO compilation library (239KB)
+- **atomforge.exe** - C-based compilation executable
+- **Wine Environment** - Windows emulation for cross-platform compatibility
+- **Docker Container** - Isolated compilation environment
+- **Python Harness** - CLI and API interface layer
 
 ### Directory Structure
-```
-atomforge/
-├── api/                     # HTTP REST API service
-│   ├── src/                 # API source code
-│   │   ├── api_server.py    # FastAPI HTTP service
-│   │   └── fdo_compiler.py  # Shared compiler module
-│   ├── Dockerfile           # API container definition
-│   ├── docker-compose.yml   # API service configuration
-│   └── README.md            # API documentation
-├── src/                     # Core C source code
-│   └── atomforge.c          # ✅ MAIN PRODUCTION COMPILER (Ada32.dll + Wine)
-├── bin/                     # Executables and libraries
-│   ├── atomforge.exe        # Working executable
-│   └── dlls/                # Essential Ada32.dll dependencies
-│       ├── Ada32.dll        # Core compilation library (239KB)
-│       ├── Ada.bin          # Token definition file (121KB)
-│       └── GIDINFO.INF      # Configuration file (25 bytes)
-├── golden_tests_immutable/  # Reference data + sample inputs (DO NOT MODIFY)
-├── research_materials/      # Original reference tools
-├── fdo_compile.py           # Python harness for automated compilation
-└── build_tools/             # Docker build configuration
-    ├── docker-compose.yml   # Container orchestration
-    └── Dockerfile           # Container definition
-```
 
-## Key Features
-
-- **Authentic Compilation** - Uses Ada32.dll for FDO processing
-- **Working Executable** - ada32_compiler.exe successfully compiles FDO
-- **Wine Integration** - Cross-platform Windows emulation
-- **Reference Data** - Comprehensive golden test suite
-- **Clean Architecture** - Focused on core functionality
+```
+ada32_toolkit/
+├── api/                        # HTTP REST API service
+│   ├── src/
+│   │   ├── api_server.py       # FastAPI server
+│   │   └── fdo_compiler.py     # Compiler interface module
+│   ├── static/                 # Web interface assets
+│   │   ├── index.html          # Main web UI
+│   │   ├── script.js           # Frontend JavaScript
+│   │   └── style.css           # UI styling
+│   └── requirements.txt        # Python dependencies
+├── bin/                        # Executables and libraries
+│   ├── atomforge.exe           # Main compiler executable
+│   └── dlls/
+│       ├── Ada32.dll           # Core compilation library
+│       ├── Ada.bin             # Token definitions
+│       └── GIDINFO.INF         # Configuration
+├── build_tools/                # Docker build configuration
+│   ├── Dockerfile              # Container definition
+│   └── docker-compose.yml      # Service orchestration
+├── golden_tests_immutable/     # Reference test data
+├── src/                        # Source code
+│   └── atomforge.c             # Main compiler source
+└── fdo_compile.py              # CLI Python harness
+```
 
 ## File Formats
 
-### Input: FDO Text (.txt)
+### Input: FDO Source (.txt)
 ```
 uni_start_stream <00x>
   man_start_object <independent, "Test Room">
-  ...
+    mat_object_id <test-001>
+    mat_orientation <vcf>
+    mat_position <center_center>
+  man_end_object <>
+uni_end_stream <>
 ```
 
-### Output: Binary Stream (.str)
-Compiled binary format from Ada32.dll (typically 413 bytes)
+### Output: Binary Stream (.fdo)
+Compiled binary format generated by Ada32.dll, typically containing optimized form definitions for runtime execution.
+
+## Docker Manual Usage
+
+For advanced usage or debugging:
+
+```bash
+# Build and run container manually
+cd build_tools
+docker-compose run --rm ada32-wine bash
+
+# Inside container
+cd /ada32_toolkit
+wine bin/atomforge.exe input.txt output.fdo
+```
 
 ## Development
 
-### Core Working Components
-- **ada32_compiler.c** - Main production compiler (working)
-- **fdo_compile.py** - Command-line Python harness 
-- **api_server.py** - HTTP REST API service
-- **fdo_compiler.py** - Shared compiler module (reusable)
-- **Ada32.dll** - FDO compilation library (239KB)
-- **Wine/Docker** - Cross-platform execution environment
+### Building from Source
 
-### Research Status
-This represents the working FDO compilation pipeline using authentic Ada32.dll. The core functionality successfully converts FDO text to binary streams.
+The Docker container automatically builds the Wine environment and configures Ada32.dll. No manual compilation steps are required for the Ada32.dll integration.
 
-## Testing
+### Testing
 
-Use the comprehensive reference data in `golden_tests_immutable/` to validate compilation.
+Use the reference data in `golden_tests_immutable/` directory to validate compilation output against known-good binary files.
 
-## Research Materials
+### API Development
 
-The `research_materials/` directory contains original reference tools:
-- **STAR Tool** - Alternative Ada32.dll implementation
-- **DBViewer** - Original database viewer application (full installation)
-- **Ada32_exports.json** - Function export definitions
-- **Essential files** - Ada.bin, GIDINFO.INF, and other dependencies (copied to bin/dlls/)
+The API server supports development mode with auto-reload:
 
-These are preserved for research purposes but are not required for core compilation functionality.
+```bash
+cd api
+source venv/bin/activate
+ENV=development PORT=8001 python -m src.api_server
+```
+
+## Configuration
+
+### Environment Variables
+
+- `PORT` - API server port (default: 8000)
+- `HOST` - API server host (default: 0.0.0.0)
+- `ENV` - Environment mode (development/production)
+
+### Docker Configuration
+
+The system uses a Linux AMD64 container with Wine for Ada32.dll compatibility. Platform specification in docker-compose.yml ensures consistent behavior across ARM64 and x86_64 hosts.
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Docker Build Failures** - Ensure Docker has sufficient memory (4GB+ recommended)
+2. **Wine Issues** - Container automatically initializes Wine environment
+3. **Permission Errors** - Ensure proper file permissions for input/output directories
+4. **Port Conflicts** - Change PORT environment variable if 8000 is in use
+
+### Compilation Errors
+
+- Verify FDO syntax matches expected format
+- Check for special characters that need escaping
+- Ensure input files are UTF-8 encoded
+
+## License
+
+This project utilizes the Ada32.dll library for FDO compilation. Ensure compliance with applicable licenses for commercial use.

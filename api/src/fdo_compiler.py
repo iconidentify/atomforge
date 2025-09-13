@@ -80,8 +80,21 @@ class FDOCompiler:
         if os.path.exists('/ada32_toolkit/build_tools'):
             build_tools_dir = Path('/ada32_toolkit/build_tools')
         else:
-            # Running from host (CLI)
-            build_tools_dir = Path(os.getcwd()) / "build_tools"
+            # Running from host - check multiple possible locations
+            possible_paths = [
+                Path(os.getcwd()) / "build_tools",
+                Path(os.getcwd()).parent / "build_tools",
+                Path(__file__).parent.parent.parent / "build_tools"  # From api/src/ up to project root
+            ]
+            
+            build_tools_dir = None
+            for path in possible_paths:
+                if path.exists():
+                    build_tools_dir = path
+                    break
+            
+            if build_tools_dir is None:
+                raise FileNotFoundError(f"build_tools directory not found. Searched: {[str(p) for p in possible_paths]}")
         
         result = subprocess.run([
             "docker-compose", "build"
@@ -129,7 +142,7 @@ class FDOCompiler:
         """Internal compilation logic - handles both Docker and direct Wine execution"""
         
         # Check if we're running inside the API container (has Wine available)
-        if os.path.exists('/ada32_toolkit/bin/ada32_compiler.exe'):
+        if os.path.exists('/ada32_toolkit/bin/atomforge.exe'):
             return self._wine_compile_direct(prepared_input, output_path, return_binary)
         else:
             return self._docker_compile_external(prepared_input, output_path, return_binary)
@@ -147,7 +160,7 @@ class FDOCompiler:
                 f"cp /ada32_toolkit/bin/dlls/GIDINFO.INF . && "
                 f"cp /ada32_toolkit/bin/dlls/Ada.bin . && "
                 f"export WINEPATH='/ada32_toolkit/bin/dlls' && "
-                f"wine /ada32_toolkit/bin/ada32_compiler.exe {prepared_input} {container_output}"
+                f"wine /ada32_toolkit/bin/atomforge.exe {prepared_input} {container_output}"
             ]
             
             result = subprocess.run(wine_cmd, capture_output=True)
@@ -206,7 +219,7 @@ class FDOCompiler:
                     "bash", "-c",
                     f"cd /ada32_toolkit && cp bin/dlls/GIDINFO.INF . && cp bin/dlls/Ada.bin . && "
                     f"export WINEPATH='/ada32_toolkit/bin/dlls' && "
-                    f"wine bin/ada32_compiler.exe {container_input} {container_output} && "
+                    f"wine bin/atomforge.exe {container_input} {container_output} && "
                     f"cat {container_output}"
                 ]
             else:
@@ -219,7 +232,7 @@ class FDOCompiler:
                     "bash", "-c",
                     f"cd /ada32_toolkit && cp bin/dlls/GIDINFO.INF . && cp bin/dlls/Ada.bin . && "
                     f"export WINEPATH='/ada32_toolkit/bin/dlls' && "
-                    f"wine bin/ada32_compiler.exe {container_input} {container_output} && "
+                    f"wine bin/atomforge.exe {container_input} {container_output} && "
                     f"cp {container_output} /output/{Path(output_path).name}"
                 ]
 

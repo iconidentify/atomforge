@@ -53,10 +53,19 @@ app = FastAPI(
 )
 
 # Mount static files for web interface
-if os.path.exists("/ada32_toolkit/api/static"):
-    app.mount("/static", StaticFiles(directory="/ada32_toolkit/api/static"), name="static")
-elif os.path.exists("../static"):
-    app.mount("/static", StaticFiles(directory="../static"), name="static")
+static_paths = [
+    "/ada32_toolkit/api/static",
+    "../static", 
+    "static"
+]
+
+for static_path in static_paths:
+    if os.path.exists(static_path):
+        app.mount("/static", StaticFiles(directory=static_path), name="static")
+        print(f"📁 Mounted static files from: {os.path.abspath(static_path)}")
+        break
+else:
+    print("⚠️  Static files directory not found!")
 
 # Global compiler instance
 compiler = FDOCompiler()
