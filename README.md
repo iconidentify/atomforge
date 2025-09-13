@@ -200,6 +200,21 @@ docker-compose -f docker-compose.api.yml up -d
 curl http://localhost:8000/health
 ```
 
+### Koyeb Cloud (Free & Simple)
+```bash
+# 1. Sign up at https://app.koyeb.com/
+# 2. Connect your GitHub repo
+# 3. Deploy with these settings:
+#    - Branch: master
+#    - Work Directory: api
+#    - Dockerfile: api/Dockerfile.koyeb
+#    - Port: 8000
+#    - Instance: Free (512MB)
+
+# Your API will be live instantly!
+# Example: https://fdo-api-yourname.koyeb.app
+```
+
 ### Image Details
 - **Registry**: `ghcr.io/iconidentify/ada32-toolkit`
 - **Size**: ~500MB (includes Wine + Ada32.dll)

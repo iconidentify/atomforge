@@ -1,0 +1,57 @@
+# Koyeb-Optimized FDO Compiler HTTP API
+FROM ubuntu:22.04
+
+# Install Wine, Python, and dependencies (optimized for Koyeb)
+RUN dpkg --add-architecture i386 && \
+    apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    wine \
+    wine32 \
+    python3 \
+    python3-pip \
+    xvfb \
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Configure Wine for 32-bit architecture (Koyeb optimized)
+ENV WINEPREFIX=/wine
+ENV WINEARCH=win32
+ENV DISPLAY=:99
+ENV PYTHONPATH=/app
+
+# Initialize Wine (lighter initialization for Koyeb)
+RUN Xvfb :99 -screen 0 800x600x16 > /dev/null 2>&1 & \
+    sleep 3 && \
+    wine wineboot --init && \
+    wineserver -w && \
+    pkill Xvfb
+
+# Install Python dependencies
+COPY api/requirements.txt /tmp/requirements.txt
+RUN pip3 install --no-cache-dir -r /tmp/requirements.txt && \
+    rm /tmp/requirements.txt
+
+# Set working directory
+WORKDIR /ada32_toolkit
+
+# Copy project files
+COPY . .
+
+# Copy API source to /app
+RUN mkdir -p /app && \
+    cp -r api/src/* /app/ && \
+    cp -r api/static /ada32_toolkit/api/ 2>/dev/null || true
+
+# Make sure API files are in the right place
+WORKDIR /app
+
+# Expose port
+EXPOSE 8000
+
+# Health check (curl-based for Koyeb)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Start the API server with optimized settings
+CMD ["python3", "-u", "api_server.py"]
