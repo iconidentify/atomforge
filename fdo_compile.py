@@ -108,7 +108,7 @@ class FDOCompiler:
                 "--name", self.container_name,
                 "build_tools-ada32-wine",
                 "bash", "-c",
-                f"cd /ada32_toolkit && cp bin/dlls/GIDINFO.INF . && cp bin/dlls/Ada.bin . && export WINEPATH='/ada32_toolkit/bin/dlls' && wine bin/ada32_compiler.exe {container_input} {container_output} && cp {container_output} /output/{Path(output_path).name}"
+                f"cd /ada32_toolkit && cp bin/dlls/GIDINFO.INF . && cp bin/dlls/Ada.bin . && export WINEPATH='/ada32_toolkit/bin/dlls' && wine bin/atomforge.exe {container_input} {container_output} && cp {container_output} /output/{Path(output_path).name}"
             ]
 
             result = subprocess.run(docker_cmd, capture_output=True, text=True)

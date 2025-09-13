@@ -1,17 +1,17 @@
-# ADA32 FDO Compiler
+# AtomForge
 
-A clean, focused toolkit for compiling atom stream text files (.txt) to binary stream files (.str) using the Ada32.dll library. Available as both a command-line tool and HTTP REST API.
+**AtomForge** - A powerful toolkit for forging atom streams, transforming text-based FDO definitions into optimized binary formats using the Ada32.dll compilation engine. Available as both a command-line forge and HTTP REST API.
 
 ## Overview
 
-This repository contains the essential functionality for FDO (Flap Data Object) compilation using the Ada32.dll library. The tool takes raw FDO text input and produces binary atom stream output through the Ada32.dll compilation pipeline.
+**AtomForge** is a precision toolkit for crafting perfect atom streams. Like a master blacksmith forging metal into intricate shapes, AtomForge transforms raw FDO text definitions into highly optimized binary formats using the powerful Ada32.dll compilation engine.
 
-**Features:**
-- 🔧 **Command Line Interface** - Simple Python harness for local compilation
-- 🌐 **HTTP REST API** - Containerized web service for remote compilation
-- 🐳 **Docker Ready** - Wine environment with Ada32.dll pre-configured
-- 📁 **Shared Architecture** - Reusable compiler module for both CLI and API
-- ⚡ **Binary Preservation** - Maintains authentic FDO binary format
+**Forge Features:**
+- 🔨 **Command Line Forge** - Powerful Python harness for precision compilation
+- 🌐 **HTTP REST API** - Containerized web service for remote atom crafting
+- 🐳 **Docker Forged** - Wine environment with Ada32.dll perfectly tempered
+- 📁 **Shared Architecture** - Reusable compiler module across all interfaces
+- ⚡ **Binary Mastery** - Preserves authentic FDO binary craftsmanship
 
 ## Quick Start
 
@@ -69,14 +69,14 @@ docker-compose run --rm ada32-wine bash
 
 # Inside container, compile manually
 cd /ada32_toolkit
-wine bin/ada32_compiler.exe input.txt output.str
+wine bin/atomforge.exe input.txt output.str
 ```
 
 ## Architecture
 
 ### Core Components
 - **Ada32.dll** (239KB) - FDO compilation library
-- **ada32_compiler.exe** - Working C compilation tool
+- **atomforge.exe** - Working C compilation tool
 - **fdo_compile.py** - Python harness for automated compilation
 - **Wine x86 Emulation** - Cross-platform Windows compatibility
 - **Docker Containerized** - Isolated, reproducible environment
@@ -91,7 +91,7 @@ The `fdo_compile.py` script provides:
 
 ### Directory Structure
 ```
-ada32_fdo_compiler/
+atomforge/
 ├── api/                     # HTTP REST API service
 │   ├── src/                 # API source code
 │   │   ├── api_server.py    # FastAPI HTTP service
@@ -100,9 +100,9 @@ ada32_fdo_compiler/
 │   ├── docker-compose.yml   # API service configuration
 │   └── README.md            # API documentation
 ├── src/                     # Core C source code
-│   └── ada32_compiler.c     # ✅ MAIN PRODUCTION COMPILER (Ada32.dll + Wine)
+│   └── atomforge.c          # ✅ MAIN PRODUCTION COMPILER (Ada32.dll + Wine)
 ├── bin/                     # Executables and libraries
-│   ├── ada32_compiler.exe   # Working executable
+│   ├── atomforge.exe        # Working executable
 │   └── dlls/                # Essential Ada32.dll dependencies
 │       ├── Ada32.dll        # Core compilation library (239KB)
 │       ├── Ada.bin          # Token definition file (121KB)
