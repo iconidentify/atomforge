@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FDO Compiler - Online FDO Compilation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">
+                    <span class="title-main">FDO Compiler</span>
+                </h1>
+            </div>
+            <div class="header-badge">
+                <span class="badge">Binary FDO Compiler</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Input Section -->
+            <section class="input-section">
+                <div class="section-header">
+                    <h2>📝 FDO Source Code</h2>
+                    <div class="examples-dropdown">
+                        <button class="examples-btn" id="examplesBtn">
+                            <span>📚 Load Example</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6"/>
+                            </svg>
+                        </button>
+                        <div class="examples-menu" id="examplesMenu">
+                            <button class="example-item" data-example="basic">Basic Object</button>
+                            <button class="example-item" data-example="email">Email Notification</button>
+                            <button class="example-item" data-example="rooms">Public Rooms</button>
+                            <button class="example-item" data-example="complex">Complex Layout</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="editor-container">
+                    <div class="editor-toolbar">
+                        <span class="file-info">Input: <span id="charCount">0</span> characters</span>
+                        <button class="clear-btn" id="clearBtn">Clear</button>
+                    </div>
+                    <textarea 
+                        id="fdoInput" 
+                        class="fdo-editor" 
+                        placeholder="Paste your FDO source code here...&#10;&#10;Example:&#10;uni_start_stream <00x>&#10;  man_start_object <independent, &quot;Test Object&quot;>&#10;    mat_object_id <test-123>&#10;  man_end_object <>&#10;uni_end_stream <>"
+                        spellcheck="false"
+                        autocorrect="off"
+                        autocapitalize="off"
+                    ></textarea>
+                    <div class="drop-zone" id="dropZone">
+                        <div class="drop-content">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7,10 12,15 17,10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            <p>Drop FDO files here or click to browse</p>
+                            <input type="file" id="fileInput" accept=".txt,.fdo" hidden>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Compile Button -->
+            <div class="compile-section">
+                <button class="compile-btn" id="compileBtn">
+                    <span class="btn-content">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5,3 19,12 5,21"/>
+                        </svg>
+                        <span>Compile FDO</span>
+                    </span>
+                    <div class="btn-loader"></div>
+                </button>
+            </div>
+
+            <!-- Status Section -->
+            <section class="status-section" id="statusSection">
+                <div class="status-content" id="statusContent">
+                    <!-- Dynamic status content -->
+                </div>
+            </section>
+
+            <!-- Output Section -->
+            <section class="output-section" id="outputSection" style="display: none;">
+                <div class="section-header">
+                    <h2>✅ Compilation Successful</h2>
+                    <div class="output-info">
+                        <span id="outputSize">0 bytes</span>
+                    </div>
+                </div>
+                
+                <div class="output-content">
+                    <div class="binary-preview" id="binaryPreview">
+                        <!-- Binary hex preview -->
+                    </div>
+                    
+                    <div class="download-section">
+                        <button class="download-btn" id="downloadBtn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7,10 12,15 17,10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            <span>Download compiled.fdo</span>
+                        </button>
+                        
+                        <button class="copy-hex-btn" id="copyHexBtn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                            </svg>
+                            <span>Copy Hex</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-right">
+                    <a href="/health" class="footer-link">API Status</a>
+                    <a href="/docs" class="footer-link">API Docs</a>
+                    <a href="https://github.com" class="footer-link">GitHub</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="/static/script.js"></script>
+</body>
+</html>

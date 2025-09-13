@@ -26,7 +26,7 @@ class FDOCompiler:
 
     def __init__(self):
         self.container_name = "ada32-compiler"
-        self.docker_image = "ada32-wine"  # Will be built from Dockerfile
+        self.docker_image = "build_tools-ada32-wine"  # Built from docker-compose
 
     def escape_special_chars(self, text: str) -> str:
         """Escape special characters that cause issues with Ada32.dll"""
@@ -39,8 +39,8 @@ class FDOCompiler:
         with open(input_path, 'r', encoding='utf-8') as f:
             content = f.read()
 
-        # Remove GID headers if present
-        content = re.sub(r'<<<<<<<< GID: [^>]+ >>>>>>>>>', '', content)
+        # Remove GID headers if present (multiple formats)
+        content = re.sub(r'<+\s*GID:\s*[^>]+\s*>+.*\n?', '', content)
 
         # Escape special characters
         content = self.escape_special_chars(content)
@@ -106,9 +106,9 @@ class FDOCompiler:
                 "-v", f"{prepared_input}:{container_input}:ro",
                 "-v", f"{os.getcwd()}:/output:rw",
                 "--name", self.container_name,
-                "ada32-wine",
+                "build_tools-ada32-wine",
                 "bash", "-c",
-                f"cd /ada32_toolkit && wine bin/ada32_compiler.exe {container_input} {container_output} && cp {container_output} /output/{Path(output_path).name}"
+                f"cd /ada32_toolkit && cp bin/dlls/GIDINFO.INF . && cp bin/dlls/Ada.bin . && export WINEPATH='/ada32_toolkit/bin/dlls' && wine bin/ada32_compiler.exe {container_input} {container_output} && cp {container_output} /output/{Path(output_path).name}"
             ]
 
             result = subprocess.run(docker_cmd, capture_output=True, text=True)
