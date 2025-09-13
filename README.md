@@ -15,32 +15,14 @@ This repository contains the essential functionality for FDO (Flap Data Object) 
 
 ## Quick Start
 
-### Option A: Docker Release (Easiest)
-
-```bash
-# Download and run the latest release
-docker run -p 8000:8000 ghcr.io/iconidentify/ada32-toolkit:latest
-
-# Open API documentation
-open http://localhost:8000
-
-# Compile FDO (example)
-curl -X POST http://localhost:8000/compile \
-  -H "Content-Type: application/json" \
-  -d '{"source": "uni_start_stream <00x>\n  man_start_object <independent, \"Test\">\n  man_end_object <>\nman_end_stream <>"}' \
-  --output test.fdo
-```
-
-### Option B: Development Setup
-
-#### Prerequisites
+### Prerequisites
 - Docker and Docker Compose
 - Git
 - Python 3.6+
 
 ### Usage
 
-#### Option 1: Command Line Interface
+#### Command Line Interface
 ```bash
 # Compile FDO text to binary
 python fdo_compile.py input.txt [output.fdo]
@@ -52,7 +34,7 @@ This automatically:
 - ✅ Runs compilation with Ada32.dll
 - ✅ Returns compiled .fdo file
 
-#### Option 2: HTTP REST API
+#### HTTP REST API
 ```bash
 # Start the API service
 cd api
@@ -79,7 +61,7 @@ curl http://localhost:8000/health
 - 📝 Detailed JSON error responses for failures
 - ⚡ Fast Wine-based execution inside container
 
-#### Option 3: Manual Docker Usage
+#### Manual Docker Usage
 ```bash
 # Build and run container
 cd build_tools
@@ -169,57 +151,6 @@ This represents the working FDO compilation pipeline using authentic Ada32.dll. 
 ## Testing
 
 Use the comprehensive reference data in `golden_tests_immutable/` to validate compilation.
-
-## Docker Releases
-
-Pre-built Docker images are available for easy deployment:
-
-### Latest Release
-```bash
-docker run -p 8000:8000 ghcr.io/iconidentify/ada32-toolkit:latest
-```
-
-### Specific Version
-```bash
-# List available versions
-curl -s https://api.github.com/repos/iconidentify/ada32-toolkit/releases | grep "tag_name"
-
-# Run specific version
-docker run -p 8000:8000 ghcr.io/iconidentify/ada32-toolkit:v1.0.0
-```
-
-### Docker Compose (Recommended)
-```bash
-# Download the API compose file
-curl -O https://raw.githubusercontent.com/iconidentify/ada32-toolkit/main/docker-compose.api.yml
-
-# Start the service
-docker-compose -f docker-compose.api.yml up -d
-
-# Check it's running
-curl http://localhost:8000/health
-```
-
-### Koyeb Cloud (Free & Simple)
-```bash
-# 1. Sign up at https://app.koyeb.com/
-# 2. Connect your GitHub repo
-# 3. Deploy with these settings:
-#    - Branch: master
-#    - Work Directory: api
-#    - Dockerfile: api/Dockerfile.koyeb
-#    - Port: 8000
-#    - Instance: Free (512MB)
-
-# Your API will be live instantly!
-# Example: https://fdo-api-yourname.koyeb.app
-```
-
-### Image Details
-- **Registry**: `ghcr.io/iconidentify/ada32-toolkit`
-- **Size**: ~500MB (includes Wine + Ada32.dll)
-- **Platforms**: linux/amd64
-- **Auto-updated**: Latest tag tracks master branch
 
 ## Research Materials
 
