@@ -4,7 +4,7 @@
 
 ## Purpose
 
-This directory contains the original, unmodified reference files extracted from AOL's main.IDX database. These files serve as the target format for our compilation research and must never be changed to preserve the integrity of our testing and analysis.
+This directory contains the original, unmodified reference files extracted from a main.IDX database. These files serve as the target format for our compilation research and must never be changed to preserve the integrity of our testing and analysis.
 
 ## Files
 
@@ -20,12 +20,12 @@ This directory contains the original, unmodified reference files extracted from 
 Source atom stream files extracted from main.IDX database:
 - **Format**: Plain text atom stream syntax
 - **Header**: GID (Global ID) headers like `<<<<<<<< GID: 32-105 >>>>>>>>`
-- **Content**: AOL UI definitions with atoms like `man_start_object`, `mat_orientation`, etc.
+- **Content**: UI definitions with atoms like `man_start_object`, `mat_orientation`, etc.
 - **Encoding**: UTF-8 text with CRLF line endings
 - **Size range**: 159 bytes to 13,815 bytes
 
 ### .str Files (Reference binaries)
-Original compiled binary formats from AOL production systems:
+Original compiled binary formats from production systems:
 - **Format**: FDO (Flap Data Object) compressed binary format  
 - **Header patterns**: Various, e.g., `40 01 01 00 22 01` for 32-105.str
 - **Size range**: Variable, typically smaller than our generated outputs
@@ -76,7 +76,7 @@ Our `.program.output.bin` files are generated using the following restored Ada32
 ### Current Theories on Size Differences
 
 #### Theory 1: Compression Pipeline Missing
-- **Reference .str files**: Processed through AOL's full production pipeline
+- **Reference .str files**: Processed through full production pipeline
 - **Our output**: Raw Ada32.dll output without post-processing
 - **Evidence**: Reference files show signs of compression/optimization
 - **Solution**: Need to identify and implement the compression stage
@@ -144,14 +144,14 @@ These files are used for:
 1. **Size optimization**: Why are our files larger than reference .str files?
 2. **FDO compression**: How to implement the missing compression layer?
 3. **Alternative functions**: Should we use `sm_send_token_raw` or other variants?
-4. **Production pipeline**: What additional steps were used in AOL's build system?
+4. **Production pipeline**: What additional steps were used in the build system?
 5. **Version differences**: Are there other Ada32.dll versions with different output?
 
 ### Recommended Next Steps 🎯
 
 1. **Binary analysis**: Compare hex dumps of .str vs .program.output.bin files
 2. **Function exploration**: Test other Ada32.dll functions for compression
-3. **Pipeline investigation**: Research AOL's complete build toolchain
+3. **Pipeline investigation**: Research the complete build toolchain
 4. **Dbaol32.dll research**: Investigate database compression functions
 5. **Historical research**: Find documentation on FDO format specifications
 
@@ -218,11 +218,11 @@ typedef int (__cdecl *AdaAssembleAtomStream_t)(void* input, int inputSize, void*
 
 ## Historical Note
 
-**Reference .str files**: Original AOL production binaries (circa 1999-2001) extracted from main.IDX database, representing the target FDO compressed format.
+**Reference .str files**: Original production binaries extracted from main.IDX database, representing the target FDO compressed format.
 
 **Our .program.output.bin files**: Generated using restored Ada32.dll (1997 version) with complete compilation pipeline, producing raw uncompressed binary output.
 
-**Research goal**: Bridge the gap between our Ada32.dll output and the reference FDO format by identifying the missing compression/optimization stage in AOL's production pipeline.
+**Research goal**: Bridge the gap between our Ada32.dll output and the reference FDO format by identifying the missing compression/optimization stage in the production pipeline.
 
 ## Contact
 

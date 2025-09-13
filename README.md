@@ -1,10 +1,10 @@
 # ADA32 FDO Compiler
 
-A clean, focused toolkit for compiling AOL atom stream text files (.txt) to binary stream files (.str) using the original Ada32.dll library. Available as both a command-line tool and HTTP REST API.
+A clean, focused toolkit for compiling atom stream text files (.txt) to binary stream files (.str) using the Ada32.dll library. Available as both a command-line tool and HTTP REST API.
 
 ## Overview
 
-This repository contains the essential functionality for FDO (Flap Data Object) compilation using AOL's original Ada32.dll. The tool takes raw FDO text input and produces binary atom stream output through the authentic Ada32.dll compilation pipeline.
+This repository contains the essential functionality for FDO (Flap Data Object) compilation using the Ada32.dll library. The tool takes raw FDO text input and produces binary atom stream output through the Ada32.dll compilation pipeline.
 
 **Features:**
 - 🔧 **Command Line Interface** - Simple Python harness for local compilation
@@ -93,7 +93,7 @@ wine bin/ada32_compiler.exe input.txt output.str
 ## Architecture
 
 ### Core Components
-- **Ada32.dll** (239KB) - Original AOL compilation library
+- **Ada32.dll** (239KB) - FDO compilation library
 - **ada32_compiler.exe** - Working C compilation tool
 - **fdo_compile.py** - Python harness for automated compilation
 - **Wine x86 Emulation** - Cross-platform Windows compatibility
@@ -126,7 +126,7 @@ ada32_fdo_compiler/
 │       ├── Ada.bin          # Token definition file (121KB)
 │       └── GIDINFO.INF      # Configuration file (25 bytes)
 ├── golden_tests_immutable/  # Reference data + sample inputs (DO NOT MODIFY)
-├── research_materials/      # Original AOL tools (reference only)
+├── research_materials/      # Original reference tools
 ├── fdo_compile.py           # Python harness for automated compilation
 └── build_tools/             # Docker build configuration
     ├── docker-compose.yml   # Container orchestration
@@ -135,7 +135,7 @@ ada32_fdo_compiler/
 
 ## Key Features
 
-- **Authentic Compilation** - Uses original Ada32.dll from AOL
+- **Authentic Compilation** - Uses Ada32.dll for FDO processing
 - **Working Executable** - ada32_compiler.exe successfully compiles FDO
 - **Wine Integration** - Cross-platform Windows emulation
 - **Reference Data** - Comprehensive golden test suite
@@ -160,7 +160,7 @@ Compiled binary format from Ada32.dll (typically 413 bytes)
 - **fdo_compile.py** - Command-line Python harness 
 - **api_server.py** - HTTP REST API service
 - **fdo_compiler.py** - Shared compiler module (reusable)
-- **Ada32.dll** - Original AOL library (239KB, 1997)
+- **Ada32.dll** - FDO compilation library (239KB)
 - **Wine/Docker** - Cross-platform execution environment
 
 ### Research Status
@@ -208,7 +208,7 @@ curl http://localhost:8000/health
 
 ## Research Materials
 
-The `research_materials/` directory contains original AOL tools for reference:
+The `research_materials/` directory contains original reference tools:
 - **STAR Tool** - Alternative Ada32.dll implementation
 - **DBViewer** - Original database viewer application (full installation)
 - **Ada32_exports.json** - Function export definitions
