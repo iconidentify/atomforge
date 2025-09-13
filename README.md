@@ -1,6 +1,6 @@
 # AtomForge
 
-A professional FDO compilation toolkit that converts text-based FDO definitions into optimized binary formats using the Ada32.dll compilation engine. Deployed as a containerized web service with REST API and browser interface.
+A powerful FDO compilation toolkit that converts text-based FDO definitions into optimized binary formats using the Ada32.dll compilation engine. Deployed as a containerized web service with REST API and browser interface.
 
 ## Screenshots
 
@@ -10,15 +10,15 @@ A professional FDO compilation toolkit that converts text-based FDO definitions 
 
 ## Overview
 
-AtomForge provides a complete web-based toolchain for FDO (Form Definition Object) compilation, utilizing the authentic Ada32.dll library through Wine containerization. The system transforms textual FDO source code into binary stream formats with a modern web interface and REST API.
+AtomForge is a hacker's toolkit for FDO (Form Definition Object) compilation, using the real Ada32.dll library through Wine containerization. It transforms FDO source code into binary streams with a clean web interface and REST API for automation.
 
 ## Features
 
-- **Web Interface** - Modern browser-based UI for FDO compilation
+- **Web Interface** - Clean browser-based UI for FDO compilation
 - **HTTP REST API** - Programmatic access with JSON interface
 - **Docker Deployment** - Single-command containerized deployment
 - **Cross-Platform Support** - Works on macOS (ARM64), Linux, and Windows
-- **Authentic Compilation** - Uses original Ada32.dll for binary output compatibility
+- **Real Compilation** - Uses actual Ada32.dll for binary output compatibility
 
 ## Quick Start
 
