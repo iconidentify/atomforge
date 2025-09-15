@@ -1,35 +1,48 @@
-# AtomForge - All-in-One Docker Container
-# Wine + Ada32.dll + Python API server + web interface
-FROM ubuntu:22.04
+# ================================
+# AtomForge Docker Image with Wine
+# Web interface + FDO compilation capability
+# ================================
+FROM python:3.9-slim
 
-# Install system dependencies
+# Install essential dependencies including minimal Wine
 RUN dpkg --add-architecture i386 && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
+        # Core Wine (minimal - no X11)
         wine \
         wine32 \
-        python3 \
-        python3-pip \
-        file \
+        # Essential tools
         curl \
-    && rm -rf /var/lib/apt/lists/*
+        file \
+        --no-install-recommends && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    # Remove Wine bloat we don't need
+    rm -rf /usr/share/doc/wine* && \
+    rm -rf /usr/share/man/man1/wine* && \
+    find /usr -name "*.pdb" -delete 2>/dev/null || true
 
-# Configure Wine environment
+# Configure Wine for headless operation
 ENV WINEPREFIX=/wine \
     WINEARCH=win32 \
+    WINEDEBUG=-all \
+    DISPLAY=:99 \
     PYTHONPATH=/atomforge \
     PORT=8000 \
-    HOST=0.0.0.0
+    HOST=0.0.0.0 \
+    PYTHONUNBUFFERED=1
 
-# Initialize Wine (headless)
-RUN wine wineboot --init && wineserver -w
+# Initialize Wine prefix (headless)
+RUN wine wineboot --init && \
+    wineserver -w && \
+    rm -rf /tmp/.wine-* 2>/dev/null || true
 
 # Set working directory
 WORKDIR /atomforge
 
-# Copy requirements first for better layer caching
+# Copy and install Python dependencies
 COPY api/requirements.txt ./api/
-RUN pip3 install -r api/requirements.txt
+RUN pip install --no-cache-dir -r api/requirements.txt
 
 # Copy project files
 COPY . .

@@ -1,8 +1,20 @@
 services:
   atomforge:
-    build: .
+    build: .  # Add this line to specify local build context
+    image: atomforge-full:latest
     platform: linux/amd64
     container_name: atomforge
     ports:
       - "8000:8000"
     restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    volumes:
+      # Optional: Mount local directory for persistent compiled files
+      - ./compiled_output:/atomforge/compiled_output

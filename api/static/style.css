@@ -571,6 +571,17 @@ body {
     transform: translateY(0);
 }
 
+.copy-hex-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.copy-hex-btn:disabled:hover {
+    transform: none;
+    box-shadow: var(--shadow-md);
+}
+
 .output-details strong {
     color: var(--text-secondary);
     font-weight: 600;

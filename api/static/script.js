@@ -62,9 +62,12 @@ class FDOCompiler {
 
         // Download
         this.downloadBtn.addEventListener('click', () => this.downloadFile());
-        
+
         // Copy hex
         this.copyHexBtn.addEventListener('click', () => this.copyHex());
+
+        // Initially disable copy hex button since no data is compiled yet
+        this.copyHexBtn.disabled = true;
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => this.handleKeyboard(e));
@@ -143,6 +146,10 @@ uni_end_stream <>`,
         this.updateCharCount();
         this.hideOutput();
         this.hideStatus();
+
+        // Disable copy hex button since we cleared the compiled data
+        this.copyHexBtn.disabled = true;
+
         this.fdoInput.focus();
     }
 
@@ -305,12 +312,15 @@ uni_end_stream <>`,
         this.outputSize.textContent = this.formatBytes(size);
         this.generateBinaryPreview();
         this.outputSection.style.display = 'block';
-        
+
+        // Enable copy hex button since we now have compiled data
+        this.copyHexBtn.disabled = false;
+
         // Smooth scroll to output
         setTimeout(() => {
-            this.outputSection.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
+            this.outputSection.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
             });
         }, 100);
     }
@@ -377,35 +387,55 @@ uni_end_stream <>`,
     }
 
     copyHex() {
-        if (!this.compiledData) return;
-        
+        if (!this.compiledData) {
+            this.showTemporaryMessage('❌ No compiled data to copy. Please compile FDO source first.');
+            return;
+        }
+
         const bytes = new Uint8Array(this.compiledData);
         const hexString = Array.from(bytes)
             .map(byte => byte.toString(16).padStart(2, '0'))
             .join('');
-        
-        navigator.clipboard.writeText(hexString).then(() => {
-            this.showTemporaryMessage('📋 Hex copied to clipboard!');
-        }).catch(() => {
-            // Fallback for older browsers
-            const textArea = document.createElement('textarea');
-            textArea.value = hexString;
-            textArea.style.position = 'fixed';
-            textArea.style.left = '-999999px';
-            textArea.style.top = '-999999px';
-            document.body.appendChild(textArea);
+
+        // Try modern clipboard API first
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(hexString).then(() => {
+                this.showTemporaryMessage('📋 Hex copied to clipboard!');
+            }).catch((err) => {
+                console.warn('Clipboard API failed, using fallback:', err);
+                this.fallbackCopyHex(hexString);
+            });
+        } else {
+            // Use fallback for browsers without clipboard API
+            this.fallbackCopyHex(hexString);
+        }
+    }
+
+    fallbackCopyHex(hexString) {
+        // Create a temporary textarea for copying
+        const textArea = document.createElement('textarea');
+        textArea.value = hexString;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+
+        try {
             textArea.focus();
             textArea.select();
-            
-            try {
-                document.execCommand('copy');
+            const successful = document.execCommand('copy');
+            if (successful) {
                 this.showTemporaryMessage('📋 Hex copied to clipboard!');
-            } catch (err) {
-                this.showTemporaryMessage('❌ Failed to copy hex');
+            } else {
+                this.showTemporaryMessage('❌ Failed to copy hex to clipboard');
             }
-            
+        } catch (err) {
+            console.error('Fallback copy failed:', err);
+            this.showTemporaryMessage('❌ Failed to copy hex to clipboard');
+        } finally {
             document.body.removeChild(textArea);
-        });
+        }
     }
 
     showStatus(type, title, message) {

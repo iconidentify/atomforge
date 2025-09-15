@@ -1,0 +1,78 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env
+venv
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.tox
+.coverage
+.coverage.*
+.pytest_cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.cache
+.mypy_cache
+
+# IDEs
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+docs/
+README*
+
+# Build artifacts (but keep essential binaries)
+*.o
+*.obj
+# Note: bin/*.exe and bin/*.dll are kept for the compiler to work
+
+# Test files
+test_*
+*_test.py
+tests/
+
+# Docker
+Dockerfile.*
+docker-compose*.yml
+.dockerignore
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Node modules (if any)
+node_modules/
+
+# Development files
+BUILD_NOTES.md
+run_decompiler.sh
+clean_fdo_source.txt
+final_demo.fdo
+live_demo.fdo
+output_*.fdo*
+test_*.fdo*
+
+# Backup files
+*~
+*.bak
+*.backup
