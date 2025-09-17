@@ -12,6 +12,12 @@ Runs in Docker with Wine for cross-platform compatibility.
 |__|__| |_| |_____|_|_|_|__|__|_____|__|__|_____|_____|
 ```
 
+<p align="center">
+  <img src="screenshot.png" alt="AtomForge web UI screenshot" width="900" />
+  <br />
+  <em>AtomForge web interface — compile and decompile with hex I/O</em>
+</p>
+
 ## Features
 
 - Compile FDO source code to binary
