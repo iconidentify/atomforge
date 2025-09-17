@@ -20,7 +20,3 @@ bridge_debug.txt
 # OS files
 .DS_Store
 Thumbs.db
-
-# Ada32 DLL files (keep for reference but don't track changes)
-Ada32.dll
-Ada32.bin
