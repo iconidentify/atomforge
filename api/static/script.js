@@ -1,926 +1,457 @@
-// AtomForge Web Interface - Unified FDO Compiler & Decompiler
-class AtomForge {
-    constructor() {
-        this.mode = localStorage.getItem('atomforge:mode') || 'compile'; // 'compile' or 'decompile'
-        this.compileEndpoint = '/compile';
-        this.decompileEndpoint = '/decompile';
-        this.init();
+/* ================================
+   AtomForge - Focused Two-Function UI
+   Simple, robust JavaScript module
+   ================================ */
+
+const App = (() => {
+  const qs = (s, r=document) => r.querySelector(s);
+  const qsa = (s, r=document) => [...r.querySelectorAll(s)];
+  const st = {
+    mode: (location.hash.replace('#','') || localStorage.getItem('atomforge:mode') || 'compile')
+  };
+
+  // Elements
+  const el = {
+    tabCompile: qs('#tab-compile'),
+    tabDecompile: qs('#tab-decompile'),
+    panelCompile: qs('#panel-compile'),
+    panelDecompile: qs('#panel-decompile'),
+    runBtn: qs('#runBtn'),
+    runLabel: qs('#runBtn .label'),
+    fdoInput: qs('#fdoInput'),
+    // Decompile
+    toggleBtns: qsa('.toggle-btn'),
+    fileView: qs('#fileInputView'),
+    hexInputView: qs('#hexInputView'),
+    binaryDrop: qs('#binaryDrop'),
+    binaryFile: qs('#binaryFile'),
+    fileMeta: qs('#fileMeta'),
+    fileName: qs('#fileName'),
+    fileSize: qs('#fileSize'),
+    hexInput: qs('#hexInput'),
+    hexDecoded: qs('#hexDecoded'),
+    // Output
+    outTabs: qsa('.output .tab'),
+    outPanels: {
+      status: qs('#out-status'),
+      hex: qs('#out-hex'),
+      source: qs('#out-source'),
+    },
+    statusLog: qs('#statusLog'),
+    hexOutPanel: qs('#out-hex'),
+    hexOutViewer: qs('#hexView'),
+    sourceView: qs('#sourceView'),
+    compileSize: qs('#compileSize'),
+    decompileSize: qs('#decompileSize'),
+    downloadBin: qs('#downloadBin'),
+    copyHex: qs('#copyHex'),
+    downloadTxt: qs('#downloadTxt'),
+    copySource: qs('#copySource'),
+    // Examples menu
+    examplesBtn: qs('#examplesBtn'),
+    examplesMenu: qs('#examplesMenu'),
+  };
+
+  let currentBinary = null;   // Uint8Array from file OR hex
+  let compiledBuffer = null;  // ArrayBuffer
+  let decompiledText = '';
+
+  function init() {
+    bindTabs();
+    bindRun();
+    bindDecompileInputs();
+    bindOutputTabs();
+    bindDownloads();
+    setupExamples();
+    setupBottomResize();
+    setMode(st.mode, {pushHash:false});
+    log('Ready.');
+  }
+
+  function setMode(mode, {pushHash=true}={}) {
+    if (!['compile','decompile'].includes(mode)) return;
+    st.mode = mode;
+    localStorage.setItem('atomforge:mode', mode);
+    el.tabCompile.setAttribute('aria-selected', String(mode==='compile'));
+    el.tabDecompile.setAttribute('aria-selected', String(mode==='decompile'));
+    el.tabDecompile.tabIndex = mode==='decompile' ? 0 : -1;
+    el.tabCompile.tabIndex = mode==='compile' ? 0 : -1;
+    el.panelCompile.hidden = mode!=='compile';
+    el.panelDecompile.hidden = mode!=='decompile';
+    el.runLabel.textContent = 'Run';
+    if (pushHash) location.hash = mode;
+    (mode==='compile' ? el.fdoInput : (visible(el.hexInputView)? el.hexInput : el.fdoInput)).focus();
+  }
+
+  function bindTabs() {
+    el.tabCompile.addEventListener('click', () => setMode('compile'));
+    el.tabDecompile.addEventListener('click', () => setMode('decompile'));
+  }
+
+  function bindRun() {
+    el.runBtn.addEventListener('click', () => run());
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey||e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); run(); }
+    });
+  }
+
+  async function run() {
+    if (st.mode === 'compile') return compile();
+    return decompile();
+  }
+
+  // ---------- Compile ----------
+  async function compile() {
+    const source = (el.fdoInput.value || '').trim();
+    if (!source) return log('Enter FDO source to compile.', 'error');
+    setBusy(true, 'Compiling…');
+
+    try {
+      const res = await fetch('/compile', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ source })
+      });
+      if (!res.ok) {
+        const e = await safeJson(res);
+        throw new Error(e.error || `HTTP ${res.status}`);
+      }
+      compiledBuffer = await res.arrayBuffer();
+      const bytes = new Uint8Array(compiledBuffer);
+      el.compileSize.textContent = formatBytes(bytes.length);
+      el.hexOutViewer.textContent = hexdump(bytes);
+      reveal('hex');
+      el.outPanels.hex.scrollTop = 0;
+      log(`Compilation OK — ${formatBytes(bytes.length)}`, 'success');
+    } catch (err) {
+      log(`Compilation failed: ${err.message}`, 'error'); reveal('status');
+    } finally { setBusy(false); }
+  }
+
+  // ---------- Decompile ----------
+  async function decompile() {
+    const bytes = getBinary();
+    if (!bytes) return;
+    setBusy(true, 'Decompiling…');
+    try {
+      const base64 = btoa(String.fromCharCode.apply(null, bytes));
+      const res = await fetch('/decompile', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ binary_data: base64 })
+      });
+      if (!res.ok) {
+        const e = await safeJson(res);
+        throw new Error(e.error || `HTTP ${res.status}`);
+      }
+      const data = await res.json(); // {source_code, output_size}
+      decompiledText = data.source_code || '';
+      el.decompileSize.textContent = `${(data.output_size||decompiledText.length).toLocaleString()} chars`;
+      el.sourceView.textContent = decompiledText;
+      reveal('source');
+      log('Decompilation OK.', 'success');
+    } catch (err) {
+      log(`Decompilation failed: ${err.message}`, 'error'); reveal('status');
+    } finally { setBusy(false); }
+  }
+
+  function getBinary() {
+    // Check if hex view is active (not hidden)
+    if (!el.hexInputView.hidden) {
+      const raw = (el.hexInput.value || '').trim();
+      if (!raw) { log('Paste hex data or choose a file.', 'error'); return null; }
+      const clean = raw.replace(/[^0-9A-Fa-f]/g, '');
+      if (clean.length % 2 !== 0) { log('Hex length must be even.', 'error'); return null; }
+      const bytes = new Uint8Array(clean.length/2);
+      for (let i=0;i<clean.length;i+=2) bytes[i/2] = parseInt(clean.substr(i,2),16);
+      currentBinary = bytes;
+      el.hexDecoded.textContent = bytes.length.toLocaleString();
+      return bytes;
     }
+    if (!currentBinary) { showToast('Choose a file or paste hex.', 'error'); return null; }
+    return currentBinary;
+  }
 
-    init() {
-        this.bindElements();
-        this.bindEvents();
-        this.loadExamples();
-        this.updateCharCount();
-        this.updateMode();
-    }
+  function bindDecompileInputs() {
+    // Toggle File/Hex
+    el.toggleBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        el.toggleBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const showHex = btn.dataset.input === 'hex';
 
-    bindElements() {
-        // Mode switching
-        this.modeBtns = document.querySelectorAll('.mode-btn');
+        el.fileView.hidden = showHex;
+        el.hexInputView.hidden = !showHex;
 
-        // Input elements - compile mode
-        this.fdoInput = document.getElementById('fdoInput');
-        this.charCount = document.getElementById('charCount');
-        this.clearBtn = document.getElementById('clearBtn');
-        this.fileInput = document.getElementById('fileInput');
-        this.dropZone = document.getElementById('dropZone');
-        this.inputSection = document.querySelector('.input-section');
-
-        // Input elements - decompile mode
-        this.decompileSection = document.getElementById('decompileSection');
-        this.binaryDropZone = document.getElementById('binaryDropZone');
-        this.binaryFileInput = document.getElementById('binaryFileInput');
-        this.binaryFilePreview = document.getElementById('binaryFilePreview');
-        this.binaryFileName = document.getElementById('binaryFileName');
-        this.binaryFileSize = document.getElementById('binaryFileSize');
-        this.binaryHexPreview = document.getElementById('binaryHexPreview');
-        this.binarySize = document.getElementById('binarySize');
-        this.clearBinaryBtn = document.getElementById('clearBinaryBtn');
-
-        // Hex input elements
-        this.binaryTabs = document.querySelectorAll('.binary-tab');
-        this.hexInput = document.getElementById('hexInput');
-        this.hexFormatBtn = document.getElementById('hexFormatBtn');
-        this.hexDecodedSize = document.getElementById('hexDecodedSize');
-        this.fileTab = document.getElementById('fileTab');
-        this.hexTab = document.getElementById('hexTab');
-
-        // Examples
-        this.examplesBtn = document.getElementById('examplesBtn');
-        this.examplesMenu = document.getElementById('examplesMenu');
-
-        // Action button
-        this.actionBtn = document.getElementById('actionBtn');
-        this.btnIcon = document.getElementById('btnIcon');
-        this.btnText = document.getElementById('btnText');
-
-        // Status and output
-        this.statusSection = document.getElementById('statusSection');
-        this.statusContent = document.getElementById('statusContent');
-
-        // Result elements
-        this.compileResult = document.getElementById('compileResult');
-        this.decompileResult = document.getElementById('decompileResult');
-        this.compileSize = document.getElementById('compileSize');
-        this.decompileSize = document.getElementById('decompileSize');
-        this.compileHexPreview = document.getElementById('compileHexPreview');
-        this.decompileSourceCode = document.getElementById('decompileSourceCode');
-        this.downloadBtn = document.getElementById('downloadBtn');
-        this.copyHexBtn = document.getElementById('copyHexBtn');
-        this.downloadSourceBtn = document.getElementById('downloadSourceBtn');
-        this.copySourceBtn = document.getElementById('copySourceBtn');
-
-        // Output data storage
-
-        // Store processed data
-        this.compiledData = null;
-        this.binaryData = null;
-        this.decompileResultData = null;
-    }
-
-    bindEvents() {
-        // Mode switching
-        this.modeBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const mode = e.currentTarget?.dataset?.mode;
-                if (mode === 'compile' || mode === 'decompile') this.switchMode(mode);
-            });
-        });
-
-        // Compile mode input events
-        this.fdoInput.addEventListener('input', () => this.updateCharCount());
-        this.clearBtn.addEventListener('click', () => this.clearInput());
-        this.fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
-        this.dropZone.addEventListener('click', () => this.fileInput.click());
-
-        // Decompile mode input events
-        this.binaryFileInput.addEventListener('change', (e) => this.handleBinaryFileSelect(e));
-        this.binaryDropZone.addEventListener('click', () => this.binaryFileInput.click());
-        this.clearBinaryBtn.addEventListener('click', () => this.clearBinaryInput());
-
-        // Hex input events
-        this.binaryTabs.forEach(tab => {
-            tab.addEventListener('click', (e) => this.switchBinaryTab(e.currentTarget.dataset.tab));
-        });
-        this.hexInput.addEventListener('input', () => this.updateHexPreview());
-        this.hexFormatBtn.addEventListener('click', () => this.formatHex());
-
-        // Drag and drop for both modes
-        this.setupDragDrop();
-
-        // Examples
-        this.examplesBtn.addEventListener('click', (e) => this.toggleExamples(e));
-        document.addEventListener('click', (e) => this.closeExamples(e));
-        this.examplesMenu.addEventListener('click', (e) => this.selectExample(e));
-
-        // Simple result events
-        this.downloadBtn.addEventListener('click', () => this.downloadFile());
-        this.copyHexBtn.addEventListener('click', () => this.copyHex());
-        this.downloadSourceBtn.addEventListener('click', () => this.downloadSource());
-        this.copySourceBtn.addEventListener('click', () => this.copySource());
-
-        // Action button
-        this.actionBtn.addEventListener('click', () => this.executeAction());
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => this.handleKeyboard(e));
-    }
-
-    switchMode(newMode) {
-        if (this.mode === newMode) return;
-
-        this.mode = newMode;
-        localStorage.setItem('atomforge:mode', newMode);
-        this.updateMode();
-        this.hideAllOutput();
-        this.hideStatus();
-    }
-
-    updateMode() {
-        // Update button states
-        this.modeBtns.forEach(btn => {
-            if (btn.dataset.mode === this.mode) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        });
-
-        // Show/hide appropriate sections
-        if (this.mode === 'compile') {
-            this.inputSection.style.display = 'block';
-            this.decompileSection.style.display = 'none';
-            this.examplesBtn.style.display = 'inline-flex';
-
-            // Update action button
-            this.btnIcon.innerHTML = '<polygon points="5,3 19,12 5,21"/>';
-            this.btnText.textContent = 'Compile FDO (⌘⏎)';
+        if (showHex) {
+          el.hexInput.removeAttribute('disabled');
+          el.hexInput.focus();
+          // Update decoded count
+          const clean = (el.hexInput.value||'').replace(/[^0-9A-Fa-f]/g, '');
+          el.hexDecoded.textContent = (clean.length/2|0).toLocaleString();
         } else {
-            this.inputSection.style.display = 'none';
-            this.decompileSection.style.display = 'block';
-            this.examplesBtn.style.display = 'none';
-
-            // Update action button
-            this.btnIcon.innerHTML = '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="7.5,4.21 12,6.81 16.5,4.21"/><polyline points="7.5,19.79 7.5,14.6 3,12"/><polyline points="21,12 16.5,14.6 16.5,19.79"/>';
-            this.btnText.textContent = 'Decompile FDO (⌘⏎)';
+          el.binaryFile.focus();
         }
+      });
+    });
 
-        // Defensive: collapse any open example menu when switching modes
-        this.examplesMenu?.classList?.remove('show');
-    }
+    // Single-click opens the file picker
+    el.binaryDrop.addEventListener('click', (e) => { e.preventDefault(); el.binaryFile.click(); });
 
-    async executeAction() {
-        if (this.mode === 'compile') {
-            await this.compileFDO();
-        } else {
-            await this.decompileFDO();
+    // File -> bytes
+    el.binaryFile.addEventListener('change', (e) => {
+      const f = e.target.files?.[0]; if (!f) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        currentBinary = new Uint8Array(ev.target.result);
+        el.fileName.textContent = f.name;
+        el.fileSize.textContent = formatBytes(currentBinary.length);
+        el.fileMeta.hidden = false;
+        // Visually indicate loaded state on the drop zone
+        el.binaryDrop.classList.add('loaded');
+        const msgNode = el.binaryDrop.querySelector('span');
+        if (msgNode) {
+          msgNode.textContent = `${f.name} — ${formatBytes(currentBinary.length)} (click to change)`;
         }
+        showToast(`Loaded ${f.name} (${formatBytes(currentBinary.length)})`, 'success');
+      };
+      reader.readAsArrayBuffer(f);
+    });
+
+    // Hex input: live sanitize + count
+    function updateHexDecoded() {
+      const clean = (el.hexInput.value||'').replace(/[^0-9A-Fa-f]/g, '');
+      el.hexDecoded.textContent = (clean.length/2|0).toLocaleString();
     }
+    el.hexInput.addEventListener('input', updateHexDecoded);
+    el.hexInput.addEventListener('paste', (e) => { requestAnimationFrame(updateHexDecoded); });
+  }
 
-    async compileFDO() {
-        const source = this.fdoInput.value.trim();
-
-        if (!source) {
-            this.showStatus('error', 'Empty Input', 'Please enter FDO source code to compile');
-            return;
+  // ---------- Output tabs & helpers ----------
+  function bindOutputTabs() {
+    el.outTabs.forEach(btn => btn.addEventListener('click', () => reveal(btn.dataset.tab)));
+  }
+  function reveal(tab) {
+    ['status','hex','source'].forEach(t => {
+      qs(`.output .tab[data-tab="${t}"]`).setAttribute('aria-selected', String(t===tab));
+      el.outPanels[t].hidden = t!==tab;
+    });
+  }
+  function bindDownloads() {
+    el.downloadBin.addEventListener('click', () => {
+      if (!compiledBuffer) return;
+      const blob = new Blob([compiledBuffer], {type:'application/octet-stream'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      a.download = 'compiled.fdo'; a.click(); URL.revokeObjectURL(a.href);
+      showToast('Binary downloaded successfully', 'success');
+    });
+    el.copyHex.addEventListener('click', async () => {
+      try {
+        if (!compiledBuffer) {
+          showToast('No hex content to copy', 'error');
+          return;
         }
-
-        // Show loading state
-        this.actionBtn.disabled = true;
-        this.actionBtn.classList.add('loading');
-        this.hideAllOutput();
-        this.showStatus('loading', 'Compiling...', 'Processing FDO source with native compiler');
-
-        try {
-            const response = await fetch(this.compileEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ source })
-            });
-
-            if (response.ok) {
-                // Successful compilation
-                const data = await response.arrayBuffer();
-                const size = response.headers.get('X-Output-Size') || data.byteLength;
-
-                this.compiledData = data;
-                this.showCompileSuccess(parseInt(size));
-
-            } else {
-                // Compilation error
-                const errorData = await response.json();
-                this.showStatus('error', 'Compilation Failed',
-                    errorData.error || 'Unknown compilation error occurred');
-            }
-        } catch (error) {
-            console.error('Compilation error:', error);
-            this.showStatus('error', 'Network Error',
-                'Could not connect to the FDO compiler service');
-        } finally {
-            // Reset button state
-            this.actionBtn.disabled = false;
-            this.actionBtn.classList.remove('loading');
+        const bytes = new Uint8Array(compiledBuffer);
+        // Copy raw hex: contiguous uppercase hex pairs, no offsets/ASCII/spacing
+        const rawHex = Array.from(bytes).map(v => v.toString(16).padStart(2,'0')).join('').toUpperCase();
+        if (!rawHex) {
+          showToast('No hex content to copy', 'error');
+          return;
         }
-    }
-
-    async decompileFDO() {
-        const binaryData = this.getBinaryData();
-        if (!binaryData) {
-            this.showStatus('error', 'No Binary Data', 'Please select an FDO binary file or paste hex data to decompile');
-            return;
+        await navigator.clipboard.writeText(rawHex);
+        showToast('Hex copied to clipboard', 'success');
+      } catch (err) {
+        showToast('Failed to copy hex', 'error');
+      }
+    });
+    el.downloadTxt.addEventListener('click', () => {
+      if (!decompiledText) return;
+      const blob = new Blob([decompiledText], {type:'text/plain'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      a.download = 'decompiled.txt'; a.click(); URL.revokeObjectURL(a.href);
+      showToast('Source downloaded successfully', 'success');
+    });
+    el.copySource.addEventListener('click', async () => {
+      try {
+        const sourceContent = decompiledText || '';
+        if (!sourceContent.trim()) {
+          showToast('No source content to copy', 'error');
+          return;
         }
+        await navigator.clipboard.writeText(sourceContent);
+        showToast('Source copied to clipboard', 'success');
+      } catch (err) {
+        showToast('Failed to copy source', 'error');
+      }
+    });
+  }
 
-        // Show loading state
-        this.actionBtn.disabled = true;
-        this.actionBtn.classList.add('loading');
-        this.hideAllOutput();
-        this.showStatus('loading', 'Decompiling...', 'Processing FDO binary with native decompiler');
-
-        try {
-            // Convert binary data to base64
-            const binaryArray = new Uint8Array(binaryData);
-            const base64Data = btoa(String.fromCharCode.apply(null, binaryArray));
-
-            const response = await fetch(this.decompileEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ binary_data: base64Data })
-            });
-
-            if (response.ok) {
-                // Successful decompilation
-                const result = await response.json();
-
-                this.decompileResultData = result.source_code;
-                this.showDecompileSuccess(result.output_size);
-
-            } else {
-                // Decompilation error
-                const errorData = await response.json();
-                this.showStatus('error', 'Decompilation Failed',
-                    errorData.error || 'Unknown decompilation error occurred');
-            }
-        } catch (error) {
-            console.error('Decompilation error:', error);
-            this.showStatus('error', 'Network Error',
-                'Could not connect to the FDO decompiler service');
-        } finally {
-            // Reset button state
-            this.actionBtn.disabled = false;
-            this.actionBtn.classList.remove('loading');
-        }
+  // ---------- Examples menu ----------
+  function setupExamples() {
+    if (!el.examplesBtn || !el.examplesMenu) {
+      console.warn('Examples elements not found');
+      return;
     }
 
-    handleBinaryFileSelect(e) {
-        const file = e.target.files[0];
-        if (file) {
-            this.loadBinaryFile(file);
-        }
-    }
-
-    loadBinaryFile(file) {
-        if (!file.name.match(/\.(fdo|str|bin)$/i)) {
-            this.showStatus('error', 'Invalid File Type', 'Please select a binary file (.fdo, .str, or .bin)');
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            this.binaryData = e.target.result;
-            this.showBinaryPreview(file);
-            this.hideAllOutput();
-            this.hideStatus();
-        };
-        reader.onerror = () => {
-            this.showStatus('error', 'File Read Error', 'Could not read the selected binary file');
-        };
-        reader.readAsArrayBuffer(file);
-    }
-
-    showBinaryPreview(file) {
-        this.binaryFileName.textContent = file.name;
-        this.binaryFileSize.textContent = this.formatBytes(file.size);
-        this.binarySize.textContent = file.size.toLocaleString();
-
-        // Generate hex preview
-        const bytes = new Uint8Array(this.binaryData);
-        const lines = [];
-        const maxLines = 4;
-
-        for (let i = 0; i < Math.min(bytes.length, maxLines * 16); i += 16) {
-            const offset = i.toString(16).padStart(8, '0');
-            const hexBytes = [];
-
-            for (let j = 0; j < 16 && i + j < bytes.length; j++) {
-                const byte = bytes[i + j];
-                hexBytes.push(byte.toString(16).padStart(2, '0'));
-            }
-
-            while (hexBytes.length < 16) {
-                hexBytes.push('  ');
-            }
-
-            const hexLine = hexBytes.join(' ');
-            lines.push(`<div class="hex-line">
-                <span class="hex-offset">${offset}</span>
-                <span class="hex-bytes">${hexLine}</span>
-            </div>`);
-        }
-
-        if (bytes.length > maxLines * 16) {
-            lines.push('<div class="hex-line">...</div>');
-        }
-
-        this.binaryHexPreview.innerHTML = lines.join('');
-        this.binaryFilePreview.style.display = 'block';
-    }
-
-    clearBinaryInput() {
-        this.binaryData = null;
-        this.currentBinaryData = null;
-        this.binaryFilePreview.style.display = 'none';
-        this.binarySize.textContent = '0';
-        this.binaryFileInput.value = '';
-        this.hexInput.value = '';
-        this.hexDecodedSize.textContent = '0';
-        this.hideAllOutput();
-        this.hideStatus();
-    }
-
-    showCompileSuccess(size) {
-        // Hide the status section completely
-        this.hideStatus();
-
-        // Show simple compile result
-        this.showSimpleCompileResult(size);
-    }
-
-    showDecompileSuccess(size) {
-        // Hide the status section completely
-        this.hideStatus();
-
-        // Show simple decompile result
-        this.showSimpleDecompileResult(size);
-    }
-
-    showSimpleCompileResult(size) {
-        if (this.compileSize) {
-            this.compileSize.textContent = this.formatBytes(size);
-        }
-
-        // Generate hex preview for compilation
-        if (this.compileHexPreview && this.compiledData) {
-            this.generateBinaryPreview(this.compiledData, this.compileHexPreview);
-        }
-
-        if (this.compileResult) {
-            this.compileResult.style.display = 'block';
-        }
-    }
-
-    showSimpleDecompileResult(size) {
-        if (this.decompileSize) {
-            this.decompileSize.textContent = `${size.toLocaleString()} characters`;
-        }
-
-        // Display decompiled source code
-        if (this.decompileSourceCode && this.decompileResultData) {
-            this.decompileSourceCode.textContent = this.decompileResultData;
-        }
-
-        if (this.decompileResult) {
-            this.decompileResult.style.display = 'block';
-        }
-    }
-
-    downloadFile() {
-        if (!this.compiledData) return;
-
-        const blob = new Blob([this.compiledData], { type: 'application/octet-stream' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-
-        a.href = url;
-        a.download = 'compiled.fdo';
-        a.style.display = 'none';
-
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-
-        URL.revokeObjectURL(url);
-    }
-
-    downloadSource() {
-        if (!this.decompileResultData) return;
-
-        const blob = new Blob([this.decompileResultData], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-
-        a.href = url;
-        a.download = 'decompiled.txt';
-        a.style.display = 'none';
-
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-
-        URL.revokeObjectURL(url);
-    }
-
-    copyData() {
-        if (this.mode === 'compile') {
-            this.copyHex();
-        }
-    }
-
-    copySource() {
-        if (!this.decompileResultData) {
-            return;
-        }
-
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(this.decompileResultData).then(() => {
-            }).catch((err) => {
-                console.warn('Clipboard API failed:', err);
-                this.fallbackCopyText(this.decompileResultData);
-            });
-        } else {
-            this.fallbackCopyText(this.decompileResultData);
-        }
-    }
-
-    copyHex() {
-        if (!this.compiledData) {
-            return;
-        }
-
-        const bytes = new Uint8Array(this.compiledData);
-        const hexString = Array.from(bytes)
-            .map(byte => byte.toString(16).padStart(2, '0'))
-            .join('');
-
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(hexString).then(() => {
-            }).catch((err) => {
-                console.warn('Clipboard API failed:', err);
-                this.fallbackCopyText(hexString);
-            });
-        } else {
-            this.fallbackCopyText(hexString);
-        }
-    }
-
-    fallbackCopyText(text) {
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-        textArea.style.position = 'fixed';
-        textArea.style.left = '-999999px';
-        textArea.style.top = '-999999px';
-        textArea.style.opacity = '0';
-        document.body.appendChild(textArea);
-
-        try {
-            textArea.focus();
-            textArea.select();
-            document.execCommand('copy');
-        } catch (err) {
-            console.error('Fallback copy failed:', err);
-        } finally {
-            document.body.removeChild(textArea);
-        }
-    }
-
-    // Keep existing methods for examples, file handling, drag/drop, status, etc.
-    async loadExamples() {
-        try {
-            const response = await fetch('/examples');
-            if (response.ok) {
-                const examples = await response.json();
-                this.examples = {};
-
-                examples.forEach(example => {
-                    this.examples[example.id] = {
-                        name: example.name,
-                        source: example.source,
-                        description: example.description
-                    };
-                });
-
-                this.populateExamplesMenu();
-                console.log(`Loaded ${examples.length} examples from golden tests`);
-            } else {
-                this.setupFallbackExamples();
-            }
-        } catch (error) {
-            console.error('Error loading examples:', error);
-            this.setupFallbackExamples();
-        }
-    }
-
-    populateExamplesMenu() {
-        if (!this.examplesMenu) {
-            console.error('Examples menu element not found!');
-            return;
-        }
-
-        this.examplesMenu.innerHTML = '';
-
-        Object.keys(this.examples).forEach(key => {
-            const example = this.examples[key];
-            const menuItem = document.createElement('button');
-            menuItem.className = 'example-item';
-            menuItem.dataset.example = key;
-            menuItem.textContent = example.name;
-            menuItem.title = example.description || '';
-            this.examplesMenu.appendChild(menuItem);
-        });
-    }
-
-    setupFallbackExamples() {
-        this.examples = {
-            'basic': {
-                name: 'Basic Example',
-                source: `uni_start_stream <00x>
-  man_start_object <independent, "Basic Example">
-    mat_object_id <basic-001>
-    mat_orientation <vcf>
-    mat_position <center_center>
-  man_end_object <>
-uni_end_stream <>`,
-                description: 'Simple fallback example'
-            }
-        };
-        this.populateExamplesMenu();
-    }
-
-    updateCharCount() {
-        const count = this.fdoInput.value.length;
-        this.charCount.textContent = count.toLocaleString();
-    }
-
-    clearInput() {
-        this.fdoInput.value = '';
-        this.updateCharCount();
-        this.hideAllOutput();
-        this.hideStatus();
-        this.fdoInput.focus();
-    }
-
-    setupDragDrop() {
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            document.addEventListener(eventName, this.preventDefaults, false);
-        });
-
-        // Compile mode drag/drop
-        ['dragenter', 'dragover'].forEach(eventName => {
-            this.fdoInput.addEventListener(eventName, () => this.showDropZone(), false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            this.fdoInput.addEventListener(eventName, () => this.hideDropZone(), false);
-        });
-
-        this.fdoInput.addEventListener('drop', (e) => this.handleDrop(e), false);
-        this.dropZone.addEventListener('drop', (e) => this.handleDrop(e), false);
-
-        // Decompile mode drag/drop
-        this.binaryDropZone.addEventListener('drop', (e) => this.handleBinaryDrop(e), false);
-    }
-
-    preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-
-    showDropZone() {
-        if (this.mode === 'compile') {
-            this.dropZone.classList.add('active');
-        }
-    }
-
-    hideDropZone() {
-        if (this.mode === 'compile') {
-            this.dropZone.classList.remove('active');
-        }
-    }
-
-    handleDrop(e) {
-        this.hideDropZone();
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            this.loadFile(files[0]);
-        }
-    }
-
-    handleBinaryDrop(e) {
-        e.preventDefault();
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            this.loadBinaryFile(files[0]);
-        }
-    }
-
-    handleFileSelect(e) {
-        const file = e.target.files[0];
-        if (file) {
-            this.loadFile(file);
-        }
-    }
-
-    loadFile(file) {
-        if (!file.type.match('text.*') && !file.name.match(/\.(txt|fdo)$/i)) {
-            this.showStatus('error', 'Invalid File Type', 'Please select a text file (.txt or .fdo)');
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            this.fdoInput.value = e.target.result;
-            this.updateCharCount();
-            this.hideAllOutput();
-            this.hideStatus();
-        };
-        reader.onerror = () => {
-            this.showStatus('error', 'File Read Error', 'Could not read the selected file');
-        };
-        reader.readAsText(file);
-    }
-
-    handleBinaryFileSelect(e) {
-        const file = e.target.files[0];
-        if (file) {
-            this.loadBinaryFile(file);
-        }
-    }
-
-    loadBinaryFile(file) {
-        if (!file.name.match(/\.(fdo|str|bin)$/i)) {
-            this.showStatus('error', 'Invalid File Type', 'Please select a binary file (.fdo, .str, or .bin)');
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            this.currentBinaryData = new Uint8Array(e.target.result);
-            this.showBinaryFilePreview(file, this.currentBinaryData);
-            this.hideAllOutput();
-            this.hideStatus();
-        };
-        reader.onerror = () => {
-            this.showStatus('error', 'File Read Error', 'Could not read the selected binary file');
-        };
-        reader.readAsArrayBuffer(file);
-    }
-
-    showBinaryFilePreview(file, data) {
-        this.binaryFileName.textContent = file.name;
-        this.binaryFileSize.textContent = this.formatBytes(data.length);
-        this.binarySize.textContent = data.length.toLocaleString();
-
-        // Generate hex preview
-        this.generateBinaryPreview(data);
-        this.binaryFilePreview.style.display = 'block';
-    }
-
-    toggleExamples(e) {
-        e.stopPropagation();
-        this.examplesMenu.classList.toggle('show');
-    }
-
-    closeExamples(e) {
-        if (!this.examplesBtn.contains(e.target)) {
-            this.examplesMenu.classList.remove('show');
-        }
-    }
-
-    selectExample(e) {
-        if (e.target.classList.contains('example-item')) {
-            const exampleKey = e.target.dataset.example;
-            if (this.examples[exampleKey]) {
-                this.fdoInput.value = this.examples[exampleKey].source;
-                this.updateCharCount();
-                this.hideAllOutput();
-                this.hideStatus();
-                this.examplesMenu.classList.remove('show');
-            }
-        }
-    }
-
-    handleKeyboard(e) {
-        // Ctrl/Cmd + Enter to execute action
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    async function loadExamples() {
+      try {
+        const res = await fetch('/examples');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const list = await res.json();
+        el.examplesMenu.innerHTML = '';
+        (list || []).forEach(ex => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.setAttribute('role','menuitem');
+          b.textContent = ex.label || ex.name || 'Example';
+          b.addEventListener('click', (e) => {
             e.preventDefault();
-            this.executeAction();
-        }
-
-        // Ctrl/Cmd + K to clear
-        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-            e.preventDefault();
-            if (this.mode === 'compile') {
-                this.clearInput();
-            } else {
-                this.clearBinaryInput();
-            }
-        }
-    }
-
-    generateBinaryPreview(data = null, targetElement = null) {
-        const sourceData = data || this.compiledData;
-        if (!sourceData) return;
-
-        const bytes = new Uint8Array(sourceData);
-        const lines = [];
-        const maxLines = 8;
-
-        for (let i = 0; i < Math.min(bytes.length, maxLines * 16); i += 16) {
-            const offset = i.toString(16).padStart(8, '0').toUpperCase();
-            const hexBytes = [];
-            const asciiChars = [];
-
-            for (let j = 0; j < 16 && i + j < bytes.length; j++) {
-                const byte = bytes[i + j];
-                hexBytes.push(byte.toString(16).padStart(2, '0').toUpperCase());
-                asciiChars.push(byte >= 32 && byte <= 126 ? String.fromCharCode(byte) : '.');
-            }
-
-            while (hexBytes.length < 16) {
-                hexBytes.push('  ');
-            }
-
-            const hexLine = hexBytes.join(' ');
-            const asciiLine = asciiChars.join('');
-
-            lines.push(`<div class="hex-line">
-                <span class="hex-offset">${offset}</span>
-                <span class="hex-bytes">${hexLine}</span>
-                <span class="hex-ascii">${asciiLine}</span>
-            </div>`);
-        }
-
-        if (bytes.length > maxLines * 16) {
-            lines.push('<div class="hex-line">...</div>');
-        }
-
-        // Use target element if provided, otherwise fall back to binaryHexPreview
-        const target = targetElement || this.binaryHexPreview;
-        if (target) {
-            target.innerHTML = lines.join('');
-        }
-    }
-
-    showStatus(type, title, message) {
-        const icons = {
-            success: `<svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22,4 12,14.01 9,11.01"/>
-            </svg>`,
-            error: `<svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="15" y1="9" x2="9" y2="15"/>
-                <line x1="9" y1="9" x2="15" y2="15"/>
-            </svg>`,
-            loading: `<svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
-            </svg>`
-        };
-
-        this.statusContent.innerHTML = `
-            <div class="status-content">
-                ${icons[type]}
-                <div class="status-text">
-                    <div class="status-title">${title}</div>
-                    <div class="status-message">${message}</div>
-                </div>
-            </div>
-        `;
-
-        this.statusSection.className = `status-section status-${type} show`;
-    }
-
-    hideStatus() {
-        this.statusSection.classList.remove('show');
-    }
-
-    hideAllOutput() {
-        // Hide simple result displays
-        if (this.compileResult) {
-            this.compileResult.style.display = 'none';
-        }
-        if (this.decompileResult) {
-            this.decompileResult.style.display = 'none';
-        }
-    }
-
-
-    // Binary input tab switching
-    switchBinaryTab(tab) {
-        // Update tab buttons
-        this.binaryTabs.forEach(btn => btn.classList.remove('active'));
-        document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
-
-        // Update tab content
-        const allTabs = document.querySelectorAll('.binary-tab-content');
-        allTabs.forEach(content => {
-            content.classList.remove('active');
-            content.style.display = 'none';
+            e.stopPropagation();
+            el.fdoInput.value = ex.text || ex.source || '';
+            el.examplesMenu.hidden = true;
+            el.examplesBtn.setAttribute('aria-expanded', 'false');
+            el.fdoInput.focus();
+            showToast(`Loaded example: ${b.textContent}`, 'success');
+          });
+          el.examplesMenu.appendChild(b);
         });
-
-        if (tab === 'file') {
-            this.fileTab.classList.add('active');
-            this.fileTab.style.display = 'block';
-        } else if (tab === 'hex') {
-            this.hexTab.classList.add('active');
-            this.hexTab.style.display = 'block';
-        }
+      } catch (err) {
+        showToast('Failed to load examples', 'error');
+      }
     }
 
-    // Update hex preview and size
-    updateHexPreview() {
-        const hexData = this.hexInput.value.trim();
-        if (!hexData) {
-            this.hexDecodedSize.textContent = '0';
-            this.binarySize.textContent = '0';
-            return;
-        }
+    el.examplesBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const isHidden = el.examplesMenu.hasAttribute('hidden') || el.examplesMenu.hidden;
+      if (isHidden) await loadExamples();
+      el.examplesMenu.hidden = !isHidden;
+      el.examplesBtn.setAttribute('aria-expanded', String(!isHidden));
+    });
 
-        // Clean hex data (remove spaces and non-hex characters)
-        const cleanHex = hexData.replace(/[^0-9A-Fa-f]/g, '');
+    document.addEventListener('click', (e)=>{
+      if (!el.examplesBtn.contains(e.target) && !el.examplesMenu.contains(e.target)) {
+        el.examplesMenu.hidden = true;
+        el.examplesBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
 
-        if (cleanHex.length % 2 !== 0) {
-            // Invalid hex length
-            this.hexDecodedSize.textContent = 'Invalid';
-            return;
-        }
+  // ---------- UI helpers ----------
+  function log(msg, level='info'){
+    const line=document.createElement('div');
+    line.className=`log-line ${level}`;
+    line.textContent=msg;
+    el.statusLog.prepend(line);
+    // Keep only 100 lines
+    const max = 100;
+    while (el.statusLog.children.length > max) el.statusLog.lastChild.remove();
+  }
 
-        const byteCount = cleanHex.length / 2;
-        this.hexDecodedSize.textContent = byteCount;
-        this.binarySize.textContent = byteCount;
+  function formatBytes(n){
+    if(n<1024) return `${n} bytes`;
+    const kb=n/1024;
+    if(kb<1024) return `${kb.toFixed(1)} KB`;
+    const mb=kb/1024;
+    return `${mb.toFixed(1)} MB`;
+  }
+
+  function visible(node){
+    return node && node.offsetParent !== null;
+  }
+
+  function toggle(node, show){
+    node.hidden = !show;
+    node.style.display = show ? '' : 'none';
+  }
+
+  function hexdump(bytes, {cols=16, group=2} = {}) {
+    let out = '';
+    const b = (bytes instanceof Uint8Array) ? bytes : new Uint8Array(bytes || 0);
+    for (let i = 0; i < b.length; i += cols) {
+      const chunk = b.slice(i, i + cols);
+      const hex = Array.from(chunk)
+        .map(v => v.toString(16).padStart(2, '0'))
+        .map((v, idx) => (idx && group && idx % group === 0) ? ` ${v}` : v)
+        .join(' ')
+        .toUpperCase();
+      const ascii = Array.from(chunk).map(v => (v >= 32 && v < 127) ? String.fromCharCode(v) : '.').join('');
+      out += `${i.toString(16).padStart(8,'0')}  ${hex.padEnd(cols*3 + Math.floor(cols/group) - 2, ' ')}  |${ascii}|\n`;
     }
+    return out || '(no data)';
+  }
 
-    // Format hex input with proper spacing
-    formatHex() {
-        const hexData = this.hexInput.value.trim();
-        if (!hexData) return;
+  async function safeJson(res){
+    try{ return await res.json(); } catch{ return {}; }
+  }
 
-        // Clean and format hex data
-        const cleanHex = hexData.replace(/[^0-9A-Fa-f]/g, '').toUpperCase();
-        const formattedHex = cleanHex.match(/.{1,2}/g)?.join(' ') || cleanHex;
+  function setBusy(on, label){
+    el.runBtn.disabled = on;
+    el.runBtn.classList.toggle('loading', on);
+    if(on) log(label||'Working…');
+  }
 
-        this.hexInput.value = formattedHex;
-        this.updateHexPreview();
-    }
+  // ---------- Toast System ----------
+  function showToast(message, type = 'info', duration = 3000) {
+    const container = qs('#toastContainer');
+    if (!container) return;
 
-    // Get binary data from current decompile input (file or hex)
-    getBinaryData() {
-        const activeTab = document.querySelector('.binary-tab.active')?.dataset.tab;
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
 
-        if (activeTab === 'hex') {
-            // Get data from hex input
-            const hexData = this.hexInput.value.trim();
-            if (!hexData) return null;
+    container.appendChild(toast);
 
-            const cleanHex = hexData.replace(/[^0-9A-Fa-f]/g, '');
-            if (cleanHex.length % 2 !== 0) return null;
+    // Trigger animation
+    requestAnimationFrame(() => {
+      toast.classList.add('show');
+    });
 
-            // Convert hex to binary
-            const bytes = [];
-            for (let i = 0; i < cleanHex.length; i += 2) {
-                bytes.push(parseInt(cleanHex.substr(i, 2), 16));
-            }
-            return new Uint8Array(bytes);
-        } else {
-            // Get data from file input (existing functionality)
-            return this.currentBinaryData;
-        }
-    }
-
-    formatBytes(bytes) {
-        if (bytes === 0) return '0 bytes';
-        const k = 1024;
-        const sizes = ['bytes', 'KB', 'MB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-    }
-}
-
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    new AtomForge();
-
-    // Add loading animation to the page
-    document.body.style.opacity = '0';
-    document.body.style.transform = 'translateY(20px)';
-    document.body.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-
+    // Auto-remove
     setTimeout(() => {
-        document.body.style.opacity = '1';
-        document.body.style.transform = 'translateY(0)';
-    }, 100);
-});
+      toast.classList.remove('show');
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.parentNode.removeChild(toast);
+        }
+      }, 250);
+    }, duration);
+  }
+
+  function setupBottomResize(){
+    const split = document.querySelector('.content-split');   // NEW selector
+    const out = document.querySelector('.output');
+    if (!split || !out) return;
+    let startY=0, startH=out.clientHeight;
+    const move = (e)=>{
+      const y=(e.clientY||e.touches?.[0]?.clientY||0);
+      const dy=y-startY;
+      const h=Math.min(window.innerHeight*0.85, Math.max(180, startH - dy));
+      out.style.maxHeight=h+'px';
+      out.style.height=h+'px';
+    };
+    const up = ()=>{
+      window.removeEventListener('mousemove',move);
+      window.removeEventListener('mouseup',up);
+      window.removeEventListener('touchmove',move);
+      window.removeEventListener('touchend',up);
+    };
+    const down = (e)=>{
+      startY=(e.clientY||e.touches?.[0]?.clientY||0);
+      startH=out.clientHeight;
+      window.addEventListener('mousemove',move);
+      window.addEventListener('mouseup',up);
+      window.addEventListener('touchmove',move);
+      window.addEventListener('touchend',up);
+    };
+    split.addEventListener('mousedown',down);
+    split.addEventListener('touchstart',down,{passive:true});
+  }
+
+  // init
+  window.addEventListener('hashchange', ()=>{
+    const h = location.hash.replace('#','');
+    if (h==='compile'||h==='decompile') setMode(h);
+  });
+
+  window.addEventListener('DOMContentLoaded', init);
+  return { init };
+})();

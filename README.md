@@ -32,6 +32,14 @@ docker run -p 8000:8000 atomforge-full
 
 Access at: http://localhost:8000
 
+### Docker Compose
+
+```bash
+docker compose up --build
+```
+
+This builds the local image and starts the service on port 8000.
+
 ### Manual Setup
 
 Requirements:
@@ -50,10 +58,18 @@ cd api && python src/api_server.py
 
 ### Web Interface
 
-1. Choose Compile or Decompile mode
-2. Upload files or paste text/hex data
-3. Click the action button
-4. Download results or copy output
+1. Choose Compile or Decompile mode (tabs at the top)
+2. For Compile: paste or type FDO source in the editor, then Run
+3. For Decompile: choose File or Hex input (toggle)
+   - File: click the drop area and select a file. When loaded, the area shows a checkmark with filename and size. Click again to change the file.
+   - Hex: paste raw hex (with or without spaces). The decoded byte count updates live.
+4. Results appear in the output tabs below (Status, Hex, Source)
+   - Copy Hex copies contiguous raw hex (no offsets or ASCII). Suitable for pasting into Hex mode.
+   - Download buttons save the binary or source to disk.
+
+Shortcut: press Ctrl+Enter (Windows/Linux) or Cmd+Enter (macOS) to Run.
+
+Status log shows only meaningful events (start/end, errors).
 
 ### API
 
@@ -109,6 +125,10 @@ AtomForge/
 - `GET /examples` - Get example FDO files
 - `GET /health` - Service health check
 
+Notes on `/examples`:
+- The server loads examples from `bin/fdo_compiler_decompiler/golden_tests_immutable/*.txt` when present.
+- If no golden tests are found, a small fallback example is returned.
+
 ## Environment
 
 The Docker container includes:
@@ -125,3 +145,13 @@ MIT License - See LICENSE file for details.
 
 This tool is intended for legitimate reverse engineering and analysis purposes.
 The original Ada32.dll and executables are required for operation.
+
+## Troubleshooting
+
+- Examples menu is empty or fails:
+  - Ensure golden test files exist under `bin/fdo_compiler_decompiler/golden_tests_immutable/`.
+  - Check the server logs for errors loading examples.
+- Hex paste errors:
+  - Hex length must be even after removing spaces. The UI will show a concise error if not.
+- File decompile not starting:
+  - Ensure a file is selected. The drop area will show a loaded state with the filename and size when ready.
