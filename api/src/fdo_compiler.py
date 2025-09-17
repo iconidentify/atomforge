@@ -142,25 +142,29 @@ class FDOCompiler:
         """Internal compilation logic - handles both Docker and direct Wine execution"""
         
         # Check if we're running inside the API container (has Wine available)
-        if os.path.exists('/atomforge/bin/atomforge.exe'):
+        if os.path.exists('/atomforge/bin/fdo_compiler.exe'):
             return self._wine_compile_direct(prepared_input, output_path, return_binary)
         else:
             return self._docker_compile_external(prepared_input, output_path, return_binary)
 
-    def _wine_compile_direct(self, prepared_input: str, output_path: Optional[str] = None, 
+    def _wine_compile_direct(self, prepared_input: str, output_path: Optional[str] = None,
                             return_binary: bool = False) -> CompileResult:
         """Direct Wine compilation (when running inside API container)"""
-        container_output = "/tmp/output.fdo"
-        
+        # Create unique temporary output file to avoid collisions
+        temp_fd, container_output = tempfile.mkstemp(suffix='.fdo', dir='/tmp')
+        os.close(temp_fd)  # Close the file descriptor but keep the path
+
         try:
             # Use /tmp as working directory since /atomforge might be read-only
             wine_cmd = [
                 "bash", "-c",
                 f"cd /tmp && "
-                f"cp /atomforge/bin/dlls/GIDINFO.INF . && "
-                f"cp /atomforge/bin/dlls/Ada.bin . && "
-                f"export WINEPATH='/atomforge/bin/dlls' && "
-                f"wine /atomforge/bin/atomforge.exe {prepared_input} {container_output}"
+                f"cp /atomforge/bin/GIDINFO.INF . && "
+                f"cp /atomforge/bin/Ada.bin . && "
+                f"cp /atomforge/bin/Ada32.dll . && "
+                f"cp /atomforge/bin/mfc42.dll . 2>/dev/null || true && "
+                f"export WINEPATH='/atomforge/bin' && "
+                f"wine /atomforge/bin/fdo_compiler.exe --force {prepared_input} {container_output}"
             ]
             
             result = subprocess.run(wine_cmd, capture_output=True)
@@ -197,6 +201,13 @@ class FDOCompiler:
 
         except Exception as e:
             return CompileResult(False, error_message=f"Wine execution failed: {e}")
+        finally:
+            # Clean up temporary output file
+            try:
+                if os.path.exists(container_output):
+                    os.unlink(container_output)
+            except:
+                pass
 
     def _docker_compile_external(self, prepared_input: str, output_path: Optional[str] = None, 
                                 return_binary: bool = False) -> CompileResult:
@@ -217,9 +228,9 @@ class FDOCompiler:
                     "-v", f"{prepared_input}:{container_input}:ro",
                     self.docker_image,
                     "bash", "-c",
-                    f"cd /atomforge && cp bin/dlls/GIDINFO.INF . && cp bin/dlls/Ada.bin . && "
-                    f"export WINEPATH='/atomforge/bin/dlls' && "
-                    f"wine bin/atomforge.exe {container_input} {container_output} && "
+                    f"cd /atomforge && cp bin/GIDINFO.INF . && cp bin/Ada.bin . && cp bin/Ada32.dll . && cp bin/mfc42.dll . 2>/dev/null || true && "
+                    f"export WINEPATH='/atomforge/bin' && "
+                    f"wine bin/fdo_compiler.exe {container_input} {container_output} && "
                     f"cat {container_output}"
                 ]
             else:
@@ -230,9 +241,9 @@ class FDOCompiler:
                     "-v", f"{os.getcwd()}:/output:rw",
                     self.docker_image,
                     "bash", "-c",
-                    f"cd /atomforge && cp bin/dlls/GIDINFO.INF . && cp bin/dlls/Ada.bin . && "
-                    f"export WINEPATH='/atomforge/bin/dlls' && "
-                    f"wine bin/atomforge.exe {container_input} {container_output} && "
+                    f"cd /atomforge && cp bin/GIDINFO.INF . && cp bin/Ada.bin . && cp bin/Ada32.dll . && cp bin/mfc42.dll . 2>/dev/null || true && "
+                    f"export WINEPATH='/atomforge/bin' && "
+                    f"wine bin/fdo_compiler.exe {container_input} {container_output} && "
                     f"cp {container_output} /output/{Path(output_path).name}"
                 ]
 

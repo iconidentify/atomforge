@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AtomForge - Online FDO Compilation</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
     <link rel="stylesheet" href="/static/style.css">
@@ -18,16 +19,37 @@
                 </h1>
             </div>
             <div class="header-badge">
-                    <span class="badge">Binary FDO Compiler</span>
+                    <span class="badge">Binary FDO Compiler & Decompiler</span>
             </div>
         </header>
 
         <!-- Main Content -->
         <main class="main">
+            <!-- Mode Toggle -->
+            <section class="mode-section">
+                <div class="mode-toggle">
+                    <button class="mode-btn active" data-mode="compile">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5,3 19,12 5,21"/>
+                        </svg>
+                        <span>Compile</span>
+                    </button>
+                    <button class="mode-btn" data-mode="decompile">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            <polyline points="7.5,4.21 12,6.81 16.5,4.21"/>
+                            <polyline points="7.5,19.79 7.5,14.6 3,12"/>
+                            <polyline points="21,12 16.5,14.6 16.5,19.79"/>
+                        </svg>
+                        <span>Decompile</span>
+                    </button>
+                </div>
+            </section>
+
             <!-- Input Section -->
             <section class="input-section">
                 <div class="section-header">
-                    <h2>📝 FDO Source Code</h2>
+                    <h2 class="section-title">📝 FDO Source Code</h2>
                     <div class="examples-dropdown">
                         <button class="examples-btn" id="examplesBtn">
                             <span>📚 Load Example</span>
@@ -71,14 +93,81 @@
                 </div>
             </section>
 
-            <!-- Compile Button -->
-            <div class="compile-section">
-                <button class="compile-btn" id="compileBtn">
-                    <span class="btn-content">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <!-- Decompile Input Section (Initially Hidden) -->
+            <section class="decompile-section" id="decompileSection" style="display: none;">
+                <div class="section-header">
+                    <h2 class="section-title">🔓 FDO Binary File</h2>
+                </div>
+
+                <div class="editor-container">
+                    <div class="editor-toolbar">
+                        <span class="file-info">Binary: <span id="binarySize">0</span> bytes</span>
+                        <button class="clear-btn" id="clearBinaryBtn">Clear</button>
+                    </div>
+                    <div class="binary-input-area">
+                        <!-- Tab Selector for Binary Input -->
+                        <div class="binary-input-tabs">
+                            <button class="binary-tab active" data-tab="file">📁 File Upload</button>
+                            <button class="binary-tab" data-tab="hex">🔧 Hex Paste</button>
+                        </div>
+
+                        <!-- File Upload Tab -->
+                        <div class="binary-tab-content active" id="fileTab">
+                            <div class="binary-drop-zone" id="binaryDropZone">
+                                <div class="drop-content">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                        <polyline points="7,10 12,15 17,10"/>
+                                        <line x1="12" y1="15" x2="12" y2="3"/>
+                                    </svg>
+                                    <p>Drop FDO binary files here or click to browse</p>
+                                    <p class="file-types">Accepts .fdo, .str, .bin binary files</p>
+                                    <input type="file" id="binaryFileInput" accept=".fdo,.str,.bin" hidden>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hex Paste Tab -->
+                        <div class="binary-tab-content" id="hexTab" style="display: none;">
+                            <div class="hex-input-area">
+                                <div class="hex-input-header">
+                                    <span class="hex-label">Paste hex data (with or without spaces):</span>
+                                    <button class="hex-format-btn" id="hexFormatBtn">🔄 Format</button>
+                                </div>
+                                <textarea
+                                    id="hexInput"
+                                    class="hex-editor"
+                                    placeholder="Paste hex data here...&#10;&#10;Examples:&#10;40010101 01014D79 46696C65&#10;or&#10;40 01 01 01 01 01 4D 79 46 69 6C 65"
+                                    spellcheck="false"
+                                    autocorrect="off"
+                                    autocapitalize="off"
+                                ></textarea>
+                                <div class="hex-info">
+                                    <span>Decoded: <span id="hexDecodedSize">0</span> bytes</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="binary-preview" id="binaryFilePreview" style="display: none;">
+                            <div class="binary-info">
+                                <strong id="binaryFileName">file.fdo</strong>
+                                <span id="binaryFileSize">0 bytes</span>
+                            </div>
+                            <div class="binary-hex-preview" id="binaryHexPreview">
+                                <!-- Hex preview will be shown here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Action Button -->
+            <div class="action-section">
+                <button class="action-btn" id="actionBtn">
+                    <span class="btn-content" id="btnContent">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="btnIcon">
                             <polygon points="5,3 19,12 5,21"/>
                         </svg>
-                        <span>Compile FDO</span>
+                        <span id="btnText">Compile FDO</span>
                     </span>
                     <div class="btn-loader"></div>
                 </button>
@@ -91,40 +180,33 @@
                 </div>
             </section>
 
-            <!-- Output Section -->
-            <section class="output-section" id="outputSection" style="display: none;">
-                <div class="section-header">
-                    <h2>✅ Compilation Successful</h2>
-                    <div class="output-info">
-                        <span id="outputSize">0 bytes</span>
+            <!-- Compile Result with Hex Preview -->
+            <div class="result-section" id="compileResult" style="display: none;">
+                <div class="result-header">
+                    <span class="result-title">📦 Compiled Binary (<span id="compileSize">0 bytes</span>)</span>
+                    <div class="result-actions">
+                        <button class="simple-btn" id="downloadBtn">📥 Download</button>
+                        <button class="simple-btn" id="copyHexBtn">📋 Copy Hex</button>
                     </div>
                 </div>
-                
-                <div class="output-content">
-                    <div class="binary-preview" id="binaryPreview">
-                        <!-- Binary hex preview -->
-                    </div>
-                    
-                    <div class="download-section">
-                        <button class="download-btn" id="downloadBtn">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                <polyline points="7,10 12,15 17,10"/>
-                                <line x1="12" y1="15" x2="12" y2="3"/>
-                            </svg>
-                            <span>Download compiled.fdo</span>
-                        </button>
-                        
-                        <button class="copy-hex-btn" id="copyHexBtn">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                            </svg>
-                            <span>Copy Hex</span>
-                        </button>
+                <div class="hex-preview" id="compileHexPreview">
+                    <!-- Hex preview will be generated here -->
+                </div>
+            </div>
+
+            <!-- Decompile Result with Source Display -->
+            <div class="result-section" id="decompileResult" style="display: none;">
+                <div class="result-header">
+                    <span class="result-title">📝 Decompiled Source (<span id="decompileSize">0 characters</span>)</span>
+                    <div class="result-actions">
+                        <button class="simple-btn" id="downloadSourceBtn">📥 Download</button>
+                        <button class="simple-btn" id="copySourceBtn">📋 Copy Source</button>
                     </div>
                 </div>
-            </section>
+                <div class="source-preview">
+                    <pre id="decompileSourceCode"></pre>
+                </div>
+            </div>
         </main>
 
         <!-- Footer -->

@@ -19,14 +19,20 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 import uvicorn
 
-# Add our compiler module to path
+# Add our compiler modules to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fdo_compiler import FDOCompiler, CompileResult
+from fdo_decompiler import FDODecompiler, DecompileResult
 
 
 class CompileRequest(BaseModel):
     """Request model for FDO compilation"""
     source: str = Field(..., description="FDO source code to compile", min_length=1)
+
+
+class DecompileRequest(BaseModel):
+    """Request model for FDO decompilation"""
+    binary_data: str = Field(..., description="Base64-encoded FDO binary data to decompile", min_length=1)
 
 
 class CompileErrorResponse(BaseModel):
@@ -45,9 +51,9 @@ class ExampleResponse(BaseModel):
 
 
 app = FastAPI(
-    title="FDO Compiler API",
-    description="HTTP API for compiling FDO source code using authentic Ada32.dll",
-    version="1.0.0",
+    title="AtomForge FDO API",
+    description="HTTP API for compiling and decompiling FDO files using authentic Ada32.dll",
+    version="2.0.0",
     docs_url="/api",  # Swagger UI at /api
     redoc_url="/docs"
 )
@@ -67,8 +73,9 @@ for static_path in static_paths:
 else:
     print("⚠️  Static files directory not found!")
 
-# Global compiler instance
+# Global compiler and decompiler instances
 compiler = FDOCompiler()
+decompiler = FDODecompiler()
 
 
 @app.get("/")
@@ -98,20 +105,21 @@ async def health_check():
     """Health check endpoint"""
     return {
         "status": "healthy",
-        "service": "fdo-compiler-api",
-        "version": "1.0.0"
+        "service": "atomforge-fdo-api",
+        "version": "2.0.0",
+        "features": ["compilation", "decompilation"]
     }
 
 
 def load_golden_examples() -> List[ExampleResponse]:
     """Load FDO examples from golden test files"""
     examples = []
-    
-    # Look for golden test files
+
+    # Look for golden test files in new location
     golden_paths = [
-        "/atomforge/golden_tests_immutable/*.txt",  # Inside container
-        "../golden_tests_immutable/*.txt",
-        "../../golden_tests_immutable/*.txt"
+        "/atomforge/bin/golden_tests_immutable/*.txt",  # Inside container
+        "bin/fdo_compiler_decompiler/golden_tests_immutable/*.txt",  # Development
+        "../bin/fdo_compiler_decompiler/golden_tests_immutable/*.txt"
     ]
     
     for pattern in golden_paths:
@@ -142,8 +150,9 @@ uni_end_stream <>""",
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
             
-            # Remove GID header if present
+            # Remove GID header and comment lines if present
             content = re.sub(r'^<+.*?GID:.*?>+.*?\n', '', content, flags=re.MULTILINE)
+            content = re.sub(r'^>>>>.*?\n', '', content, flags=re.MULTILINE)  # Remove comment lines
             content = content.strip()
             
             if content and 'uni_start_stream' in content:
@@ -234,6 +243,83 @@ async def compile_fdo(request: CompileRequest):
                 }
             )
             
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "success": False,
+                "error": "Internal server error",
+                "details": {"exception": str(e)}
+            }
+        )
+
+
+@app.post("/decompile")
+async def decompile_fdo(request: DecompileRequest):
+    """
+    Decompile FDO binary data to source code
+
+    Returns:
+        - Success: JSON response with source code
+        - Error: JSON error response
+    """
+    import base64
+
+    try:
+        # Decode base64 binary data
+        try:
+            binary_data = base64.b64decode(request.binary_data)
+        except Exception as e:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "success": False,
+                    "error": "Invalid base64 binary data",
+                    "details": {"decode_error": str(e)}
+                }
+            )
+
+        if not binary_data:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "success": False,
+                    "error": "Empty binary data provided",
+                    "details": {"field": "binary_data"}
+                }
+            )
+
+        # Attempt decompilation
+        result: DecompileResult = decompiler.decompile_from_bytes(binary_data)
+
+        if result.success:
+            # Return JSON response with source code
+            return {
+                "success": True,
+                "source_code": result.source_code,
+                "output_size": result.output_size,
+                "input_size": len(binary_data)
+            }
+        else:
+            # Return JSON error response
+            status_code = 400  # Bad Request for decompilation errors
+            if "Docker" in result.error_message:
+                status_code = 500  # Internal Server Error for infrastructure issues
+
+            raise HTTPException(
+                status_code=status_code,
+                detail={
+                    "success": False,
+                    "error": result.error_message,
+                    "details": {
+                        "input_size": len(binary_data),
+                        "decompilation_attempted": True
+                    }
+                }
+            )
+
     except HTTPException:
         raise
     except Exception as e:
