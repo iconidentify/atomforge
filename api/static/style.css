@@ -163,12 +163,14 @@ body {
     display: flex;
     flex-direction: column;
     height: calc(100vh - 56px);
+    min-height: 0; /* allow interior grids to size correctly */
 }
 
 .panel {
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-height: 0;
 }
 
 /* Editor */
@@ -306,12 +308,21 @@ body {
    Decompile Inputs
    ================================ */
 
+/* Decompile panel layout: 2 rows → controls+inputs (auto) and growable area (1fr) */
+#panel-decompile {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-height: 0; /* allows children to shrink/grow within viewport */
+}
+
 .decompile-inputs {
     display: grid;
+    grid-template-rows: auto 1fr; /* row 1: toggle; row 2: active input view */
     gap: 12px;
     padding: 12px;
     border-top: 1px solid var(--border-primary);
     background: var(--bg-secondary);
+    min-height: 0; /* critical for proper overflow in grid/flex parents */
 }
 
 .toggle {
@@ -336,8 +347,39 @@ body {
 }
 
 .input-view {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 8px;
+    min-height: 0; /* allows children to flex within */
+}
+
+/* HEX textarea fills available space */
+#hexInput {
+    flex: 1 1 auto;
+    min-height: 240px;
+    resize: vertical;
+}
+
+/* FILE drop zone also grows to fill */
+#fileInputView .drop {
+    flex: 1 1 auto;
+    min-height: 240px;
+}
+
+/* Keep metadata visible inside the input view without consuming extra layout height */
+#hexInputView .file-meta,
+#fileInputView .file-meta {
+    position: sticky;
+    bottom: 0;
+    background: var(--bg-secondary);
+    padding: 6px 2px;
+    border-top: 1px solid var(--border-primary);
+}
+
+/* Emphasize decoded count */
+#hexInputView .file-meta #hexDecoded {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
 }
 
 .drop {

@@ -184,9 +184,7 @@ const App = (() => {
         if (showHex) {
           el.hexInput.removeAttribute('disabled');
           el.hexInput.focus();
-          // Update decoded count
-          const clean = (el.hexInput.value||'').replace(/[^0-9A-Fa-f]/g, '');
-          el.hexDecoded.textContent = (clean.length/2|0).toLocaleString();
+          refreshHexDecoded();
         } else {
           el.binaryFile.focus();
         }
@@ -216,13 +214,13 @@ const App = (() => {
       reader.readAsArrayBuffer(f);
     });
 
-    // Hex input: live sanitize + count
-    function updateHexDecoded() {
+    // Ensure decoded count refresh after large paste operations and programmatic value sets
+    function refreshHexDecoded() {
       const clean = (el.hexInput.value||'').replace(/[^0-9A-Fa-f]/g, '');
       el.hexDecoded.textContent = (clean.length/2|0).toLocaleString();
     }
-    el.hexInput.addEventListener('input', updateHexDecoded);
-    el.hexInput.addEventListener('paste', (e) => { requestAnimationFrame(updateHexDecoded); });
+    el.hexInput.addEventListener('input', refreshHexDecoded);
+    el.hexInput.addEventListener('paste', (e) => { requestAnimationFrame(refreshHexDecoded); });
   }
 
   // ---------- Output tabs & helpers ----------
