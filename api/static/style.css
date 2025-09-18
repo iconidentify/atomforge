@@ -349,7 +349,7 @@ body {
 .input-view {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 0; /* eliminate void between input and metadata */
     min-height: 0; /* allows children to flex within */
     overflow: hidden; /* ensure child scroll instead of growing container */
 }
@@ -375,7 +375,7 @@ body {
     position: sticky;
     bottom: 0;
     background: var(--bg-secondary);
-    padding: 6px 2px;
+    padding: 4px 2px; /* tighten to reduce visible gap */
     border-top: 1px solid var(--border-primary);
 }
 
