@@ -351,19 +351,22 @@ body {
     flex-direction: column;
     gap: 8px;
     min-height: 0; /* allows children to flex within */
+    overflow: hidden; /* ensure child scroll instead of growing container */
 }
 
 /* HEX textarea fills available space */
 #hexInput {
-    flex: 1 1 auto;
-    min-height: 240px;
+    flex: 1 1 240px; /* preferred size but allows shrink/grow */
+    min-height: 0;   /* allow shrink when splitter moves */
+    max-height: 100%;
+    overflow: auto;
     resize: vertical;
 }
 
 /* FILE drop zone also grows to fill */
 #fileInputView .drop {
-    flex: 1 1 auto;
-    min-height: 240px;
+    flex: 1 1 240px; /* preferred size but allows shrink/grow */
+    min-height: 0;   /* allow shrink when splitter moves */
 }
 
 /* Keep metadata visible inside the input view without consuming extra layout height */
