@@ -254,8 +254,8 @@ const App = (() => {
           showToast('No hex content to copy', 'error');
           return;
         }
-        await navigator.clipboard.writeText(rawHex);
-        showToast('Hex copied to clipboard', 'success');
+        const ok = await copyTextToClipboard(rawHex);
+        showToast(ok ? 'Hex copied to clipboard' : 'Failed to copy hex', ok ? 'success' : 'error');
       } catch (err) {
         showToast('Failed to copy hex', 'error');
       }
@@ -274,8 +274,8 @@ const App = (() => {
           showToast('No source content to copy', 'error');
           return;
         }
-        await navigator.clipboard.writeText(sourceContent);
-        showToast('Source copied to clipboard', 'success');
+        const ok = await copyTextToClipboard(sourceContent);
+        showToast(ok ? 'Source copied to clipboard' : 'Failed to copy source', ok ? 'success' : 'error');
       } catch (err) {
         showToast('Failed to copy source', 'error');
       }
@@ -385,6 +385,35 @@ const App = (() => {
     el.runBtn.disabled = on;
     el.runBtn.classList.toggle('loading', on);
     if(on) log(label||'Working…');
+  }
+
+  // Clipboard helper: uses async Clipboard API on secure contexts, falls back to execCommand on HTTP
+  async function copyTextToClipboard(text){
+    if (!text) return false;
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch (_) { /* fall through to legacy path */ }
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly','');
+      ta.style.position = 'fixed';
+      ta.style.top = '-1000px';
+      ta.style.left = '-1000px';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      ta.setSelectionRange(0, ta.value.length);
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return !!ok;
+    } catch (_) {
+      return false;
+    }
   }
 
   // ---------- Toast System ----------
