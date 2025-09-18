@@ -319,7 +319,7 @@ body {
     display: grid;
     grid-template-rows: auto 1fr; /* row 1: toggle; row 2: active input view */
     gap: 12px;
-    padding: 12px;
+    padding: 12px 12px 0 12px; /* remove bottom padding so input sits at splitter */
     border-top: 1px solid var(--border-primary);
     background: var(--bg-secondary);
     min-height: 0; /* critical for proper overflow in grid/flex parents */
