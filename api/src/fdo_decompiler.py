@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 FDO Decompiler Module
-Elegant decompilation of binary FDO files to source code
+Elegant decompilation of binary FDO files to source code with ASCII text support
 """
 
 import os
@@ -10,6 +10,13 @@ import tempfile
 from pathlib import Path
 from typing import Optional, Union
 import re
+
+# Import ASCII transformation support
+try:
+    from ascii_transformers import hex_to_ascii
+    ASCII_SUPPORT_AVAILABLE = True
+except ImportError:
+    ASCII_SUPPORT_AVAILABLE = False
 
 
 class DecompileResult:
@@ -31,6 +38,19 @@ class FDODecompiler:
 
     def __init__(self):
         self.container_name = "atomforge-decompiler"
+
+    def post_process_source(self, source_code: str) -> str:
+        """Post-process decompiled source code with ASCII transformation"""
+        if not ASCII_SUPPORT_AVAILABLE:
+            return source_code
+
+        try:
+            # Transform hex values back to ASCII text for supported atoms
+            return hex_to_ascii(source_code)
+        except Exception as e:
+            # If ASCII transformation fails, log but return original source
+            print(f"Warning: ASCII transformation failed during decompilation: {e}")
+            return source_code
 
     def decompile_from_bytes(self, binary_data: bytes) -> DecompileResult:
         """Decompile FDO from binary data - API version"""
@@ -94,7 +114,11 @@ class FDODecompiler:
                 if return_source:
                     # Read and return source code
                     with open(container_output, 'r', encoding='utf-8') as f:
-                        source_code = f.read()
+                        raw_source_code = f.read()
+
+                    # Post-process to convert hex to ASCII where applicable
+                    source_code = self.post_process_source(raw_source_code)
+
                     return DecompileResult(True, source_code=source_code,
                                          output_size=len(source_code))
                 else:
@@ -103,7 +127,15 @@ class FDODecompiler:
                         import shutil
                         shutil.copy(container_output, output_path)
                         with open(output_path, 'r', encoding='utf-8') as f:
-                            source_code = f.read()
+                            raw_source_code = f.read()
+
+                        # Post-process to convert hex to ASCII where applicable
+                        source_code = self.post_process_source(raw_source_code)
+
+                        # Write processed source back to output file
+                        with open(output_path, 'w', encoding='utf-8') as f:
+                            f.write(source_code)
+
                         return DecompileResult(True, source_code=source_code,
                                              output_size=len(source_code))
                     else:
@@ -175,12 +207,22 @@ class FDODecompiler:
 
             if result.returncode == 0:
                 if return_source:
-                    return DecompileResult(True, source_code=result.stdout,
-                                         output_size=len(result.stdout))
+                    # Post-process to convert hex to ASCII where applicable
+                    source_code = self.post_process_source(result.stdout)
+                    return DecompileResult(True, source_code=source_code,
+                                         output_size=len(source_code))
                 else:
                     if os.path.exists(output_path):
                         with open(output_path, 'r', encoding='utf-8') as f:
-                            source_code = f.read()
+                            raw_source_code = f.read()
+
+                        # Post-process to convert hex to ASCII where applicable
+                        source_code = self.post_process_source(raw_source_code)
+
+                        # Write processed source back to output file
+                        with open(output_path, 'w', encoding='utf-8') as f:
+                            f.write(source_code)
+
                         return DecompileResult(True, source_code=source_code,
                                              output_size=len(source_code))
                     else:

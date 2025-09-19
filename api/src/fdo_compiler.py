@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Shared FDO Compiler Module
-Reusable compiler logic for both CLI and HTTP API
+Reusable compiler logic for both CLI and HTTP API with ASCII text support
 """
 
 import os
@@ -10,6 +10,13 @@ import tempfile
 import re
 from pathlib import Path
 from typing import Tuple, Optional, Union
+
+# Import ASCII transformation support
+try:
+    from ascii_transformers import ascii_to_hex
+    ASCII_SUPPORT_AVAILABLE = True
+except ImportError:
+    ASCII_SUPPORT_AVAILABLE = False
 
 
 class CompileResult:
@@ -39,10 +46,18 @@ class FDOCompiler:
         return text.replace('&', '26x')
 
     def prepare_input_content(self, content: str) -> str:
-        """Prepare FDO source content with necessary escaping and cleanup"""
+        """Prepare FDO source content with ASCII transformation, escaping and cleanup"""
         # Remove GID headers if present (multiple formats)
         content = re.sub(r'<+\s*GID:\s*[^>]+\s*>+.*\n?', '', content)
-        
+
+        # Transform ASCII text to hex for supported atoms
+        if ASCII_SUPPORT_AVAILABLE:
+            try:
+                content = ascii_to_hex(content)
+            except Exception as e:
+                # If ASCII transformation fails, log but continue with original content
+                print(f"Warning: ASCII transformation failed: {e}")
+
         # Escape special characters
         return self.escape_special_chars(content)
 

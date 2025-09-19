@@ -244,26 +244,44 @@ class P3FDOExtractor:
             # Try each potential end position, preferring ones that validate properly
             best_end = None
             best_score = -1
+            
+            # Check if there's another Z marker after this one (helps identify packet boundary)
+            next_z_pos = None
+            try:
+                next_z_pos = self._buf.index(Z, start + 1)
+            except ValueError:
+                pass
 
             for end in potential_ends:
                 packet_candidate = bytes(self._buf[start:end + 1])
                 payload_candidate = packet_candidate[10:-1]  # exclude header and CR
 
-                # Score this candidate based on length prefix validation
+                # Score this candidate based on multiple factors
                 score = 0
+                
+                # Factor 1: If this CR is immediately before the next Z, it's very likely the correct boundary
+                if next_z_pos is not None and end == next_z_pos - 1:
+                    score = 2000  # Highest priority - CR right before next packet
+                
+                # Factor 2: Length prefix validation
                 if len(payload_candidate) >= 6:
                     L = int.from_bytes(payload_candidate[:4], "little", signed=False)
                     if 0 < L <= (len(payload_candidate) - 4):
                         sid_lo, sid_hi = payload_candidate[4], payload_candidate[5]
                         if sid_lo <= 0x7F and sid_hi <= 0x7F:
-                            score = 100  # Strong preference for length-prefix-valid packets
+                            # Check if length matches exactly (strong indicator of correct boundary)
+                            if L == len(payload_candidate) - 4:
+                                score += 1000  # Exact length match
+                            else:
+                                score += 100  # Length valid but not exact
                         else:
-                            score = 50   # Moderate preference
+                            score += 50   # Moderate preference
                     else:
-                        score = 10   # Weak preference - length doesn't validate but still possible
+                        score += 10   # Weak preference - length doesn't validate but still possible
 
-                # Prefer longer packets if scores are equal (likely more complete)
-                score += (end - start) / 1000.0
+                # For equal scores, prefer shorter/earlier packets (P3 packets are typically small)
+                # But use a very small penalty so exact length matches always win
+                score -= (end - start) / 100000.0
 
                 if score > best_score:
                     best_score = score

@@ -27,6 +27,21 @@ logging.basicConfig(level=logging.ERROR, filename='/var/log/atomforge.log', form
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fdo_compiler import FDOCompiler, CompileResult
 from fdo_decompiler import FDODecompiler, DecompileResult
+from p3_extractor import P3Extractor
+
+# Import ASCII support modules
+try:
+    from ascii_atom_registry import get_registry, get_ascii_atoms
+    ASCII_SUPPORT_AVAILABLE = True
+except ImportError:
+    ASCII_SUPPORT_AVAILABLE = False
+
+# Import P3 extractor
+try:
+    from p3_extractor import get_extractor
+    P3_SUPPORT_AVAILABLE = True
+except ImportError:
+    P3_SUPPORT_AVAILABLE = False
 
 
 class CompileRequest(BaseModel):
@@ -37,6 +52,16 @@ class CompileRequest(BaseModel):
 class DecompileRequest(BaseModel):
     """Request model for FDO decompilation"""
     binary_data: str = Field(..., description="Base64-encoded FDO binary data to decompile", min_length=1)
+
+class ExtractRequest(BaseModel):
+    """Request model for extracting FDO from P3 hex payloads"""
+    hex_data: str = Field(..., description="Hex-encoded P3 packet data", min_length=1)
+    strict_crc: bool = Field(default=False, description="Enable strict CRC validation")
+
+
+class ExtractFDORequest(BaseModel):
+    """Request model for P3 packet FDO extraction"""
+    hex_data: str = Field(..., description="Hex string containing P3 packets", min_length=1)
 
 
 class CompileErrorResponse(BaseModel):
@@ -111,7 +136,7 @@ async def health_check():
         "status": "healthy",
         "service": "atomforge-fdo-api",
         "version": "2.0.0",
-        "features": ["compilation", "decompilation"]
+        "features": ["compilation", "decompilation", "p3_extraction" if P3_SUPPORT_AVAILABLE else None]
     }
 
 
@@ -190,6 +215,53 @@ async def get_examples():
         raise HTTPException(
             status_code=500,
             detail=f"Failed to load examples: {str(e)}"
+        )
+
+
+@app.get("/ascii-atoms")
+async def get_ascii_atoms():
+    """Get list of atoms that support ASCII text input"""
+    if not ASCII_SUPPORT_AVAILABLE:
+        return {
+            "ascii_support": False,
+            "atoms": [],
+            "message": "ASCII atom support not available"
+        }
+
+    try:
+        ascii_atoms = get_ascii_atoms()
+        registry = get_registry()
+
+        # Build detailed atom information
+        atom_details = []
+        for atom_name in ascii_atoms:
+            atom_def = registry.get_atom(atom_name)
+            if atom_def:
+                atom_info = {
+                    "name": atom_name,
+                    "description": atom_def.description,
+                    "parameters": [
+                        {
+                            "index": param.index,
+                            "name": param.name,
+                            "type": param.type,
+                            "max_length": param.max_length,
+                            "encoding": param.encoding
+                        }
+                        for param in atom_def.parameters
+                    ]
+                }
+                atom_details.append(atom_info)
+
+        return {
+            "ascii_support": True,
+            "atoms": atom_details,
+            "count": len(atom_details)
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to load ASCII atoms: {str(e)}"
         )
 
 
@@ -336,6 +408,81 @@ async def decompile_fdo(request: DecompileRequest):
             detail={
                 "success": False,
                 "error": "Internal server error",
+                "details": {"exception": str(e)}
+            }
+        )
+
+
+@app.post("/extract-fdo")
+async def extract_fdo_from_p3(request: ExtractFDORequest):
+    """
+    Extract FDO data from P3 packet streams
+
+    Takes hex string containing P3 packets and extracts clean FDO data
+    for decompilation purposes.
+
+    Returns:
+        - Success: JSON response with extracted FDO hex data
+        - Error: JSON error response
+    """
+    if not P3_SUPPORT_AVAILABLE:
+        raise HTTPException(
+            status_code=501,
+            detail={
+                "success": False,
+                "error": "P3 extraction not available",
+                "details": {"feature": "p3_support", "available": False}
+            }
+        )
+
+    try:
+        # Validate input
+        hex_data = request.hex_data.strip()
+        if not hex_data:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "success": False,
+                    "error": "Empty hex data provided",
+                    "details": {"field": "hex_data"}
+                }
+            )
+
+        # Extract FDO from P3 packets
+        extractor = get_extractor()
+        result = await run_in_threadpool(extractor.extract_fdo_from_hex, hex_data)
+
+        if result['success']:
+            return {
+                "success": True,
+                "fdo_hex": result['fdo_hex'],
+                "frames_found": result['frames_found'],
+                "total_fdo_bytes": result['total_fdo_bytes'],
+                "input_size": len(hex_data)
+            }
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "success": False,
+                    "error": result['error'],
+                    "details": {
+                        "frames_found": result['frames_found'],
+                        "input_size": len(hex_data),
+                        "extraction_attempted": True
+                    }
+                }
+            )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Unexpected P3 extraction error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "success": False,
+                "error": "Internal server error during P3 extraction",
                 "details": {"exception": str(e)}
             }
         )

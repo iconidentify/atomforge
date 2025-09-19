@@ -36,8 +36,11 @@
         <section id="panel-decompile" class="panel" role="tabpanel" aria-labelledby="tab-decompile" hidden>
             <div class="decompile-inputs">
                 <div class="toggle">
-                    <button class="toggle-btn active" data-input="hex">Hex</button>
-                    <button class="toggle-btn" data-input="file">File</button>
+                    <div class="toggle-buttons">
+                        <button class="toggle-btn active" data-input="hex">Hex</button>
+                        <button class="toggle-btn" data-input="file">File</button>
+                    </div>
+                    <button id="extractFdoBtn" class="btn small" hidden>Extract FDO</button>
                 </div>
 
                 <div id="fileInputView" class="input-view" hidden>
@@ -53,7 +56,9 @@
 
                 <div id="hexInputView" class="input-view active">
                     <textarea id="hexInput" class="editor mono" spellcheck="false" placeholder="Paste hex here (e.g., 40 01 02 … or 400102…)"></textarea>
-                    <div class="file-meta">Decoded: <span id="hexDecoded">0</span> bytes</div>
+                    <div class="file-meta">
+                        <span>Decoded: <span id="hexDecoded">0</span> bytes</span>
+                    </div>
                 </div>
             </div>
         </section>

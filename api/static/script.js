@@ -29,6 +29,7 @@ const App = (() => {
     openAsHexBtn: qs('#openAsHexBtn'),
     hexInput: qs('#hexInput'),
     hexDecoded: qs('#hexDecoded'),
+    extractFdoBtn: qs('#extractFdoBtn'),
     // Output
     outTabs: qsa('.output .tab'),
     outPanels: {
@@ -54,6 +55,10 @@ const App = (() => {
   let currentBinary = null;   // Uint8Array from file OR hex
   let compiledBuffer = null;  // ArrayBuffer
   let decompiledText = '';
+
+  // ASCII atom support
+  let asciiAtoms = [];
+  let asciiSupportEnabled = false;
 
   // Per-mode output state preservation
   let modeOutputs = {
@@ -82,6 +87,8 @@ const App = (() => {
     bindDownloads();
     setupExamples();
     setupBottomResize();
+    setupASCIISupport();
+    setupP3Extraction();
     // Ensure hex input is enabled by default since it's now the default view
     el.hexInput.removeAttribute('disabled');
     setMode(st.mode, {pushHash:false});
@@ -369,11 +376,6 @@ const App = (() => {
       showToast('File opened as hex', 'success');
     });
 
-    // Ensure decoded count refresh after large paste operations and programmatic value sets
-    function refreshHexDecoded() {
-      const clean = (el.hexInput.value||'').replace(/[^0-9A-Fa-f]/g, '');
-      el.hexDecoded.textContent = (clean.length/2|0).toLocaleString();
-    }
     el.hexInput.addEventListener('input', refreshHexDecoded);
     el.hexInput.addEventListener('paste', (e) => { requestAnimationFrame(refreshHexDecoded); });
   }
@@ -636,6 +638,138 @@ const App = (() => {
     };
     split.addEventListener('mousedown',down);
     split.addEventListener('touchstart',down,{passive:true});
+  }
+
+  // ---------- ASCII Atom Support ----------
+  async function setupASCIISupport() {
+    try {
+      const response = await fetch('/ascii-atoms');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.ascii_support) {
+          asciiAtoms = data.atoms;
+          asciiSupportEnabled = true;
+          setupASCIIInputEnhancements();
+          console.log(`ASCII support enabled for ${data.count} atoms:`, asciiAtoms.map(a => a.name));
+        }
+      }
+    } catch (error) {
+      console.log('ASCII atom support not available:', error.message);
+    }
+  }
+
+  function setupASCIIInputEnhancements() {
+    if (!asciiSupportEnabled) return;
+
+    // Add ASCII input helpers to the compile input
+    addASCIIInputHelper(el.fdoInput);
+  }
+
+  function addASCIIInputHelper(textarea) {
+    // Add event listeners for intelligent ASCII suggestions
+    textarea.addEventListener('input', handleASCIIInput);
+    textarea.addEventListener('keydown', handleASCIIKeydown);
+  }
+
+  function handleASCIIInput(event) {
+    const textarea = event.target;
+    const cursorPos = textarea.selectionStart;
+    const textBeforeCursor = textarea.value.substring(0, cursorPos);
+
+    // Check if we're typing an ASCII-supported atom
+    const currentLine = textBeforeCursor.split('\n').pop();
+
+    for (const atom of asciiAtoms) {
+      if (currentLine.trim().startsWith(atom.name)) {
+        // Show ASCII input suggestion (could add visual indicator here)
+        break;
+      }
+    }
+  }
+
+  function handleASCIIKeydown(event) {
+    // Could add special key handling for ASCII input assistance
+    // For example, auto-complete or formatting helpers
+  }
+
+  function isASCIIAtom(atomName) {
+    return asciiAtoms.some(atom => atom.name === atomName);
+  }
+
+  function getASCIIAtomInfo(atomName) {
+    return asciiAtoms.find(atom => atom.name === atomName);
+  }
+
+  // P3 Extraction Support
+  function setupP3Extraction() {
+    if (!el.extractFdoBtn) return;
+
+    // Show/hide extract button based on hex input content
+    el.hexInput.addEventListener('input', updateExtractButtonVisibility);
+    el.extractFdoBtn.addEventListener('click', extractFDOFromP3);
+
+    updateExtractButtonVisibility();
+  }
+
+  function refreshHexDecoded() {
+    const clean = (el.hexInput.value||'').replace(/[^0-9A-Fa-f]/g, '');
+    el.hexDecoded.textContent = (clean.length/2|0).toLocaleString();
+  }
+
+  function updateExtractButtonVisibility() {
+    const hexContent = el.hexInput.value.trim();
+    const hasContent = hexContent.length > 0;
+
+    if (hasContent) {
+      el.extractFdoBtn.hidden = false;
+    } else {
+      el.extractFdoBtn.hidden = true;
+    }
+  }
+
+  async function extractFDOFromP3() {
+    const hexData = el.hexInput.value.trim();
+
+    if (!hexData) {
+      showToast('No hex data to extract from', 'error');
+      return;
+    }
+
+    log('Extracting FDO from P3 packets...');
+    el.extractFdoBtn.disabled = true;
+    el.extractFdoBtn.textContent = 'Extracting...';
+
+    try {
+      const response = await fetch('/extract-fdo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hex_data: hexData })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Replace hex input with extracted FDO data
+        el.hexInput.value = result.fdo_hex;
+        refreshHexDecoded();
+
+        // Log success details
+        log(`✓ FDO extracted successfully`);
+        log(`  Found ${result.frames_found} P3 frames`);
+        log(`  Extracted ${result.total_fdo_bytes} FDO bytes`);
+
+        showToast(`Extracted ${result.total_fdo_bytes} bytes of FDO data from ${result.frames_found} P3 frames`, 'success');
+      } else {
+        log(`✗ P3 extraction failed: ${result.error}`);
+        showToast(`Extraction failed: ${result.error}`, 'error');
+      }
+    } catch (error) {
+      log(`✗ P3 extraction error: ${error.message}`);
+      showToast(`Extraction error: ${error.message}`, 'error');
+    } finally {
+      el.extractFdoBtn.disabled = false;
+      el.extractFdoBtn.textContent = 'Extract FDO';
+    }
   }
 
   // init
