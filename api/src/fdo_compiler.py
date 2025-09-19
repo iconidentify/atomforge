@@ -16,11 +16,15 @@ class CompileResult:
     """Result of FDO compilation with detailed error information"""
     
     def __init__(self, success: bool, output_data: Optional[bytes] = None, 
-                 error_message: Optional[str] = None, output_size: int = 0):
+                 error_message: Optional[str] = None, output_size: int = 0,
+                 stdout: Optional[str] = None, stderr: Optional[str] = None):
         self.success = success
         self.output_data = output_data
         self.error_message = error_message
         self.output_size = output_size
+        # Optional subprocess logs for diagnostics
+        self.stdout = stdout
+        self.stderr = stderr
 
 
 class FDOCompiler:
@@ -198,7 +202,7 @@ class FDOCompiler:
                 else:
                     error_msg = "Internal compilation error"  # generic for UI
                 
-                return CompileResult(False, error_message=error_msg)
+                return CompileResult(False, error_message=error_msg, stdout=stdout, stderr=stderr)
 
         except Exception as e:
             return CompileResult(False, error_message="Internal execution error")

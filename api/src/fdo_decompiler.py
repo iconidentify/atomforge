@@ -16,11 +16,14 @@ class DecompileResult:
     """Result of FDO decompilation with detailed error information"""
 
     def __init__(self, success: bool, source_code: Optional[str] = None,
-                 error_message: Optional[str] = None, output_size: int = 0):
+                 error_message: Optional[str] = None, output_size: int = 0,
+                 stdout: Optional[str] = None, stderr: Optional[str] = None):
         self.success = success
         self.source_code = source_code
         self.error_message = error_message
         self.output_size = output_size
+        self.stdout = stdout
+        self.stderr = stderr
 
 
 class FDODecompiler:
@@ -123,7 +126,7 @@ class FDODecompiler:
                 else:
                     error_msg = "Internal decompilation error"
 
-                return DecompileResult(False, error_message=error_msg)
+                return DecompileResult(False, error_message=error_msg, stdout=stdout, stderr=stderr)
 
         except Exception as e:
             return DecompileResult(False, error_message="Internal execution error")
