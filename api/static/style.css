@@ -423,6 +423,13 @@ body {
     padding: 6px 2px;
 }
 
+#fileInputView .file-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
 .file-meta[hidden=false], .file-meta:not([hidden]) {
     color: var(--text-primary);
     font-weight: 600;

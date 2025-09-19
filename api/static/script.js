@@ -25,9 +25,8 @@ const App = (() => {
     hexInputView: qs('#hexInputView'),
     binaryDrop: qs('#binaryDrop'),
     binaryFile: qs('#binaryFile'),
-    fileMeta: qs('#fileMeta'),
-    fileName: qs('#fileName'),
-    fileSize: qs('#fileSize'),
+    fileDecoded: qs('#fileDecoded'),
+    openAsHexBtn: qs('#openAsHexBtn'),
     hexInput: qs('#hexInput'),
     hexDecoded: qs('#hexDecoded'),
     // Output
@@ -56,6 +55,25 @@ const App = (() => {
   let compiledBuffer = null;  // ArrayBuffer
   let decompiledText = '';
 
+  // Per-mode output state preservation
+  let modeOutputs = {
+    compile: {
+      hexContent: '',           // Compiled binary hex dump
+      hexSize: '0 bytes',
+      buffer: null,
+      activeTab: 'status'
+    },
+    decompile: {
+      hexContent: '',           // Input binary hex dump (for decompilation)
+      hexSize: '0 bytes',
+      sourceContent: '',        // Decompiled source code
+      sourceSize: '0 chars',
+      buffer: null,
+      text: '',
+      activeTab: 'status'
+    }
+  };
+
   function init() {
     bindTabs();
     bindRun();
@@ -64,6 +82,8 @@ const App = (() => {
     bindDownloads();
     setupExamples();
     setupBottomResize();
+    // Ensure hex input is enabled by default since it's now the default view
+    el.hexInput.removeAttribute('disabled');
     setMode(st.mode, {pushHash:false});
     log('Ready.');
   }
@@ -79,8 +99,101 @@ const App = (() => {
     el.panelCompile.hidden = mode!=='compile';
     el.panelDecompile.hidden = mode!=='decompile';
     el.runLabel.textContent = 'Run';
+
+    // Update output tab availability based on mode
+    updateOutputTabsForMode(mode);
+
     if (pushHash) location.hash = mode;
-    (mode==='compile' ? el.fdoInput : (visible(el.hexInputView)? el.hexInput : el.fdoInput)).focus();
+    (mode==='compile' ? el.fdoInput : el.hexInput).focus();
+  }
+
+  function updateOutputTabsForMode(mode) {
+    const sourceTab = qs('.output .tab[data-tab="source"]');
+    const hexTab = qs('.output .tab[data-tab="hex"]');
+
+    // Don't save current outputs when switching - only save when operations complete
+    // Just restore the outputs for the new mode
+    restoreModeOutputs(mode);
+
+    if (mode === 'compile') {
+      // In compile mode: Hex tab available, Source tab disabled
+      sourceTab.disabled = true;
+      sourceTab.setAttribute('aria-disabled', 'true');
+      sourceTab.style.opacity = '0.5';
+      sourceTab.style.cursor = 'not-allowed';
+      hexTab.disabled = false;
+      hexTab.removeAttribute('aria-disabled');
+      hexTab.style.opacity = '';
+      hexTab.style.cursor = '';
+    } else {
+      // In decompile mode: Both tabs available
+      sourceTab.disabled = false;
+      sourceTab.removeAttribute('aria-disabled');
+      sourceTab.style.opacity = '';
+      sourceTab.style.cursor = '';
+      hexTab.disabled = false;
+      hexTab.removeAttribute('aria-disabled');
+      hexTab.style.opacity = '';
+      hexTab.style.cursor = '';
+    }
+
+    // Restore the remembered active tab for this mode
+    const activeTab = mode === 'compile' ? modeOutputs.compile.activeTab : modeOutputs.decompile.activeTab;
+    restoreActiveTab(mode, activeTab);
+  }
+
+  function getCurrentActiveTab() {
+    // Find which output tab is currently selected
+    const activeTabs = ['status', 'hex', 'source'];
+    for (const tab of activeTabs) {
+      const tabElement = qs(`.output .tab[data-tab="${tab}"]`);
+      if (tabElement && tabElement.getAttribute('aria-selected') === 'true') {
+        return tab;
+      }
+    }
+    return 'status'; // fallback
+  }
+
+
+  function restoreModeOutputs(mode) {
+    if (mode === 'compile') {
+      // Restore compile-specific hex output (compiled binary)
+      el.hexOutViewer.textContent = modeOutputs.compile.hexContent || '';
+      el.compileSize.textContent = modeOutputs.compile.hexSize || '0 bytes';
+      compiledBuffer = modeOutputs.compile.buffer;
+      // Clear decompile-specific outputs
+      el.sourceView.textContent = '';
+      el.decompileSize.textContent = '0 chars';
+      decompiledText = '';
+    } else if (mode === 'decompile') {
+      // Restore decompile-specific hex output (formatted input hex)
+      el.hexOutViewer.textContent = modeOutputs.decompile.hexContent || '';
+      el.compileSize.textContent = modeOutputs.decompile.hexSize || '0 bytes';
+      el.sourceView.textContent = modeOutputs.decompile.sourceContent || '';
+      el.decompileSize.textContent = modeOutputs.decompile.sourceSize || '0 chars';
+      decompiledText = modeOutputs.decompile.text || '';
+      // Clear compile-specific buffer
+      compiledBuffer = null;
+    }
+  }
+
+  function restoreActiveTab(mode, requestedTab) {
+    // Check if the requested tab is available for this mode
+    let tabToShow = requestedTab;
+
+    if (mode === 'compile' && requestedTab === 'source') {
+      // Source tab is disabled in compile mode, fallback to a valid tab
+      tabToShow = modeOutputs.compile.hexContent ? 'hex' : 'status';
+    }
+
+    // Ensure the tab we're trying to show actually exists and is enabled
+    const tabElement = qs(`.output .tab[data-tab="${tabToShow}"]`);
+    if (tabElement && !tabElement.disabled) {
+      reveal(tabToShow);
+    } else {
+      // Fallback to status if something goes wrong
+      reveal('status');
+    }
   }
 
   function bindTabs() {
@@ -119,11 +232,20 @@ const App = (() => {
       const bytes = new Uint8Array(compiledBuffer);
       el.compileSize.textContent = formatBytes(bytes.length);
       el.hexOutViewer.textContent = hexdump(bytes);
+
+      // Save compile outputs to mode state
+      modeOutputs.compile.hexContent = el.hexOutViewer.textContent;
+      modeOutputs.compile.hexSize = el.compileSize.textContent;
+      modeOutputs.compile.buffer = compiledBuffer;
+
       reveal('hex');
+      modeOutputs.compile.activeTab = 'hex'; // Remember we switched to hex tab
       el.outPanels.hex.scrollTop = 0;
       log(`Compilation OK — ${formatBytes(bytes.length)}`, 'success');
     } catch (err) {
-      log(`Compilation failed: ${err.message}`, 'error'); reveal('status');
+      log(`Compilation failed: ${err.message}`, 'error');
+      reveal('status');
+      modeOutputs.compile.activeTab = 'status';
     } finally { setBusy(false); }
   }
 
@@ -146,10 +268,25 @@ const App = (() => {
       decompiledText = data.source_code || '';
       el.decompileSize.textContent = `${(data.output_size||decompiledText.length).toLocaleString()} chars`;
       el.sourceView.textContent = decompiledText;
+
+      // Populate hex output with formatted input hex
+      el.compileSize.textContent = formatBytes(bytes.length);
+      el.hexOutViewer.textContent = hexdump(bytes);
+
+      // Save decompile outputs to mode state
+      modeOutputs.decompile.hexContent = el.hexOutViewer.textContent;
+      modeOutputs.decompile.hexSize = el.compileSize.textContent;
+      modeOutputs.decompile.sourceContent = el.sourceView.textContent;
+      modeOutputs.decompile.sourceSize = el.decompileSize.textContent;
+      modeOutputs.decompile.text = decompiledText;
+
       reveal('source');
+      modeOutputs.decompile.activeTab = 'source'; // Remember we switched to source tab
       log('Decompilation OK.', 'success');
     } catch (err) {
-      log(`Decompilation failed: ${err.message}`, 'error'); reveal('status');
+      log(`Decompilation failed: ${err.message}`, 'error');
+      reveal('status');
+      modeOutputs.decompile.activeTab = 'status';
     } finally { setBusy(false); }
   }
 
@@ -200,9 +337,8 @@ const App = (() => {
       const reader = new FileReader();
       reader.onload = ev => {
         currentBinary = new Uint8Array(ev.target.result);
-        el.fileName.textContent = f.name;
-        el.fileSize.textContent = formatBytes(currentBinary.length);
-        el.fileMeta.hidden = false;
+        el.fileDecoded.textContent = currentBinary.length.toLocaleString();
+        el.openAsHexBtn.hidden = false;
         // Visually indicate loaded state on the drop zone
         el.binaryDrop.classList.add('loaded');
         const msgNode = el.binaryDrop.querySelector('span');
@@ -212,6 +348,25 @@ const App = (() => {
         showToast(`Loaded ${f.name} (${formatBytes(currentBinary.length)})`, 'success');
       };
       reader.readAsArrayBuffer(f);
+    });
+
+    // Open as Hex button functionality
+    el.openAsHexBtn.addEventListener('click', () => {
+      if (!currentBinary) return;
+      // Convert binary to hex string
+      const hexString = Array.from(currentBinary)
+        .map(byte => byte.toString(16).padStart(2, '0'))
+        .join('').toUpperCase();
+
+      // Switch to hex tab and populate
+      el.toggleBtns.forEach(b => b.classList.remove('active'));
+      el.toggleBtns.find(b => b.dataset.input === 'hex').classList.add('active');
+      el.fileView.hidden = true;
+      el.hexInputView.hidden = false;
+      el.hexInput.value = hexString;
+      el.hexInput.focus();
+      refreshHexDecoded();
+      showToast('File opened as hex', 'success');
     });
 
     // Ensure decoded count refresh after large paste operations and programmatic value sets
@@ -225,7 +380,13 @@ const App = (() => {
 
   // ---------- Output tabs & helpers ----------
   function bindOutputTabs() {
-    el.outTabs.forEach(btn => btn.addEventListener('click', () => reveal(btn.dataset.tab)));
+    el.outTabs.forEach(btn => btn.addEventListener('click', (e) => {
+      if (btn.disabled) {
+        e.preventDefault();
+        return;
+      }
+      reveal(btn.dataset.tab);
+    }));
   }
   function reveal(tab) {
     ['status','hex','source'].forEach(t => {
@@ -306,6 +467,7 @@ const App = (() => {
             el.fdoInput.value = ex.text || ex.source || '';
             el.examplesMenu.hidden = true;
             el.examplesBtn.setAttribute('aria-expanded', 'false');
+            setMode('compile');
             el.fdoInput.focus();
             showToast(`Loaded example: ${b.textContent}`, 'success');
           });
