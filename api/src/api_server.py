@@ -18,6 +18,10 @@ from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 import uvicorn
+import logging
+from starlette.concurrency import run_in_threadpool
+
+logging.basicConfig(level=logging.ERROR, filename='/var/log/atomforge.log', format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Add our compiler modules to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -212,7 +216,7 @@ async def compile_fdo(request: CompileRequest):
             )
         
         # Attempt compilation
-        result: CompileResult = compiler.compile_from_string(source)
+        result: CompileResult = await run_in_threadpool(compiler.compile_from_string, source)
         
         if result.success:
             # Return binary data with appropriate headers
@@ -227,6 +231,7 @@ async def compile_fdo(request: CompileRequest):
             )
         else:
             # Return JSON error response
+            logging.error(f"Compile failed: {result.error_message}\nStdout: {result.stdout}\nStderr: {result.stderr}")
             status_code = 400  # Bad Request for compilation errors
             if "Docker" in result.error_message:
                 status_code = 500  # Internal Server Error for infrastructure issues
@@ -246,6 +251,7 @@ async def compile_fdo(request: CompileRequest):
     except HTTPException:
         raise
     except Exception as e:
+        logging.error(f"Unexpected compile error: {str(e)}")
         raise HTTPException(
             status_code=500,
             detail={
@@ -292,7 +298,7 @@ async def decompile_fdo(request: DecompileRequest):
             )
 
         # Attempt decompilation
-        result: DecompileResult = decompiler.decompile_from_bytes(binary_data)
+        result: DecompileResult = await run_in_threadpool(decompiler.decompile_from_bytes, binary_data)
 
         if result.success:
             # Return JSON response with source code
@@ -304,6 +310,7 @@ async def decompile_fdo(request: DecompileRequest):
             }
         else:
             # Return JSON error response
+            logging.error(f"Decompile failed: {result.error_message}\nStdout: {result.stdout}\nStderr: {result.stderr}")
             status_code = 400  # Bad Request for decompilation errors
             if "Docker" in result.error_message:
                 status_code = 500  # Internal Server Error for infrastructure issues
@@ -323,6 +330,7 @@ async def decompile_fdo(request: DecompileRequest):
     except HTTPException:
         raise
     except Exception as e:
+        logging.error(f"Unexpected decompile error: {str(e)}")
         raise HTTPException(
             status_code=500,
             detail={

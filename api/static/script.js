@@ -499,6 +499,9 @@ const App = (() => {
   function log(msg, level='info'){
     const line=document.createElement('div');
     line.className=`log-line ${level}`;
+    if (msg.toLowerCase().includes('syntax error')) {
+        line.classList.add('syntax-error');
+    }
     line.textContent=msg;
     el.statusLog.prepend(line);
     // Keep only 100 lines

@@ -497,6 +497,12 @@ body {
     background: color-mix(in srgb, var(--error) 10%, transparent);
 }
 
+/* Syntax-specific error highlighting */
+.log-line.syntax-error {
+    background: color-mix(in srgb, var(--warning) 15%, transparent);
+    border-left: 4px solid var(--warning);
+}
+
 .viewer {
     white-space: pre;
     overflow: auto;

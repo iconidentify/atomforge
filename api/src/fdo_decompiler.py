@@ -9,6 +9,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 from typing import Optional, Union
+import re
 
 
 class DecompileResult:
@@ -81,7 +82,7 @@ class FDODecompiler:
                 f"cp /atomforge/bin/Ada32.dll . && "
                 f"cp /atomforge/bin/mfc42.dll . 2>/dev/null || true && "
                 f"export WINEPATH='/atomforge/bin' && "
-                f"wine /atomforge/bin/fdo_decompiler.exe --force {input_path} {container_output}"
+                f"wine /atomforge/bin/fdo_decompiler.exe --force --verbose {input_path} {container_output}"
             ]
 
             result = subprocess.run(wine_cmd, capture_output=True, text=True)
@@ -108,21 +109,24 @@ class FDODecompiler:
                 stderr = result.stderr if result.stderr else ""
                 stdout = result.stdout if result.stdout else ""
 
-                # Extract meaningful error
-                error_msg = "Wine decompilation failed"
-                if "❌ Failed to load Ada32.dll" in stdout:
-                    error_msg = "Ada32.dll could not be loaded"
-                elif "❌ Decompilation failed" in stdout:
-                    error_msg = "Ada32 decompilation failed - invalid FDO binary format"
+                error_msg = "Decompilation failed"
+                if "Failed to load Ada32.dll" in stdout:
+                    error_msg = "Internal error: decompiler library not found"
+                elif "Decompilation failed" in stdout:
+                    error_msg = "Invalid FDO binary format"
                 elif "Cannot open input file" in stdout:
-                    error_msg = "Input file could not be read or is not a valid FDO binary"
-                elif stderr:
-                    error_msg = f"Wine error: {stderr.strip()}"
+                    error_msg = "Input file could not be read"
+                # New: extract Ada error text
+                ada_match = re.search(r"Ada32 error rc=0x[0-9A-F]+ \(\d+\): (.*)", stdout or stderr)
+                if ada_match:
+                    error_msg = f"Decompile error: {ada_match.group(1)}"
+                else:
+                    error_msg = "Internal decompilation error"
 
                 return DecompileResult(False, error_message=error_msg)
 
         except Exception as e:
-            return DecompileResult(False, error_message=f"Wine execution failed: {e}")
+            return DecompileResult(False, error_message="Internal execution error")
         finally:
             # Clean up temporary output file
             try:

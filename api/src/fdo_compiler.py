@@ -159,12 +159,8 @@ class FDOCompiler:
             wine_cmd = [
                 "bash", "-c",
                 f"cd /tmp && "
-                f"cp /atomforge/bin/GIDINFO.INF . && "
-                f"cp /atomforge/bin/Ada.bin . && "
-                f"cp /atomforge/bin/Ada32.dll . && "
-                f"cp /atomforge/bin/mfc42.dll . 2>/dev/null || true && "
                 f"export WINEPATH='/atomforge/bin' && "
-                f"wine /atomforge/bin/fdo_compiler.exe --force {prepared_input} {container_output}"
+                f"wine /atomforge/bin/fdo_compiler.exe --force --verbose {prepared_input} {container_output}"
             ]
             
             result = subprocess.run(wine_cmd, capture_output=True)
@@ -188,19 +184,24 @@ class FDOCompiler:
                 stderr = result.stderr.decode('utf-8') if result.stderr else ""
                 stdout = result.stdout.decode('utf-8') if result.stdout else ""
                 
-                # Extract meaningful error
-                error_msg = "Wine compilation failed"
-                if "❌ Failed to load Ada32.dll" in stdout:
-                    error_msg = "Ada32.dll could not be loaded"
-                elif "❌ Compilation failed" in stdout:
-                    error_msg = "Ada32 compilation failed - invalid FDO syntax"
-                elif stderr:
-                    error_msg = f"Wine error: {stderr.strip()}"
+                error_msg = "Compilation failed"
+                if "Failed to load Ada32.dll" in stdout:
+                    error_msg = "Internal error: compiler library not found"
+                elif "Compilation failed" in stdout:
+                    error_msg = "Invalid FDO syntax"
+                elif "Cannot open input file" in stdout:
+                    error_msg = "Input file could not be read"
+                # New: extract Ada error text
+                ada_match = re.search(r"Ada32 error rc=0x[0-9A-F]+ \(\d+\): (.*)", stdout or stderr)
+                if ada_match:
+                    error_msg = f"Syntax error: {ada_match.group(1)}"  # e.g., "Syntax error: missing parameter"
+                else:
+                    error_msg = "Internal compilation error"  # generic for UI
                 
                 return CompileResult(False, error_message=error_msg)
 
         except Exception as e:
-            return CompileResult(False, error_message=f"Wine execution failed: {e}")
+            return CompileResult(False, error_message="Internal execution error")
         finally:
             # Clean up temporary output file
             try:
