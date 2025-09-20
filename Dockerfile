@@ -44,18 +44,8 @@ RUN pip install --no-cache-dir -r api/requirements.txt
 # Copy essential project files only
 COPY api/ ./api/
 COPY bin/fdo_compiler_decompiler/ ./bin/
+COPY bin/mfc42.dll ./bin/
 RUN cp -r ./bin/golden_tests_immutable ./bin/ 2>/dev/null || echo "Golden tests already in correct location"
-
-# Install mfc42.dll for Wine MFC support (required for FDO tools)
-RUN if [ -f ./bin/mfc42.dll ]; then \
-        echo "Installing mfc42.dll for Wine MFC support..." && \
-        cp ./bin/mfc42.dll $WINEPREFIX/drive_c/windows/system32/ && \
-        cd $WINEPREFIX/drive_c/windows/system32 && \
-        wine regsvr32 /s mfc42.dll && \
-        echo "mfc42.dll registered successfully"; \
-    else \
-        echo "WARNING: mfc42.dll not found - FDO compilation may fail"; \
-    fi
 
 # Expose web interface port
 EXPOSE 8000

@@ -105,6 +105,12 @@ def _classify_fdo_candidate(
         notes.append("payload too small (<6) for FDO; skipping")
         return False, b"", notes
 
+    # If a plausible length prefix exists but payload is shorter than declared, reject as truncated
+    L0 = int.from_bytes(payload_raw[:4], "little", signed=False)
+    if 0 < L0 and L0 > (len(payload_raw) - 4):
+        notes.append(f"declared length {L0} exceeds available {len(payload_raw)-4}; skipping as truncated")
+        return False, b"", notes
+
     # Strip optional BUF length prefix
     fdo_bytes, strip_notes = strip_fn(payload_raw)
     notes.extend(strip_notes)
@@ -189,6 +195,7 @@ class P3FDOExtractor:
         self.fdo_token_allow = fdo_token_allow or {"AT", "at"}
         self._buf = bytearray()
         self._base_offset = 0  # how many bytes we've discarded before current buffer
+        self.skipped_non_fdo = 0  # count of non-FDO packets skipped
 
     def feed(self, chunk: bytes) -> List[P3Frame]:
         """Feed bytes; returns any fully parsed frames."""
@@ -266,7 +273,10 @@ class P3FDOExtractor:
                 # Factor 2: Length prefix validation
                 if len(payload_candidate) >= 6:
                     L = int.from_bytes(payload_candidate[:4], "little", signed=False)
-                    if 0 < L <= (len(payload_candidate) - 4):
+                    # Penalize obvious truncation (declared length exceeds available payload)
+                    if 0 < L and L > (len(payload_candidate) - 4):
+                        score -= 1000
+                    elif 0 < L <= (len(payload_candidate) - 4):
                         sid_lo, sid_hi = payload_candidate[4], payload_candidate[5]
                         if sid_lo <= 0x7F and sid_hi <= 0x7F:
                             # Check if length matches exactly (strong indicator of correct boundary)
@@ -321,6 +331,7 @@ class P3FDOExtractor:
 
             if not is_fdo:
                 # Not FDO; advance and continue WITHOUT appending a frame
+                self.skipped_non_fdo += 1
                 i = end + 1
                 continue
 
@@ -375,16 +386,19 @@ class P3FDOExtractor:
 # Convenience one-shot API
 # ----------------------------
 
-def extract_p3_fdo(data: bytes, strict_crc: bool = False) -> List[P3Frame]:
+def extract_p3_fdo(data: bytes, strict_crc: bool = False) -> Tuple[List[P3Frame], int]:
     """
     One-shot convenience wrapper around P3FDOExtractor for non-streaming inputs.
     Defaults to non-strict CRC mode for AOL 4 compatibility.
+
+    Returns:
+        tuple: (fdo_frames, skipped_non_fdo_count)
     """
     ex = P3FDOExtractor(strict_crc=strict_crc)
     frames = ex.feed(data)
     # Don't call flush() since feed() already processed all the data
     # flush() is only needed for streaming scenarios where you want to finalize
-    return frames
+    return frames, ex.skipped_non_fdo
 
 # ----------------------------
 # Legacy API compatibility layer
@@ -395,7 +409,7 @@ def extract_p3_frames_with_fdo(buf: bytes) -> List[Dict[str, Any]]:
     Legacy compatibility function that maintains the original API.
     Converts new P3Frame objects back to the original dictionary format.
     """
-    frames = extract_p3_fdo(buf, strict_crc=False)  # AOL 4 compatible
+    frames, _ = extract_p3_fdo(buf, strict_crc=False)  # AOL 4 compatible
 
     # Convert to legacy format
     legacy_frames = []
@@ -466,9 +480,30 @@ class P3Extractor:
             packet_data = self.hex_string_to_bytes(hex_string)
 
             # Extract P3 frames using enhanced extractor
-            frames = extract_p3_fdo(packet_data, strict_crc=self.strict_crc)
+            frames, skipped_non_fdo = extract_p3_fdo(packet_data, strict_crc=self.strict_crc)
 
             if not frames:
+                # Lightweight scan to detect presence of P3 packet headers even if no FDO was extracted
+                Z, CR = 0x5A, 0x0D
+                candidates = 0
+                i = 0
+                while i + 10 <= len(packet_data):
+                    if packet_data[i] == Z:
+                        hdr = packet_data[i:i+10]
+                        # Basic header invariants
+                        if hdr[3] == 0x00 and hdr[7] == 0x20 and _looks_plausible_token(hdr):
+                            # Look for a CR terminator
+                            try:
+                                cr_pos = packet_data.index(CR, i + 10)
+                                candidates += 1
+                                i = cr_pos + 1
+                                continue
+                            except ValueError:
+                                # No CR terminator; incomplete trailing packet
+                                pass
+                    i += 1
+
+                error_msg = 'No P3 packets found in hex data' if candidates == 0 else 'P3 packet(s) found but no valid FDO extracted (likely non-FDO or truncated payloads)'
                 return {
                     'success': False,
                     'fdo_hex': '',
@@ -476,7 +511,7 @@ class P3Extractor:
                     'total_fdo_bytes': 0,
                     'frames_with_crc_issues': 0,
                     'processing_notes': [],
-                    'error': 'No P3 packets found in hex data'
+                    'error': error_msg
                 }
 
             # Concatenate all FDO bytes from frames
@@ -503,6 +538,7 @@ class P3Extractor:
                     'frames_found': len(frames),
                     'total_fdo_bytes': 0,
                     'frames_with_crc_issues': frames_with_crc_issues,
+                    'skipped_non_fdo_packets': skipped_non_fdo,
                     'processing_notes': all_notes,
                     'error': f'Found {len(frames)} P3 packets but no FDO data extracted'
                 }
@@ -516,6 +552,7 @@ class P3Extractor:
                 'frames_found': len(frames),
                 'total_fdo_bytes': len(all_fdo_bytes),
                 'frames_with_crc_issues': frames_with_crc_issues,
+                'skipped_non_fdo_packets': skipped_non_fdo,
                 'processing_notes': all_notes,
                 'error': None
             }
@@ -527,6 +564,7 @@ class P3Extractor:
                 'frames_found': 0,
                 'total_fdo_bytes': 0,
                 'frames_with_crc_issues': 0,
+                'skipped_non_fdo_packets': 0,
                 'processing_notes': [],
                 'error': str(e)
             }
@@ -537,6 +575,7 @@ class P3Extractor:
                 'frames_found': 0,
                 'total_fdo_bytes': 0,
                 'frames_with_crc_issues': 0,
+                'skipped_non_fdo_packets': 0,
                 'processing_notes': [],
                 'error': f'Unexpected error during P3 extraction: {str(e)}'
             }
@@ -550,7 +589,7 @@ class P3Extractor:
         """
         try:
             packet_data = self.hex_string_to_bytes(hex_string)
-            frames = extract_p3_fdo(packet_data, strict_crc=self.strict_crc)
+            frames, _ = extract_p3_fdo(packet_data, strict_crc=self.strict_crc)
 
             # Add formatted details for each frame
             detailed_frames = []

@@ -27,6 +27,7 @@ const App = (() => {
     binaryFile: qs('#binaryFile'),
     fileDecoded: qs('#fileDecoded'),
     openAsHexBtn: qs('#openAsHexBtn'),
+    jsonlSpinner: qs('#jsonlSpinner'),
     hexInput: qs('#hexInput'),
     hexDecoded: qs('#hexDecoded'),
     extractFdoBtn: qs('#extractFdoBtn'),
@@ -55,6 +56,7 @@ const App = (() => {
   let currentBinary = null;   // Uint8Array from file OR hex
   let compiledBuffer = null;  // ArrayBuffer
   let decompiledText = '';
+  let isJsonlFileLoaded = false; // Track if JSONL file is loaded
 
   // ASCII atom support
   let asciiAtoms = [];
@@ -217,6 +219,12 @@ const App = (() => {
 
   async function run() {
     if (st.mode === 'compile') return compile();
+
+    // Check if we have a JSONL file loaded and we're in decompile mode
+    if (st.mode === 'decompile' && isJsonlFileLoaded && window.currentJsonlContent) {
+      return processJsonlFile();
+    }
+
     return decompile();
   }
 
@@ -341,20 +349,55 @@ const App = (() => {
     // File -> bytes
     el.binaryFile.addEventListener('change', (e) => {
       const f = e.target.files?.[0]; if (!f) return;
-      const reader = new FileReader();
-      reader.onload = ev => {
-        currentBinary = new Uint8Array(ev.target.result);
-        el.fileDecoded.textContent = currentBinary.length.toLocaleString();
-        el.openAsHexBtn.hidden = false;
-        // Visually indicate loaded state on the drop zone
-        el.binaryDrop.classList.add('loaded');
-        const msgNode = el.binaryDrop.querySelector('span');
-        if (msgNode) {
-          msgNode.textContent = `${f.name} — ${formatBytes(currentBinary.length)} (click to change)`;
-        }
-        showToast(`Loaded ${f.name} (${formatBytes(currentBinary.length)})`, 'success');
-      };
-      reader.readAsArrayBuffer(f);
+
+      // Check if this is a JSONL file
+      const isJsonl = f.name.toLowerCase().endsWith('.jsonl');
+
+      if (isJsonl) {
+        // Handle JSONL file
+        const reader = new FileReader();
+        reader.onload = ev => {
+          const jsonlContent = ev.target.result;
+          el.fileDecoded.textContent = `${formatBytes(jsonlContent.length)} JSONL`;
+          el.openAsHexBtn.hidden = true;
+          isJsonlFileLoaded = true;
+
+          // Store JSONL content for processing
+          window.currentJsonlContent = jsonlContent;
+          window.currentJsonlFilename = f.name;
+
+          // Visually indicate loaded state on the drop zone
+          el.binaryDrop.classList.add('loaded');
+          const msgNode = el.binaryDrop.querySelector('span');
+          if (msgNode) {
+            msgNode.textContent = `${f.name} — ${formatBytes(jsonlContent.length)} JSONL (click to change)`;
+          }
+          showToast(`Loaded JSONL file: ${f.name}`, 'success');
+        };
+        reader.readAsText(f);
+      } else {
+        // Handle binary file
+        const reader = new FileReader();
+        reader.onload = ev => {
+          currentBinary = new Uint8Array(ev.target.result);
+          el.fileDecoded.textContent = currentBinary.length.toLocaleString();
+          el.openAsHexBtn.hidden = false;
+          isJsonlFileLoaded = false;
+
+          // Clear any stored JSONL content
+          window.currentJsonlContent = null;
+          window.currentJsonlFilename = null;
+
+          // Visually indicate loaded state on the drop zone
+          el.binaryDrop.classList.add('loaded');
+          const msgNode = el.binaryDrop.querySelector('span');
+          if (msgNode) {
+            msgNode.textContent = `${f.name} — ${formatBytes(currentBinary.length)} (click to change)`;
+          }
+          showToast(`Loaded ${f.name} (${formatBytes(currentBinary.length)})`, 'success');
+        };
+        reader.readAsArrayBuffer(f);
+      }
     });
 
     // Open as Hex button functionality
@@ -711,6 +754,179 @@ const App = (() => {
     updateExtractButtonVisibility();
   }
 
+
+  async function processJsonlFile() {
+    if (!window.currentJsonlContent) {
+      showToast('No JSONL file loaded', 'error');
+      return;
+    }
+
+    // Show spinner
+    el.jsonlSpinner.hidden = false;
+    setBusy(true, 'Processing JSONL...');
+
+    log(`Processing JSONL file: ${window.currentJsonlFilename}`);
+
+    try {
+      // Process JSONL content line by line
+      const lines = window.currentJsonlContent.split('\n').filter(line => line.trim());
+      let totalLines = lines.length;
+      let processedLines = 0;
+      let validFrames = 0;
+      let serverToClientFrames = 0;
+      let fdoExtractionAttempts = 0;
+      let fdoExtractionSuccesses = 0;
+      let concatenatedFdoHex = '';
+
+      log(`Found ${totalLines} lines to process`);
+
+      // Process in batches to avoid blocking UI
+      const batchSize = 10;
+      for (let i = 0; i < lines.length; i += batchSize) {
+        const batch = lines.slice(i, i + batchSize);
+
+        for (const line of batch) {
+          try {
+            const frame = JSON.parse(line);
+            processedLines++;
+
+            // Check if this is a server-to-client frame
+            if (frame.direction === 'server-to-client' || frame.direction === 'ServerToClient' || frame.dir === 'S->C') {
+              serverToClientFrames++;
+
+              // Check if frame has data and is eligible for FDO extraction
+              let hexData = null;
+              if (frame.data && (frame.data.hex || frame.data.payload)) {
+                hexData = frame.data.hex || frame.data.payload;
+              } else if (frame.fullHex) {
+                hexData = frame.fullHex;
+              }
+
+              if (hexData) {
+                fdoExtractionAttempts++;
+
+                // Try to extract FDO from this frame's hex data
+                try {
+                  const extractResult = await extractFDOFromHex(hexData);
+                  if (extractResult.success && extractResult.fdo_hex) {
+                    fdoExtractionSuccesses++;
+                    concatenatedFdoHex += extractResult.fdo_hex;
+                    let logMsg = `✓ Frame ${processedLines}: Extracted ${extractResult.total_fdo_bytes} FDO bytes`;
+                    if (extractResult.skipped_non_fdo_packets > 0) {
+                      logMsg += ` (skipped ${extractResult.skipped_non_fdo_packets} non-FDO)`;
+                    }
+                    log(logMsg);
+                  } else if (extractResult.skipped_non_fdo_packets > 0) {
+                    // Even if no FDO was found, report non-FDO packets that were skipped
+                    log(`⌐ Frame ${processedLines}: Skipped ${extractResult.skipped_non_fdo_packets} non-FDO packets`);
+                  }
+                } catch (extractError) {
+                  // Silently continue - many frames won't contain FDO data
+                }
+              }
+              validFrames++;
+            }
+
+          } catch (parseError) {
+            // Skip invalid JSON lines
+            processedLines++;
+          }
+        }
+
+        // Allow UI to update between batches - reduced frequency for cleaner experience
+        if (i % 50 === 0) {
+          await new Promise(resolve => setTimeout(resolve, 5));
+        }
+      }
+
+      log(`✓ JSONL processing complete:`);
+      log(`  Total lines: ${totalLines}`);
+      log(`  Server-to-client frames: ${serverToClientFrames}`);
+      log(`  FDO extraction attempts: ${fdoExtractionAttempts}`);
+      log(`  Successful extractions: ${fdoExtractionSuccesses}`);
+
+      if (concatenatedFdoHex.length > 0) {
+        // Convert concatenated hex to binary for decompilation
+        const cleanHex = concatenatedFdoHex.replace(/[^0-9A-Fa-f]/g, '');
+        const fdoBytes = new Uint8Array(cleanHex.length / 2);
+        for (let i = 0; i < cleanHex.length; i += 2) {
+          fdoBytes[i / 2] = parseInt(cleanHex.substr(i, 2), 16);
+        }
+
+        // Set as current binary and update UI
+        currentBinary = fdoBytes;
+
+        // Populate hex output for reference
+        el.compileSize.textContent = formatBytes(fdoBytes.length);
+        el.hexOutViewer.textContent = hexdump(fdoBytes);
+
+        // Attempt decompilation of concatenated FDO data
+        log(`Attempting decompilation of ${formatBytes(fdoBytes.length)} concatenated FDO data...`);
+
+        try {
+          const base64 = btoa(String.fromCharCode.apply(null, fdoBytes));
+          const decompileRes = await fetch('/decompile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ binary_data: base64 })
+          });
+
+          if (decompileRes.ok) {
+            const decompileData = await decompileRes.json();
+            if (decompileData.success) {
+              decompiledText = decompileData.source_code || '';
+              el.decompileSize.textContent = `${(decompileData.output_size || decompiledText.length).toLocaleString()} chars`;
+              el.sourceView.textContent = decompiledText;
+
+              // Save decompile outputs to mode state
+              modeOutputs.decompile.hexContent = el.hexOutViewer.textContent;
+              modeOutputs.decompile.hexSize = el.compileSize.textContent;
+              modeOutputs.decompile.sourceContent = el.sourceView.textContent;
+              modeOutputs.decompile.sourceSize = el.decompileSize.textContent;
+              modeOutputs.decompile.text = decompiledText;
+
+              reveal('source');
+              modeOutputs.decompile.activeTab = 'source';
+              log(`✓ Decompilation successful - ${el.decompileSize.textContent}`);
+              showToast(`JSONL processed: ${fdoExtractionSuccesses} FDO extractions, decompiled to ${el.decompileSize.textContent}`, 'success');
+            } else {
+              log(`✗ Decompilation failed: ${decompileData.error}`);
+              showToast('FDO data extracted but decompilation failed', 'warning');
+            }
+          }
+        } catch (decompileError) {
+          log(`✗ Decompilation error: ${decompileError.message}`);
+          showToast('FDO data extracted but decompilation failed', 'warning');
+        }
+      } else {
+        log('No FDO data found in JSONL file');
+        showToast(`Processed ${totalLines} lines, but no FDO data was found`, 'warning');
+      }
+
+    } catch (error) {
+      log(`✗ JSONL processing error: ${error.message}`, 'error');
+      showToast(`JSONL processing failed: ${error.message}`, 'error');
+      reveal('status');
+      modeOutputs.decompile.activeTab = 'status';
+    } finally {
+      // Hide spinner and restore UI
+      el.jsonlSpinner.hidden = true;
+      setBusy(false);
+    }
+  }
+
+  // Helper function for FDO extraction from hex data
+  async function extractFDOFromHex(hexData) {
+    const response = await fetch('/extract-fdo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ hex_data: hexData })
+    });
+
+    const result = await response.json();
+    return result;
+  }
+
   function refreshHexDecoded() {
     const clean = (el.hexInput.value||'').replace(/[^0-9A-Fa-f]/g, '');
     el.hexDecoded.textContent = (clean.length/2|0).toLocaleString();
@@ -753,14 +969,23 @@ const App = (() => {
         el.hexInput.value = result.fdo_hex;
         refreshHexDecoded();
 
-        // Log success details
+        // Log success details with enhanced metrics
         log(`✓ FDO extracted successfully`);
         log(`  Found ${result.frames_found} P3 frames`);
         log(`  Extracted ${result.total_fdo_bytes} FDO bytes`);
+        if (result.skipped_non_fdo_packets > 0) {
+          log(`  Skipped ${result.skipped_non_fdo_packets} non-FDO packets`);
+        }
+        if (result.frames_with_crc_issues > 0) {
+          log(`  ${result.frames_with_crc_issues} frames had CRC issues`);
+        }
 
         showToast(`Extracted ${result.total_fdo_bytes} bytes of FDO data from ${result.frames_found} P3 frames`, 'success');
       } else {
         log(`✗ P3 extraction failed: ${result.error}`);
+        if (result.skipped_non_fdo_packets > 0) {
+          log(`  Skipped ${result.skipped_non_fdo_packets} non-FDO packets`);
+        }
         showToast(`Extraction failed: ${result.error}`, 'error');
       }
     } catch (error) {

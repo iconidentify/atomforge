@@ -45,12 +45,16 @@
 
                 <div id="fileInputView" class="input-view" hidden>
                     <div class="drop" id="binaryDrop">
-                        <span>Drop an FDO binary here or click to choose</span>
+                        <span>Drop an FDO binary or JSONL file here or click to choose</span>
                     </div>
-                    <input id="binaryFile" type="file" accept=".fdo,.str,.bin" hidden />
+                    <input id="binaryFile" type="file" accept=".fdo,.str,.bin,.jsonl" hidden />
                     <div class="file-meta">
                         <span>Decoded: <span id="fileDecoded">0</span> bytes</span>
                         <button id="openAsHexBtn" class="btn small" hidden>Open as Hex</button>
+                        <div id="jsonlSpinner" class="spinner" hidden>
+                            <div class="spinner-icon"></div>
+                            <span class="spinner-text">Processing JSONL...</span>
+                        </div>
                     </div>
                 </div>
 
