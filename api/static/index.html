@@ -23,6 +23,7 @@
                     <!-- populated by JS: <button role="menuitem" data-example="basic">Basic Object</button> -->
                 </menu>
             </div>
+            <button id="apiBtn" class="btn ghost">API</button>
             <button id="runBtn" class="btn primary"><span class="label">Run</span></button>
         </div>
     </header>
@@ -39,6 +40,12 @@
                     <div class="toggle-buttons">
                         <button class="toggle-btn active" data-input="hex">Hex</button>
                         <button class="toggle-btn" data-input="file">File</button>
+                    </div>
+                    <div class="decompile-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="preNormalizeCheck" class="checkbox">
+                            <span class="checkbox-text">Pre-normalize input</span>
+                        </label>
                     </div>
                     <button id="extractFdoBtn" class="btn small" hidden>Extract FDO</button>
                 </div>
@@ -108,6 +115,118 @@
 
     <!-- Toast Container -->
     <div id="toastContainer" class="toast-container" aria-live="polite" aria-label="Notifications"></div>
+
+    <!-- API Documentation Modal -->
+    <div id="apiModal" class="modal" hidden role="dialog" aria-labelledby="apiModalTitle" aria-modal="true">
+        <div class="modal-backdrop" aria-hidden="true"></div>
+        <div class="modal-content">
+            <header class="modal-header">
+                <h2 id="apiModalTitle">AtomForge API Documentation</h2>
+                <button id="apiModalClose" class="btn ghost small" aria-label="Close API documentation">×</button>
+            </header>
+            <div class="modal-body">
+                <section class="api-overview">
+                    <p>The AtomForge API provides programmatic access to FDO compilation, decompilation, and P3 packet processing capabilities.</p>
+                    <p><strong>Base URL:</strong> <code class="api-base-url">http://localhost:8000</code></p>
+                </section>
+
+                <section class="api-endpoint">
+                    <h3>Compile FDO Source</h3>
+                    <div class="endpoint-meta">
+                        <span class="method post">POST</span>
+                        <code>/compile</code>
+                    </div>
+                    <p>Compiles FDO source code into binary format.</p>
+
+                    <h4>Request Body</h4>
+                    <pre class="code-block"><code>{
+  "source": "uni_start_stream &lt;00x&gt;\n  man_start_object &lt;independent, \"Example\"&gt;\n    mat_object_id &lt;example-001&gt;\n  man_end_object &lt;&gt;\nuni_end_stream &lt;&gt;"
+}</code></pre>
+
+                    <h4>cURL Example</h4>
+                    <div class="code-example">
+                        <pre class="code-block"><code>curl -X POST http://localhost:8000/compile \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source": "uni_start_stream <00x>\n  man_start_object <independent, \"Example\">\n    mat_object_id <example-001>\n  man_end_object <>\nuni_end_stream <>"
+  }' \
+  --output compiled.fdo</code></pre>
+                        <button class="copy-btn" data-copy="compile">Copy</button>
+                    </div>
+
+                    <h4>Response</h4>
+                    <p>Returns binary FDO data (application/octet-stream) on success, or JSON error on failure.</p>
+                </section>
+
+                <section class="api-endpoint">
+                    <h3>Decompile FDO Binary</h3>
+                    <div class="endpoint-meta">
+                        <span class="method post">POST</span>
+                        <code>/decompile</code>
+                    </div>
+                    <p>Decompiles FDO binary data back to source code.</p>
+
+                    <h4>Request Body</h4>
+                    <pre class="code-block"><code>{
+  "binary_data": "base64-encoded-fdo-binary",
+  "pre_normalize": false
+}</code></pre>
+
+                    <h4>cURL Example</h4>
+                    <div class="code-example">
+                        <pre class="code-block"><code>curl -X POST http://localhost:8000/decompile \
+  -H "Content-Type: application/json" \
+  -d '{
+    "binary_data": "'$(base64 -i compiled.fdo)'",
+    "pre_normalize": false
+  }'</code></pre>
+                        <button class="copy-btn" data-copy="decompile">Copy</button>
+                    </div>
+
+                    <h4>Response</h4>
+                    <pre class="code-block"><code>{
+  "success": true,
+  "source_code": "uni_start_stream <00x>\n...",
+  "output_size": 156,
+  "input_size": 42
+}</code></pre>
+                </section>
+
+                <section class="api-endpoint">
+                    <h3>Extract FDO from P3 Packets</h3>
+                    <div class="endpoint-meta">
+                        <span class="method post">POST</span>
+                        <code>/extract-fdo</code>
+                    </div>
+                    <p>Extracts FDO data from P3 packet streams for further processing.</p>
+
+                    <h4>Request Body</h4>
+                    <pre class="code-block"><code>{
+  "hex_data": "504b030414001400010008004a4d..."
+}</code></pre>
+
+                    <h4>cURL Example</h4>
+                    <div class="code-example">
+                        <pre class="code-block"><code>curl -X POST http://localhost:8000/extract-fdo \
+  -H "Content-Type: application/json" \
+  -d '{
+    "hex_data": "504b030414001400010008004a4d..."
+  }'</code></pre>
+                        <button class="copy-btn" data-copy="extract">Copy</button>
+                    </div>
+
+                    <h4>Response</h4>
+                    <pre class="code-block"><code>{
+  "success": true,
+  "fdo_hex": "40010208001c...",
+  "frames_found": 3,
+  "total_fdo_bytes": 156,
+  "input_size": 1024
+}</code></pre>
+                </section>
+            </div>
+        </div>
+    </div>
 
     <!-- Scripts -->
     <script src="/static/script.js"></script>

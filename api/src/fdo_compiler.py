@@ -93,33 +93,6 @@ class FDOCompiler:
 
         return temp_path
 
-    def build_docker_image_silent(self) -> bool:
-        """Build Docker image without output for API use"""
-        # Check if we're running inside Docker (API service)
-        if os.path.exists('/atomforge/build_tools'):
-            build_tools_dir = Path('/atomforge/build_tools')
-        else:
-            # Running from host - check multiple possible locations
-            possible_paths = [
-                Path(os.getcwd()) / "build_tools",
-                Path(os.getcwd()).parent / "build_tools",
-                Path(__file__).parent.parent.parent / "build_tools"  # From api/src/ up to project root
-            ]
-            
-            build_tools_dir = None
-            for path in possible_paths:
-                if path.exists():
-                    build_tools_dir = path
-                    break
-            
-            if build_tools_dir is None:
-                raise FileNotFoundError(f"build_tools directory not found. Searched: {[str(p) for p in possible_paths]}")
-        
-        result = subprocess.run([
-            "docker-compose", "build"
-        ], cwd=str(build_tools_dir), capture_output=True, text=True)
-        
-        return result.returncode == 0
 
     def compile_from_file(self, input_path: str, output_path: str = None) -> CompileResult:
         """Compile FDO from file path - CLI version"""
@@ -156,15 +129,10 @@ class FDOCompiler:
                 except:
                     pass
 
-    def _docker_compile(self, prepared_input: str, output_path: Optional[str] = None, 
+    def _docker_compile(self, prepared_input: str, output_path: Optional[str] = None,
                        return_binary: bool = False) -> CompileResult:
-        """Internal compilation logic - handles both Docker and direct Wine execution"""
-        
-        # Check if we're running inside the API container (has Wine available)
-        if os.path.exists('/atomforge/bin/fdo_compiler.exe'):
-            return self._wine_compile_direct(prepared_input, output_path, return_binary)
-        else:
-            return self._docker_compile_external(prepared_input, output_path, return_binary)
+        """Internal compilation logic - uses direct Wine execution"""
+        return self._wine_compile_direct(prepared_input, output_path, return_binary)
 
     def _wine_compile_direct(self, prepared_input: str, output_path: Optional[str] = None,
                             return_binary: bool = False) -> CompileResult:
@@ -229,72 +197,3 @@ class FDOCompiler:
             except:
                 pass
 
-    def _docker_compile_external(self, prepared_input: str, output_path: Optional[str] = None, 
-                                return_binary: bool = False) -> CompileResult:
-        """External Docker compilation (when running from host CLI)"""
-        
-        # Build Docker image if needed
-        if not self.build_docker_image_silent():
-            return CompileResult(False, error_message="Docker build failed")
-
-        container_input = "/tmp/input.txt"
-        container_output = "/tmp/output.fdo"
-
-        try:
-            if return_binary:
-                # For API: return binary data directly
-                docker_cmd = [
-                    "docker", "run", "--rm",
-                    "-v", f"{prepared_input}:{container_input}:ro",
-                    self.docker_image,
-                    "bash", "-c",
-                    f"cd /atomforge && cp bin/GIDINFO.INF . && cp bin/Ada.bin . && cp bin/Ada32.dll . && cp bin/mfc42.dll . 2>/dev/null || true && "
-                    f"export WINEPATH='/atomforge/bin' && "
-                    f"wine bin/fdo_compiler.exe {container_input} {container_output} && "
-                    f"cat {container_output}"
-                ]
-            else:
-                # For CLI: write to output file
-                docker_cmd = [
-                    "docker", "run", "--rm",
-                    "-v", f"{prepared_input}:{container_input}:ro",
-                    "-v", f"{os.getcwd()}:/output:rw",
-                    self.docker_image,
-                    "bash", "-c",
-                    f"cd /atomforge && cp bin/GIDINFO.INF . && cp bin/Ada.bin . && cp bin/Ada32.dll . && cp bin/mfc42.dll . 2>/dev/null || true && "
-                    f"export WINEPATH='/atomforge/bin' && "
-                    f"wine bin/fdo_compiler.exe {container_input} {container_output} && "
-                    f"cp {container_output} /output/{Path(output_path).name}"
-                ]
-
-            result = subprocess.run(docker_cmd, capture_output=True)
-
-            if result.returncode == 0:
-                if return_binary:
-                    return CompileResult(True, output_data=result.stdout, 
-                                       output_size=len(result.stdout))
-                else:
-                    if os.path.exists(output_path):
-                        size = os.path.getsize(output_path)
-                        return CompileResult(True, output_size=size)
-                    else:
-                        return CompileResult(False, error_message="Output file not created")
-            else:
-                stderr = result.stderr.decode('utf-8') if result.stderr else ""
-                stdout = result.stdout.decode('utf-8') if result.stdout else ""
-                
-                # Extract meaningful error from compiler output
-                error_msg = "Compilation failed"
-                if "❌ Failed to load Ada32.dll" in stdout:
-                    error_msg = "Ada32.dll could not be loaded"
-                elif "❌ Compilation failed" in stdout:
-                    error_msg = "Ada32 compilation failed - invalid FDO syntax"
-                elif "Cannot open input file" in stdout:
-                    error_msg = "Input file could not be read"
-                elif stderr:
-                    error_msg = f"Docker error: {stderr.strip()}"
-                
-                return CompileResult(False, error_message=error_msg)
-
-        except Exception as e:
-            return CompileResult(False, error_message=f"Docker execution failed: {e}")

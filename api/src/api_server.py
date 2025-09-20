@@ -52,6 +52,7 @@ class CompileRequest(BaseModel):
 class DecompileRequest(BaseModel):
     """Request model for FDO decompilation"""
     binary_data: str = Field(..., description="Base64-encoded FDO binary data to decompile", min_length=1)
+    pre_normalize: bool = Field(default=False, description="Normalize input before decompilation")
 
 class ExtractRequest(BaseModel):
     """Request model for extracting FDO from P3 hex payloads"""
@@ -370,7 +371,7 @@ async def decompile_fdo(request: DecompileRequest):
             )
 
         # Attempt decompilation
-        result: DecompileResult = await run_in_threadpool(decompiler.decompile_from_bytes, binary_data)
+        result: DecompileResult = await run_in_threadpool(decompiler.decompile_from_bytes, binary_data, request.pre_normalize)
 
         if result.success:
             # Return JSON response with source code

@@ -52,7 +52,7 @@ class FDODecompiler:
             print(f"Warning: ASCII transformation failed during decompilation: {e}")
             return source_code
 
-    def decompile_from_bytes(self, binary_data: bytes) -> DecompileResult:
+    def decompile_from_bytes(self, binary_data: bytes, pre_normalize: bool = False) -> DecompileResult:
         """Decompile FDO from binary data - API version"""
         if not binary_data:
             return DecompileResult(False, error_message="Empty binary data provided")
@@ -64,7 +64,7 @@ class FDODecompiler:
             with os.fdopen(temp_fd, 'wb') as f:
                 f.write(binary_data)
 
-            return self._wine_decompile_direct(temp_input, return_source=True)
+            return self._wine_decompile_direct(temp_input, return_source=True, pre_normalize=pre_normalize)
         except Exception as e:
             return DecompileResult(False, error_message=f"Failed to prepare binary input: {e}")
         finally:
@@ -89,7 +89,7 @@ class FDODecompiler:
             return DecompileResult(False, error_message=f"Failed to decompile: {e}")
 
     def _wine_decompile_direct(self, input_path: str, output_path: Optional[str] = None,
-                              return_source: bool = False) -> DecompileResult:
+                              return_source: bool = False, pre_normalize: bool = False) -> DecompileResult:
         """Direct Wine decompilation (when running inside API container)"""
         # Create unique temporary output file to avoid collisions
         temp_fd, container_output = tempfile.mkstemp(suffix='.txt', dir='/tmp')
@@ -97,6 +97,7 @@ class FDODecompiler:
 
         try:
             # Use /tmp as working directory since /atomforge might be read-only
+            pre_normalize_flag = "--pre-normalize" if pre_normalize else ""
             wine_cmd = [
                 "bash", "-c",
                 f"cd /tmp && "
@@ -105,7 +106,7 @@ class FDODecompiler:
                 f"cp /atomforge/bin/Ada32.dll . && "
                 f"cp /atomforge/bin/mfc42.dll . 2>/dev/null || true && "
                 f"export WINEPATH='/atomforge/bin' && "
-                f"wine /atomforge/bin/fdo_decompiler.exe --force --verbose {input_path} {container_output}"
+                f"wine /atomforge/bin/fdo_decompiler.exe --force --verbose {pre_normalize_flag} {input_path} {container_output}"
             ]
 
             result = subprocess.run(wine_cmd, capture_output=True, text=True)
@@ -170,79 +171,3 @@ class FDODecompiler:
             except:
                 pass
 
-    def _docker_decompile_external(self, input_path: str, output_path: Optional[str] = None,
-                                  return_source: bool = False) -> DecompileResult:
-        """External Docker decompilation (when running from host CLI)"""
-        container_input = "/tmp/input.fdo"
-        container_output = "/tmp/decompiled.txt"
-
-        try:
-            if return_source:
-                # For API: return source code directly
-                docker_cmd = [
-                    "docker", "run", "--rm",
-                    "-v", f"{input_path}:{container_input}:ro",
-                    "atomforge:latest",
-                    "bash", "-c",
-                    f"cd /atomforge && cp bin/GIDINFO.INF . && cp bin/Ada.bin . && cp bin/Ada32.dll . && cp bin/mfc42.dll . 2>/dev/null || true && "
-                    f"export WINEPATH='/atomforge/bin' && "
-                    f"wine bin/fdo_decompiler.exe --force {container_input} {container_output} && "
-                    f"cat {container_output}"
-                ]
-            else:
-                # For CLI: write to output file
-                docker_cmd = [
-                    "docker", "run", "--rm",
-                    "-v", f"{input_path}:{container_input}:ro",
-                    "-v", f"{os.getcwd()}:/output:rw",
-                    "atomforge:latest",
-                    "bash", "-c",
-                    f"cd /atomforge && cp bin/GIDINFO.INF . && cp bin/Ada.bin . && cp bin/Ada32.dll . && cp bin/mfc42.dll . 2>/dev/null || true && "
-                    f"export WINEPATH='/atomforge/bin' && "
-                    f"wine bin/fdo_decompiler.exe --force {container_input} {container_output} && "
-                    f"cp {container_output} /output/{Path(output_path).name}"
-                ]
-
-            result = subprocess.run(docker_cmd, capture_output=True, text=True)
-
-            if result.returncode == 0:
-                if return_source:
-                    # Post-process to convert hex to ASCII where applicable
-                    source_code = self.post_process_source(result.stdout)
-                    return DecompileResult(True, source_code=source_code,
-                                         output_size=len(source_code))
-                else:
-                    if os.path.exists(output_path):
-                        with open(output_path, 'r', encoding='utf-8') as f:
-                            raw_source_code = f.read()
-
-                        # Post-process to convert hex to ASCII where applicable
-                        source_code = self.post_process_source(raw_source_code)
-
-                        # Write processed source back to output file
-                        with open(output_path, 'w', encoding='utf-8') as f:
-                            f.write(source_code)
-
-                        return DecompileResult(True, source_code=source_code,
-                                             output_size=len(source_code))
-                    else:
-                        return DecompileResult(False, error_message="Output file not created")
-            else:
-                stderr = result.stderr if result.stderr else ""
-                stdout = result.stdout if result.stdout else ""
-
-                # Extract meaningful error from decompiler output
-                error_msg = "Decompilation failed"
-                if "❌ Failed to load Ada32.dll" in stdout:
-                    error_msg = "Ada32.dll could not be loaded"
-                elif "❌ Decompilation failed" in stdout:
-                    error_msg = "Ada32 decompilation failed - invalid FDO binary format"
-                elif "Cannot open input file" in stdout:
-                    error_msg = "Input file could not be read"
-                elif stderr:
-                    error_msg = f"Docker error: {stderr.strip()}"
-
-                return DecompileResult(False, error_message=error_msg)
-
-        except Exception as e:
-            return DecompileResult(False, error_message=f"Docker execution failed: {e}")

@@ -31,6 +31,7 @@ const App = (() => {
     hexInput: qs('#hexInput'),
     hexDecoded: qs('#hexDecoded'),
     extractFdoBtn: qs('#extractFdoBtn'),
+    preNormalizeCheck: qs('#preNormalizeCheck'),
     // Output
     outTabs: qsa('.output .tab'),
     outPanels: {
@@ -51,6 +52,11 @@ const App = (() => {
     // Examples menu
     examplesBtn: qs('#examplesBtn'),
     examplesMenu: qs('#examplesMenu'),
+    // API modal
+    apiBtn: qs('#apiBtn'),
+    apiModal: qs('#apiModal'),
+    apiModalClose: qs('#apiModalClose'),
+    apiBackdrop: qs('#apiModal .modal-backdrop'),
   };
 
   let currentBinary = null;   // Uint8Array from file OR hex
@@ -88,6 +94,7 @@ const App = (() => {
     bindOutputTabs();
     bindDownloads();
     setupExamples();
+    setupAPIModal();
     setupBottomResize();
     setupASCIISupport();
     setupP3Extraction();
@@ -271,9 +278,10 @@ const App = (() => {
     setBusy(true, 'Decompiling…');
     try {
       const base64 = btoa(String.fromCharCode.apply(null, bytes));
+      const preNormalize = el.preNormalizeCheck.checked;
       const res = await fetch('/decompile', {
         method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ binary_data: base64 })
+        body: JSON.stringify({ binary_data: base64, pre_normalize: preNormalize })
       });
       if (!res.ok) {
         const e = await safeJson(res);
@@ -537,6 +545,96 @@ const App = (() => {
         el.examplesMenu.hidden = true;
         el.examplesBtn.setAttribute('aria-expanded', 'false');
       }
+    });
+  }
+
+  // ---------- API Modal ----------
+  function setupAPIModal() {
+    if (!el.apiBtn || !el.apiModal) {
+      console.warn('API modal elements not found');
+      return;
+    }
+
+    // Update base URL in modal content based on current location
+    const baseUrlElement = qs('.api-base-url');
+    if (baseUrlElement) {
+      baseUrlElement.textContent = `${window.location.protocol}//${window.location.host}`;
+    }
+
+    // Show modal
+    el.apiBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      el.apiModal.hidden = false;
+      el.apiModal.focus();
+      document.body.style.overflow = 'hidden'; // Prevent background scroll
+    });
+
+    // Close modal - close button
+    el.apiModalClose.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeAPIModal();
+    });
+
+    // Close modal - backdrop click
+    el.apiBackdrop.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeAPIModal();
+    });
+
+    // Close modal - escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !el.apiModal.hidden) {
+        e.preventDefault();
+        closeAPIModal();
+      }
+    });
+
+    // Setup copy buttons
+    setupAPICopyButtons();
+  }
+
+  function closeAPIModal() {
+    el.apiModal.hidden = true;
+    document.body.style.overflow = ''; // Restore background scroll
+    el.apiBtn.focus(); // Return focus to trigger button
+  }
+
+  function setupAPICopyButtons() {
+    const copyButtons = qsa('.copy-btn');
+    copyButtons.forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const copyType = btn.dataset.copy;
+        let textToCopy = '';
+
+        // Get the code content from the previous sibling pre element
+        const codeBlock = btn.parentElement.querySelector('pre code');
+        if (codeBlock) {
+          textToCopy = codeBlock.textContent;
+        }
+
+        if (textToCopy) {
+          const success = await copyTextToClipboard(textToCopy);
+          if (success) {
+            // Temporarily change button text to show success
+            const originalText = btn.textContent;
+            btn.textContent = 'Copied!';
+            btn.style.background = 'var(--success)';
+            btn.style.color = 'var(--text-inverse)';
+
+            setTimeout(() => {
+              btn.textContent = originalText;
+              btn.style.background = '';
+              btn.style.color = '';
+            }, 2000);
+
+            showToast(`${copyType.charAt(0).toUpperCase() + copyType.slice(1)} command copied to clipboard`, 'success');
+          } else {
+            showToast('Failed to copy to clipboard', 'error');
+          }
+        }
+      });
     });
   }
 
