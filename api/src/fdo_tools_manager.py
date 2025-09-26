@@ -99,13 +99,23 @@ class FdoToolsManager:
             logger.error("No valid FDO Tools releases found")
             return None
 
-        # Sort versions and select latest
+        # Prefer current backend layout if present
+        if "current" in releases:
+            self.selected_release = releases["current"]
+            logger.info(f"Selected atomforge-backend at {self.selected_release}")
+            return self.selected_release
+
+        # Numeric fallback (legacy)
         versions = list(releases.keys())
-        versions.sort(key=lambda v: [int(x) for x in v.split('.')])
+        try:
+            versions.sort(key=lambda v: [int(x) for x in v.split('.')])
+        except Exception:
+            # If non-numeric keys, pick arbitrary deterministic order
+            versions.sort()
         latest_version = versions[-1]
 
         self.selected_release = releases[latest_version]
-        logger.info(f"Selected FDO Tools release: v{latest_version} at {self.selected_release}")
+        logger.info(f"Selected FDO Tools release: {latest_version} at {self.selected_release}")
 
         return self.selected_release
 
