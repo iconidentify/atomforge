@@ -1,5 +1,0 @@
-{"direction": "client-to-server", "data": {"hex": "1234567890"}, "timestamp": "2023-01-01T12:00:00Z"}
-{"direction": "server-to-client", "data": {"hex": "4001020304050607080910ABCDEF0D"}, "timestamp": "2023-01-01T12:00:01Z"}
-{"direction": "server-to-client", "data": {"payload": "40010203040506070809101A1B1C1D1E1F0D"}, "timestamp": "2023-01-01T12:00:02Z"}
-{"direction": "client-to-server", "data": {"hex": "DEADBEEF"}, "timestamp": "2023-01-01T12:00:03Z"}
-{"direction": "server-to-client", "data": {"hex": "40010203040506070809101A1B1C1D1E1F200D"}, "timestamp": "2023-01-01T12:00:04Z"}

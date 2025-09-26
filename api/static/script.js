@@ -27,7 +27,6 @@ const App = (() => {
     binaryFile: qs('#binaryFile'),
     fileDecoded: qs('#fileDecoded'),
     openAsHexBtn: qs('#openAsHexBtn'),
-    jsonlSpinner: qs('#jsonlSpinner'),
     hexInput: qs('#hexInput'),
     hexDecoded: qs('#hexDecoded'),
     extractFdoBtn: qs('#extractFdoBtn'),
@@ -62,9 +61,10 @@ const App = (() => {
   let currentBinary = null;   // Uint8Array from file OR hex
   let compiledBuffer = null;  // ArrayBuffer
   let decompiledText = '';
-  let isJsonlFileLoaded = false; // Track if JSONL file is loaded
+  let isJsonlFileLoaded = false; // removed P3 JSONL support; keep false
 
   // ASCII atom support
+  // ASCII helper removed
   let asciiAtoms = [];
   let asciiSupportEnabled = false;
 
@@ -96,8 +96,8 @@ const App = (() => {
     setupExamples();
     setupAPIModal();
     setupBottomResize();
-    setupASCIISupport();
-    setupP3Extraction();
+    // ASCII support removed
+    // P3 extraction removed
     // Ensure hex input is enabled by default since it's now the default view
     el.hexInput.removeAttribute('disabled');
     setMode(st.mode, {pushHash:false});
@@ -228,9 +228,7 @@ const App = (() => {
     if (st.mode === 'compile') return compile();
 
     // Check if we have a JSONL file loaded and we're in decompile mode
-    if (st.mode === 'decompile' && isJsonlFileLoaded && window.currentJsonlContent) {
-      return processJsonlFile();
-    }
+    // P3 JSONL processing removed
 
     return decompile();
   }
@@ -248,7 +246,15 @@ const App = (() => {
       });
       if (!res.ok) {
         const e = await safeJson(res);
-        throw new Error(e.error || `HTTP ${res.status}`);
+        const detail = e && e.detail ? e.detail : e;
+        const daemon = detail && detail.daemon ? detail.daemon : null;
+        // Prefer normalized error payload from server when available
+        const derrServer = daemon && daemon.normalized ? daemon.normalized : null;
+        const { derr, cleanMessage } = derrServer ? { derr: derrServer, cleanMessage: (derrServer.message||`HTTP ${res.status}`) } : parseDaemonError(daemon, detail, res.status);
+        renderDaemonError(derr, daemon);
+        const err = new Error(cleanMessage);
+        err._rendered = true;
+        throw err;
       }
       compiledBuffer = await res.arrayBuffer();
       const bytes = new Uint8Array(compiledBuffer);
@@ -265,7 +271,9 @@ const App = (() => {
       el.outPanels.hex.scrollTop = 0;
       log(`Compilation OK — ${formatBytes(bytes.length)}`, 'success');
     } catch (err) {
-      log(`Compilation failed: ${err.message}`, 'error');
+      if (!(err && err._rendered)) {
+        log(`Compilation failed: ${err.message}`, 'error');
+      }
       reveal('status');
       modeOutputs.compile.activeTab = 'status';
     } finally { setBusy(false); }
@@ -285,7 +293,14 @@ const App = (() => {
       });
       if (!res.ok) {
         const e = await safeJson(res);
-        throw new Error(e.error || `HTTP ${res.status}`);
+        const detail = e && e.detail ? e.detail : e;
+        const daemon = detail && detail.daemon ? detail.daemon : null;
+        const derrServer = daemon && daemon.normalized ? daemon.normalized : null;
+        const { derr, cleanMessage } = derrServer ? { derr: derrServer, cleanMessage: (derrServer.message||`HTTP ${res.status}`) } : parseDaemonError(daemon, detail, res.status);
+        renderDaemonError(derr, daemon);
+        const err = new Error(cleanMessage);
+        err._rendered = true;
+        throw err;
       }
       const data = await res.json(); // {source_code, output_size}
       decompiledText = data.source_code || '';
@@ -307,7 +322,9 @@ const App = (() => {
       modeOutputs.decompile.activeTab = 'source'; // Remember we switched to source tab
       log('Decompilation OK.', 'success');
     } catch (err) {
-      log(`Decompilation failed: ${err.message}`, 'error');
+      if (!(err && err._rendered)) {
+        log(`Decompilation failed: ${err.message}`, 'error');
+      }
       reveal('status');
       modeOutputs.decompile.activeTab = 'status';
     } finally { setBusy(false); }
@@ -359,31 +376,7 @@ const App = (() => {
       const f = e.target.files?.[0]; if (!f) return;
 
       // Check if this is a JSONL file
-      const isJsonl = f.name.toLowerCase().endsWith('.jsonl');
-
-      if (isJsonl) {
-        // Handle JSONL file
-        const reader = new FileReader();
-        reader.onload = ev => {
-          const jsonlContent = ev.target.result;
-          el.fileDecoded.textContent = `${formatBytes(jsonlContent.length)} JSONL`;
-          el.openAsHexBtn.hidden = true;
-          isJsonlFileLoaded = true;
-
-          // Store JSONL content for processing
-          window.currentJsonlContent = jsonlContent;
-          window.currentJsonlFilename = f.name;
-
-          // Visually indicate loaded state on the drop zone
-          el.binaryDrop.classList.add('loaded');
-          const msgNode = el.binaryDrop.querySelector('span');
-          if (msgNode) {
-            msgNode.textContent = `${f.name} — ${formatBytes(jsonlContent.length)} JSONL (click to change)`;
-          }
-          showToast(`Loaded JSONL file: ${f.name}`, 'success');
-        };
-        reader.readAsText(f);
-      } else {
+      {
         // Handle binary file
         const reader = new FileReader();
         reader.onload = ev => {
@@ -391,10 +384,6 @@ const App = (() => {
           el.fileDecoded.textContent = currentBinary.length.toLocaleString();
           el.openAsHexBtn.hidden = false;
           isJsonlFileLoaded = false;
-
-          // Clear any stored JSONL content
-          window.currentJsonlContent = null;
-          window.currentJsonlFilename = null;
 
           // Visually indicate loaded state on the drop zone
           el.binaryDrop.classList.add('loaded');
@@ -689,6 +678,66 @@ const App = (() => {
     try{ return await res.json(); } catch{ return {}; }
   }
 
+
+  function parseDaemonError(daemon, detail, status){
+    let derr = daemon?.json?.error;
+    if (!derr && typeof daemon?.text === 'string') {
+      // Try strict JSON first
+      try { const parsed = JSON.parse(daemon.text); derr = parsed && parsed.error; } catch(_) {
+        // Lenient parse from pretty text
+        const txt = daemon.text;
+        const get = (re) => { const m = txt.match(re); return m ? m[1] : undefined; };
+        const msgRaw = get(/"message"\s*:\s*"([\s\S]*?)"/);
+        const lineNum = get(/"line"\s*:\s*(\d+)/);
+        const kind = get(/"kind"\s*:\s*"([^"]*)"/);
+        const hint = get(/"hint"\s*:\s*"([\s\S]*?)"/);
+        // Find context-like lines by scanning for lines with "|"
+        const ctx = [];
+        txt.split(/\r?\n/).forEach((ln) => {
+          const s = ln.trim().replace(/^,?\"|\",?$/g,'');
+          if (/^(>>\s*)?\d+\s\|\s/.test(s)) ctx.push(s);
+        });
+        if (msgRaw || lineNum || kind || hint || ctx.length) {
+          derr = {
+            message: msgRaw || 'Error',
+            line: lineNum ? parseInt(lineNum, 10) : undefined,
+            kind,
+            context: ctx.length ? ctx : undefined,
+            hint
+          };
+        }
+      }
+    }
+    const message = derr?.message || detail?.error || `HTTP ${status}`;
+    // Remove Ada32 prefix like "Ada32 error rc=0x30014 (196628): "
+    const cleanMessage = message.replace(/^Ada32\s+error\s+rc=[^:]+:\s*/i, '').trim();
+    return { derr, cleanMessage };
+  }
+
+  function renderDaemonError(derr, daemon){
+    if (derr){
+      const headline = derr.message || 'Error';
+      const title = derr.kind && !headline.startsWith(derr.kind) ? `${derr.kind}: ${headline}` : headline;
+      // choose focused context line (with >>), else line-matched, else first
+      let contextLine = null;
+      if (Array.isArray(derr.context) && derr.context.length){
+        contextLine = derr.context.find(l => /^\s*>>/.test(l)) || null;
+        if (!contextLine && typeof derr.line === 'number'){
+          const ln = String(derr.line);
+          contextLine = derr.context.find(l => new RegExp(`^\s*(?:>>\s*)?${ln}\s\|`).test(l)) || null;
+        }
+        if (!contextLine) contextLine = derr.context[0];
+      }
+      // Because log() prepends, log context second so it appears below the headline (top-down)
+      log(title, 'error');
+      if (contextLine) log(contextLine, 'error');
+    } else if (daemon?.text){
+      // As a last resort, print a compact first line of the text blob
+      const first = (daemon.text || '').split(/\r?\n/)[0].trim();
+      if (first) log(first, 'error');
+    }
+  }
+
   function setBusy(on, label){
     el.runBtn.disabled = on;
     el.runBtn.classList.toggle('loading', on);
@@ -782,264 +831,15 @@ const App = (() => {
   }
 
   // ---------- ASCII Atom Support ----------
-  async function setupASCIISupport() {
-    try {
-      const response = await fetch('/ascii-atoms');
-      if (response.ok) {
-        const data = await response.json();
-        if (data.ascii_support) {
-          asciiAtoms = data.atoms;
-          asciiSupportEnabled = true;
-          setupASCIIInputEnhancements();
-          console.log(`ASCII support enabled for ${data.count} atoms:`, asciiAtoms.map(a => a.name));
-        }
-      }
-    } catch (error) {
-      console.log('ASCII atom support not available:', error.message);
-    }
-  }
-
-  function setupASCIIInputEnhancements() {
-    if (!asciiSupportEnabled) return;
-
-    // Add ASCII input helpers to the compile input
-    addASCIIInputHelper(el.fdoInput);
-  }
-
-  function addASCIIInputHelper(textarea) {
-    // Add event listeners for intelligent ASCII suggestions
-    textarea.addEventListener('input', handleASCIIInput);
-    textarea.addEventListener('keydown', handleASCIIKeydown);
-  }
-
-  function handleASCIIInput(event) {
-    const textarea = event.target;
-    const cursorPos = textarea.selectionStart;
-    const textBeforeCursor = textarea.value.substring(0, cursorPos);
-
-    // Check if we're typing an ASCII-supported atom
-    const currentLine = textBeforeCursor.split('\n').pop();
-
-    for (const atom of asciiAtoms) {
-      if (currentLine.trim().startsWith(atom.name)) {
-        // Show ASCII input suggestion (could add visual indicator here)
-        break;
-      }
-    }
-  }
-
-  function handleASCIIKeydown(event) {
-    // Could add special key handling for ASCII input assistance
-    // For example, auto-complete or formatting helpers
-  }
-
-  function isASCIIAtom(atomName) {
-    return asciiAtoms.some(atom => atom.name === atomName);
-  }
-
-  function getASCIIAtomInfo(atomName) {
-    return asciiAtoms.find(atom => atom.name === atomName);
-  }
+  // ASCII helpers removed
 
   // P3 Extraction Support
-  function setupP3Extraction() {
-    if (!el.extractFdoBtn) return;
-
-    // Show/hide extract button based on hex input content
-    el.hexInput.addEventListener('input', updateExtractButtonVisibility);
-    el.extractFdoBtn.addEventListener('click', extractFDOFromP3);
-
-    updateExtractButtonVisibility();
-  }
-
-
-  async function processJsonlFile() {
-    if (!window.currentJsonlContent) {
-      showToast('No JSONL file loaded', 'error');
-      return;
-    }
-
-    // Show spinner
-    el.jsonlSpinner.hidden = false;
-    setBusy(true, 'Processing JSONL...');
-
-    log(`Processing JSONL file: ${window.currentJsonlFilename}`);
-
-    try {
-      // Process JSONL content line by line
-      const lines = window.currentJsonlContent.split('\n').filter(line => line.trim());
-      let totalLines = lines.length;
-      let processedLines = 0;
-      let validFrames = 0;
-      let serverToClientFrames = 0;
-      let fdoExtractionAttempts = 0;
-      let fdoExtractionSuccesses = 0;
-      let concatenatedFdoHex = '';
-
-      log(`Found ${totalLines} lines to process`);
-
-      // Process in batches to avoid blocking UI
-      const batchSize = 10;
-      for (let i = 0; i < lines.length; i += batchSize) {
-        const batch = lines.slice(i, i + batchSize);
-
-        for (const line of batch) {
-          try {
-            const frame = JSON.parse(line);
-            processedLines++;
-
-            // Check if this is a server-to-client frame
-            if (frame.direction === 'server-to-client' || frame.direction === 'ServerToClient' || frame.dir === 'S->C') {
-              serverToClientFrames++;
-
-              // Check if frame has data and is eligible for FDO extraction
-              let hexData = null;
-              if (frame.data && (frame.data.hex || frame.data.payload)) {
-                hexData = frame.data.hex || frame.data.payload;
-              } else if (frame.fullHex) {
-                hexData = frame.fullHex;
-              }
-
-              if (hexData) {
-                fdoExtractionAttempts++;
-
-                // Try to extract FDO from this frame's hex data
-                try {
-                  const extractResult = await extractFDOFromHex(hexData);
-                  if (extractResult.success && extractResult.fdo_hex) {
-                    fdoExtractionSuccesses++;
-                    concatenatedFdoHex += extractResult.fdo_hex;
-                    let logMsg = `✓ Frame ${processedLines}: Extracted ${extractResult.total_fdo_bytes} FDO bytes`;
-                    if (extractResult.skipped_non_fdo_packets > 0) {
-                      logMsg += ` (skipped ${extractResult.skipped_non_fdo_packets} non-FDO)`;
-                    }
-                    log(logMsg);
-                  } else if (extractResult.skipped_non_fdo_packets > 0) {
-                    // Even if no FDO was found, report non-FDO packets that were skipped
-                    log(`⌐ Frame ${processedLines}: Skipped ${extractResult.skipped_non_fdo_packets} non-FDO packets`);
-                  }
-                } catch (extractError) {
-                  // Silently continue - many frames won't contain FDO data
-                }
-              }
-              validFrames++;
-            }
-
-          } catch (parseError) {
-            // Skip invalid JSON lines
-            processedLines++;
-          }
-        }
-
-        // Allow UI to update between batches - reduced frequency for cleaner experience
-        if (i % 50 === 0) {
-          await new Promise(resolve => setTimeout(resolve, 5));
-        }
-      }
-
-      log(`✓ JSONL processing complete:`);
-      log(`  Total lines: ${totalLines}`);
-      log(`  Server-to-client frames: ${serverToClientFrames}`);
-      log(`  FDO extraction attempts: ${fdoExtractionAttempts}`);
-      log(`  Successful extractions: ${fdoExtractionSuccesses}`);
-
-      if (concatenatedFdoHex.length > 0) {
-        // Convert concatenated hex to binary for decompilation
-        const cleanHex = concatenatedFdoHex.replace(/[^0-9A-Fa-f]/g, '');
-        const fdoBytes = new Uint8Array(cleanHex.length / 2);
-        for (let i = 0; i < cleanHex.length; i += 2) {
-          fdoBytes[i / 2] = parseInt(cleanHex.substr(i, 2), 16);
-        }
-
-        // Set as current binary and update UI
-        currentBinary = fdoBytes;
-
-        // Populate hex output for reference
-        el.compileSize.textContent = formatBytes(fdoBytes.length);
-        el.hexOutViewer.textContent = hexdump(fdoBytes);
-
-        // Attempt decompilation of concatenated FDO data
-        log(`Attempting decompilation of ${formatBytes(fdoBytes.length)} concatenated FDO data...`);
-
-        try {
-          const base64 = btoa(String.fromCharCode.apply(null, fdoBytes));
-          const decompileRes = await fetch('/decompile', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ binary_data: base64 })
-          });
-
-          if (decompileRes.ok) {
-            const decompileData = await decompileRes.json();
-            if (decompileData.success) {
-              decompiledText = decompileData.source_code || '';
-              el.decompileSize.textContent = `${(decompileData.output_size || decompiledText.length).toLocaleString()} chars`;
-              el.sourceView.textContent = decompiledText;
-
-              // Save decompile outputs to mode state
-              modeOutputs.decompile.hexContent = el.hexOutViewer.textContent;
-              modeOutputs.decompile.hexSize = el.compileSize.textContent;
-              modeOutputs.decompile.sourceContent = el.sourceView.textContent;
-              modeOutputs.decompile.sourceSize = el.decompileSize.textContent;
-              modeOutputs.decompile.text = decompiledText;
-
-              reveal('source');
-              modeOutputs.decompile.activeTab = 'source';
-              log(`✓ Decompilation successful - ${el.decompileSize.textContent}`);
-              showToast(`JSONL processed: ${fdoExtractionSuccesses} FDO extractions, decompiled to ${el.decompileSize.textContent}`, 'success');
-            } else {
-              log(`✗ Decompilation failed: ${decompileData.error}`);
-              showToast('FDO data extracted but decompilation failed', 'warning');
-            }
-          }
-        } catch (decompileError) {
-          log(`✗ Decompilation error: ${decompileError.message}`);
-          showToast('FDO data extracted but decompilation failed', 'warning');
-        }
-      } else {
-        log('No FDO data found in JSONL file');
-        showToast(`Processed ${totalLines} lines, but no FDO data was found`, 'warning');
-      }
-
-    } catch (error) {
-      log(`✗ JSONL processing error: ${error.message}`, 'error');
-      showToast(`JSONL processing failed: ${error.message}`, 'error');
-      reveal('status');
-      modeOutputs.decompile.activeTab = 'status';
-    } finally {
-      // Hide spinner and restore UI
-      el.jsonlSpinner.hidden = true;
-      setBusy(false);
-    }
-  }
-
-  // Helper function for FDO extraction from hex data
-  async function extractFDOFromHex(hexData) {
-    const response = await fetch('/extract-fdo', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ hex_data: hexData })
-    });
-
-    const result = await response.json();
-    return result;
-  }
-
   function refreshHexDecoded() {
     const clean = (el.hexInput.value||'').replace(/[^0-9A-Fa-f]/g, '');
     el.hexDecoded.textContent = (clean.length/2|0).toLocaleString();
   }
 
-  function updateExtractButtonVisibility() {
-    const hexContent = el.hexInput.value.trim();
-    const hasContent = hexContent.length > 0;
-
-    if (hasContent) {
-      el.extractFdoBtn.hidden = false;
-    } else {
-      el.extractFdoBtn.hidden = true;
-    }
-  }
+  // P3 extraction removed
 
   async function extractFDOFromP3() {
     const hexData = el.hexInput.value.trim();

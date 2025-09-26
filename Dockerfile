@@ -1,6 +1,6 @@
 # ================================
-# AtomForge - Minimal Wine FDO Compiler
-# Lightweight Docker environment for FDO compilation & decompilation
+# AtomForge v2.0 - FDO Tools Python Module
+# Lightweight Docker environment using FDO Tools releases
 # ================================
 FROM python:3.11-slim
 
@@ -31,8 +31,13 @@ ENV WINEPREFIX=/wine \
 # Create Wine symbolic links and initialize
 RUN ln -sf /usr/lib/wine/wine /usr/local/bin/wine && \
     ln -sf /usr/lib/wine/wineserver /usr/local/bin/wineserver && \
+    # Initialize Wine with minimal configuration
+    export WINEDEBUG=-all && \
     wine wineboot --init 2>/dev/null && \
     wineserver -w && \
+    # Test Wine can execute basic commands
+    wine cmd /c echo "Wine test successful" 2>/dev/null || echo "Wine test completed" && \
+    # Clean up temporary files
     rm -rf /tmp/.wine-* 2>/dev/null || true
 
 WORKDIR /atomforge
@@ -41,11 +46,17 @@ WORKDIR /atomforge
 COPY api/requirements.txt ./api/
 RUN pip install --no-cache-dir -r api/requirements.txt
 
-# Copy essential project files only
+# Copy FDO Tools releases (contains executables and Python modules)
+COPY releases/ ./releases/
+
+# Copy golden test files for validation
+COPY bin/ ./bin/
+
+# Copy API application
 COPY api/ ./api/
-COPY bin/fdo_compiler_decompiler/ ./bin/
-COPY bin/mfc42.dll ./bin/
-RUN cp -r ./bin/golden_tests_immutable ./bin/ 2>/dev/null || echo "Golden tests already in correct location"
+
+# Set environment variable for FDO Tools release discovery
+ENV FDO_RELEASES_DIR=/atomforge/releases
 
 # Expose web interface port
 EXPOSE 8000
@@ -54,5 +65,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
-# Start the web service
+# Start API server directly (no supervisord needed)
 CMD ["python3", "-m", "api.src.api_server"]

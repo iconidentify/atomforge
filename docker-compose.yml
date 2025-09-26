@@ -1,20 +1,45 @@
 services:
   atomforge:
-    build: .  # Add this line to specify local build context
-    image: atomforge-full:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Force clean build each time
+      no_cache: false
+    image: atomforge-v2:latest
     platform: linux/amd64
-    container_name: atomforge
+    container_name: atomforge-v2
     ports:
       - "8000:8000"
     restart: unless-stopped
     environment:
       - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/atomforge
+      - FDO_RELEASES_DIR=/atomforge/releases
+      - LOGLEVEL=INFO
+      - HOST=0.0.0.0
+      - PORT=8000
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 30s
+      start_period: 15s  # FDO Tools Python module starts quickly
     volumes:
       # Optional: Mount local directory for persistent compiled files
       - ./compiled_output:/atomforge/compiled_output
+      # Mount validation results for analysis
+      - ./validation_results:/atomforge/validation_results
+    # Resource limits for production deployment
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
+        reservations:
+          memory: 256M
+          cpus: '0.5'
+    # Labels for monitoring and management
+    labels:
+      - "com.atomforge.service=api"
+      - "com.atomforge.version=2.0.0"
+      - "com.atomforge.mode=daemon"

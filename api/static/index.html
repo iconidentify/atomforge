@@ -6,7 +6,7 @@
     <title>AtomForge - FDO Compiler & Decompiler</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
     <!-- Minimal App Shell -->
@@ -47,7 +47,7 @@
                             <span class="checkbox-text">Pre-normalize input</span>
                         </label>
                     </div>
-                    <button id="extractFdoBtn" class="btn small" hidden>Extract FDO</button>
+                    
                 </div>
 
                 <div id="fileInputView" class="input-view" hidden>
@@ -58,10 +58,6 @@
                     <div class="file-meta">
                         <span>Decoded: <span id="fileDecoded">0</span> bytes</span>
                         <button id="openAsHexBtn" class="btn small" hidden>Open as Hex</button>
-                        <div id="jsonlSpinner" class="spinner" hidden>
-                            <div class="spinner-icon"></div>
-                            <span class="spinner-text">Processing JSONL...</span>
-                        </div>
                     </div>
                 </div>
 
@@ -192,43 +188,12 @@
 }</code></pre>
                 </section>
 
-                <section class="api-endpoint">
-                    <h3>Extract FDO from P3 Packets</h3>
-                    <div class="endpoint-meta">
-                        <span class="method post">POST</span>
-                        <code>/extract-fdo</code>
-                    </div>
-                    <p>Extracts FDO data from P3 packet streams for further processing.</p>
-
-                    <h4>Request Body</h4>
-                    <pre class="code-block"><code>{
-  "hex_data": "504b030414001400010008004a4d..."
-}</code></pre>
-
-                    <h4>cURL Example</h4>
-                    <div class="code-example">
-                        <pre class="code-block"><code>curl -X POST http://localhost:8000/extract-fdo \
-  -H "Content-Type: application/json" \
-  -d '{
-    "hex_data": "504b030414001400010008004a4d..."
-  }'</code></pre>
-                        <button class="copy-btn" data-copy="extract">Copy</button>
-                    </div>
-
-                    <h4>Response</h4>
-                    <pre class="code-block"><code>{
-  "success": true,
-  "fdo_hex": "40010208001c...",
-  "frames_found": 3,
-  "total_fdo_bytes": 156,
-  "input_size": 1024
-}</code></pre>
-                </section>
+                
             </div>
         </div>
     </div>
 
     <!-- Scripts -->
-    <script src="/static/script.js"></script>
+    <script src="/script.js?v=2025-09-26"></script>
 </body>
 </html>
