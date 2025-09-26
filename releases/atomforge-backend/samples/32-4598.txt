@@ -1,0 +1,59 @@
+uni_start_stream <00x>
+  man_use_default_title
+  man_start_object <ind_group, "">
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_managed_by <60>
+    mmi_atr_rid_play <1>
+    mmi_atr_rid_pause <2>
+    mmi_atr_rid_stop <3>
+    mmi_atr_rid_rewind <4>
+    mmi_atr_type <1>
+    man_set_context_globalid <1>
+    var_lookup_by_id <A, 255>
+    var_string_get <A>
+    uni_save_result
+    man_end_context
+    uni_get_result
+    uni_use_last_atom_string <mmi_open_file>
+    man_start_object <org_group, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "Play">
+        mat_relative_tag <1>
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream <00x>
+              mmi_play
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Pause">
+          mat_relative_tag <2>
+          act_replace_select_action
+              <
+              uni_start_stream <00x>
+                mmi_pause
+              uni_end_stream
+              >
+          man_start_sibling <trigger, "Stop">
+            mat_relative_tag <3>
+            act_replace_select_action
+                <
+                uni_start_stream <00x>
+                  mmi_stop
+                uni_end_stream
+                >
+            man_start_sibling <trigger, "Rewind">
+              mat_relative_tag <4>
+              act_replace_select_action
+                  <
+                  uni_start_stream <00x>
+                    mmi_rewind
+                  uni_end_stream
+                  >
+              man_end_object
+            man_end_object
+            man_update_display
+            mmi_play
+            uni_wait_off
+          uni_end_stream <00x>

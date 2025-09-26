@@ -1,0 +1,69 @@
+uni_start_stream <00x>
+  idb_set_context <20-0-16>
+  idb_atr_offset <1>
+  idb_get_string
+  var_string_set_from_atom <A>
+  var_string_set <B,"New User  ">
+  idb_end_context
+  if_stra_eq_strb_then <10, 99>
+  async_alert <info, "Please register an account to use this feature.">
+  uni_sync_skip <10>
+  man_start_object <ind_group, "FlashSessions Walk-Through">
+    mat_object_id <32-2507>
+    mat_orientation <vft>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <org_group, "">
+      mat_orientation <hff>
+      man_start_object <ornament, "">
+        mat_art_id <1-0-1288>
+        mat_bool_disabled <yes>
+      man_start_sibling <ornament, "Welcome to FlashSessions!">
+        mat_size <23, 1>
+        mat_font_id <times_roman>
+        mat_font_size <14>
+      man_end_object
+    man_start_sibling <ornament, "">
+      mat_art_id <1-0-1369>
+      mat_bool_disabled <yes>
+    man_start_sibling <ornament, "">
+      man_append_data <"FlashSessions allow you to go online -- immediately or at times you designate -- to send mail that you have prepared offline, retrieve mail that is waiting for you, or download software files that you have collected in your Download Manager.  You do not need to use FlashSessions to do your mail or download files, but FlashSessions can save you time and money.\x7f\x7fThis walk-through will help you to easily set up FlashSessions for your personal needs.  Just answer the following questions, and you'll be on your way to making more efficient use of your online time.  Click \"Continue\" below to begin.  (If you're already familiar with FlashSessions, you may want to select \"Expert Setup\" instead).">
+      mat_precise_width <400>
+      mat_precise_height <260>
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "Continue">
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              man_close_update
+              uni_invoke_no_context <32-2508>
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Expert Setup">
+          act_replace_select_action
+              <
+              uni_start_stream
+                man_close_update
+                idb_start_obj <"b">
+                idb_atr_globalid <20-0-62>
+                idb_append_data <01x>
+                idb_end_obj
+                uni_invoke_no_context <32-2506>
+              uni_end_stream
+              >
+          man_start_sibling <trigger, "Cancel">
+            act_replace_select_action
+                <
+                uni_start_stream <00x>
+                  man_close_update
+                uni_end_stream <00x>
+                >
+            man_end_object
+          man_end_object
+          uni_wait_off
+          man_update_display
+          man_end_context
+          uni_sync_skip <99>
+        uni_end_stream <00x>

@@ -1,0 +1,3 @@
+uni_start_stream
+  uni_invoke_local <32-287>
+uni_end_stream

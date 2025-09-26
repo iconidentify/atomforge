@@ -1,0 +1,57 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Public Rooms in this Area">
+    mat_orientation <vff>
+    man_start_object <ornament, "">
+      mat_art_id <1-0-1329>
+      mat_bool_disabled <yes>
+    man_start_sibling <org_group, "">
+      mat_orientation <hee>
+      man_start_object <org_group, "">
+        mat_orientation <vee>
+        man_start_object <dss_list, "Members\tRoom Name">
+          mat_orientation <vee>
+          mat_relative_tag <1>
+          mat_ruler <1, 14>
+        man_start_sibling <org_group, "">
+          mat_orientation <hee>
+          man_start_object <trigger, "Go">
+            mat_bool_default <yes>
+            act_replace_select_action
+                <
+                uni_start_stream <00x>
+                de_ez_send_list_text <"cL", 02x, 00x, 00x, 00x, 01x>
+                >
+            man_start_sibling <trigger, "List People">
+              act_replace_select_action
+                  <
+                  uni_start_stream <00x>
+                  de_ez_send_list_text <"cb", 02x, 00x, 00x, 00x, 01x>
+                  >
+              man_end_object
+            man_end_object
+          man_start_sibling <org_group, "">
+            mat_orientation <vee>
+            man_start_object <trigger, "P.C. Rooms">
+              act_replace_select_action
+                  <
+                  uni_start_stream <00x>
+                  sm_send_token_arg <"LP">
+                  >
+              man_start_sibling <trigger, "More Rooms">
+                mat_relative_tag <2>
+                act_replace_select_action
+                    <
+                    uni_start_stream <00x>
+                    sm_send_token_arg <"LC">
+                    >
+                man_start_sibling <trigger, "Help">
+                  act_replace_select_action
+                      <
+                      uni_start_stream <00x>
+                      sm_send_k1 <8-18591>
+                      >
+                  man_end_object
+                man_end_object
+              man_end_object
+              man_update_display
+            uni_end_stream <00x>

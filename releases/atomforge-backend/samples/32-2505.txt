@@ -1,0 +1,281 @@
+uni_start_stream <00x>
+  man_preset_gid <59>
+  if_last_return_false_then <1>
+  man_set_context_globalid <1>
+  man_start_object <org_group, "">
+    uni_sync_skip <1>
+    man_use_default_title
+    man_start_object <ind_group, "Compose Mail">
+      mat_orientation <hff>
+      mat_dirty_query <yes>
+      mat_position <center_center>
+      mat_managed_by <257>
+      var_number_set <A, 1>
+      var_number_save <A, 101>
+      mat_style_id <32-226>
+      mat_dirty_query <yes>
+      act_set_criterion <10>
+      act_replace_action
+          <
+          uni_start_stream
+            man_set_context_relative <16>
+            mat_bool_invisible <no>
+            man_end_context
+            man_is_rendered
+            if_last_return_true_then <1>
+            man_update_display
+            uni_sync_skip <1>
+          uni_end_stream
+          >
+        act_set_criterion <11>
+        act_replace_action
+            <
+            uni_start_stream
+              man_set_context_relative <16>
+              mat_bool_invisible <yes>
+              man_end_context
+              man_is_rendered
+              if_last_return_true_then <1>
+              man_update_display
+              uni_sync_skip <1>
+            uni_end_stream
+            >
+          act_set_criterion <18>
+          act_replace_action
+              <
+              uni_start_stream
+                man_set_context_relative <17>
+                async_is_known_subaccount
+                if_last_return_true_then <1, 2>
+                mat_bool_invisible <no>
+                uni_sync_skip <1>
+                mat_bool_invisible <yes>
+                uni_sync_skip <2>
+                man_update_display
+                man_end_context
+              uni_end_stream
+              >
+            var_number_set <A, 0>
+            var_number_save <A, 64>
+            man_start_object <org_group, "">
+              mat_orientation <vct>
+              man_start_object <trigger, "Send">
+                mat_relative_tag <16>
+                mat_art_id <1-0-1289>
+                act_replace_select_action
+                    <
+                    uni_start_stream
+                      de_validate <display_msg | terminate>
+                      sm_enter_paid
+                      if_online_then <1>
+                      uni_wait_on
+                      de_start_extraction
+                      var_lookup_by_id <A, 64>
+                      if_last_return_false_then <10, 11>
+                      buf_set_token <"e1">
+                      uni_sync_skip <10>
+                      buf_set_token <"e2">
+                      uni_sync_skip <11>
+                      man_set_context_relative <3>
+                      de_get_data
+                      man_change_context_relative <5>
+                      de_get_data
+                      man_change_context_relative <8>
+                      de_get_data
+                      man_change_context_relative <10>
+                      de_get_data
+                      man_end_context
+                      de_end_extraction
+                      buf_close_buffer
+                      uni_sync_skip <1>
+                    uni_end_stream
+                    >
+                  mat_command_key <0dx>
+                man_start_sibling <trigger, "Send\rLater">
+                  mat_relative_tag <17>
+                  mat_art_id <1-0-1288>
+                  act_replace_select_action
+                      <
+                      uni_start_stream
+                        de_validate <display_msg | terminate>
+                        de_start_extraction <0>
+                        de_set_data_type <global_id>
+                        de_get_data_value <current_object>
+                        uni_save_result
+                        de_end_extraction
+                        buf_close_buffer
+                        uni_get_result
+                        uni_use_last_atom_value <mip_set_calling_form_id>
+                        lm_start_list
+                        lm_attr_list_type <01x>
+                        lm_attr_list_form <20x, 08x, 20x>
+                        lm_end_list
+                        mip_action_command <06x>
+                        man_close_update
+                        idb_set_context <20-0-55>
+                        idb_atr_offset <0>
+                        idb_get_value <04x>
+                        if_last_return_true_then <1, 2>
+                        async_alert <info, "Your mail has been saved for later delivery.">
+                        uni_sync_skip <1>
+                        async_alert <info, "Your mail has been saved for later delivery.\x7f\x7fIf you would like to schedule a session to deliver this mail, select FlashSessions from the Mail menu.">
+                        uni_sync_skip <2>
+                        idb_end_context
+                      uni_end_stream
+                      >
+                    async_is_known_subaccount
+                    if_last_return_true_then <1, 2>
+                    mat_bool_invisible <no>
+                    uni_sync_skip <1>
+                    mat_bool_invisible <yes>
+                    uni_sync_skip <2>
+                  man_start_sibling <trigger, "Attach">
+                    mat_title_width <8>
+                    mat_relative_tag <11>
+                    mat_art_id <1-0-1294>
+                    act_replace_select_action
+                        <
+                        uni_start_stream
+                          var_lookup_by_id <A, 64>
+                          if_last_return_false_then <10, 11>
+                          fm_start
+                          fm_item_type <persistent_path>
+                          fm_item_set <14x, 00x, 01x, 1bx>
+                          fm_dialog_get_file <"Attach File">
+                          fm_handle_error <display_msg | terminate>
+                          fm_item_get <filespec>
+                          uni_save_result
+                          man_set_context_relative <10>
+                          uni_get_result
+                          uni_use_last_atom_string <man_replace_data>
+                          man_end_context
+                          man_set_context_relative <11>
+                          mat_art_id <1-0-1295>
+                          mat_title <"Detach">
+                          man_end_context
+                          man_update_display
+                          var_number_set <A, 1>
+                          var_number_save <A, 64>
+                          fm_end
+                          uni_sync_skip <10>
+                          man_set_context_relative <11>
+                          mat_art_id <1-0-1294>
+                          mat_title <"Attach">
+                          man_end_context
+                          man_set_context_relative <10>
+                          mat_title <" ">
+                          man_end_context
+                          man_update_display
+                          var_number_set <A, 0>
+                          var_number_save <A, 64>
+                          uni_sync_skip <11>
+                        uni_end_stream
+                        >
+                      mat_drop_data_type <1>
+                      act_set_criterion <20>
+                      act_replace_action
+                          <
+                          uni_start_stream
+                            fm_start
+                            man_set_context_relative <11>
+                            var_lookup_by_id <A, 303>
+                            uni_save_result
+                            man_change_context_relative <10>
+                            uni_get_result
+                            uni_use_last_atom_string <man_replace_data>
+                            man_end_context
+                            man_set_context_relative <11>
+                            mat_art_id <1-0-1295>
+                            mat_title <"Detach">
+                            man_end_context
+                            man_update_display
+                            var_number_set <A, 1>
+                            var_number_save <A, 64>
+                            fm_end
+                          uni_end_stream
+                          >
+                      man_start_sibling <trigger, "Address\rBook">
+                        mat_art_id <1-0-1287>
+                        act_replace_select_action
+                            <
+                            uni_start_stream
+                              de_start_extraction <0>
+                              de_set_data_type <global_id>
+                              de_get_data_value <current_object>
+                              uni_save_result
+                              de_end_extraction
+                              buf_close_buffer
+                              lm_open_window <32-425>
+                              uni_get_result
+                              uni_use_last_atom_value <ad_set_caller>
+                              man_update_display
+                            uni_end_stream
+                            >
+                        man_end_object
+                      man_start_sibling <org_group, "">
+                        mat_orientation <vff>
+                        man_start_object <org_group, "">
+                          mat_orientation <hff>
+                          man_start_object <edit_view, "To:">
+                            mat_size <20, 2, 14000>
+                            mat_relative_tag <3>
+                            mat_title_pos <left | top_or_left>
+                            mat_validation <128>
+                            man_make_focus
+                          man_start_sibling <edit_view, "CC:">
+                            mat_size <20, 2, 14000>
+                            mat_relative_tag <5>
+                            mat_title_pos <left | top_or_left>
+                          man_end_object
+                        man_start_sibling <edit_view, "Subject:">
+                          mat_size <40, 1, 80>
+                          mat_relative_tag <8>
+                          mat_title_pos <left | center>
+                          mat_bool_vertical_scroll <no>
+                          mat_validation <128>
+                        man_start_sibling <org_group, "">
+                          mat_orientation <hlf>
+                          man_start_object <ornament, "">
+                            mat_size <6, 1, 6>
+                            mat_font_id <system>
+                            man_append_data <"File:">
+                          man_start_sibling <ornament, "">
+                            mat_size <42, 1, 256>
+                            mat_relative_tag <10>
+                            mat_drop_data_type <4>
+                            act_set_criterion <20>
+                            act_replace_action
+                                <
+                                uni_start_stream
+                                  fm_start
+                                  man_set_context_relative <10>
+                                  var_lookup_by_id <A, 303>
+                                  uni_use_last_atom_string <man_replace_data>
+                                  man_end_context
+                                  man_set_context_relative <11>
+                                  mat_art_id <1-0-1295>
+                                  mat_title <"Detach">
+                                  man_end_context
+                                  man_update_display
+                                  var_number_set <A, 1>
+                                  var_number_save <A, 64>
+                                  fm_end
+                                uni_end_stream
+                                >
+                            man_end_object
+                          man_start_sibling <edit_view, "">
+                            mat_size <47, 10, 32000>
+                            mat_relative_tag <12>
+                            mat_bool_writeable <yes>
+                            mat_validation <128>
+                          man_end_object
+                        man_end_object
+                        man_update_display
+                        var_number_set <A, 0>
+                        var_number_save <A, 64>
+                        if_offline_then <10>
+                        act_do_action <11>
+                        uni_sync_skip <10>
+                        man_update_display
+                        uni_wait_off
+                      uni_end_stream <00x>

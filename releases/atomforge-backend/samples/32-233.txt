@@ -1,0 +1,283 @@
+uni_start_stream
+  man_set_context_globalid <1>
+  man_start_object <ind_group, "">
+    mat_form_icon <1-0-1290>
+    var_number_set <A, 1>
+    var_number_save <A, 101>
+    mat_title <"Untitled">
+    mat_dirty_query <yes>
+    mat_object_id <32-233>
+    mat_style_id <32-233>
+    mat_orientation <vft>
+    man_start_object <org_group, "">
+      mat_orientation <vlt>
+      act_set_criterion <210>
+      act_replace_action
+          <
+          uni_start_stream
+            man_set_context_relative <1>
+            rich_get_text_alignment
+            var_number_set_from_atom <A>
+            man_end_context
+            man_set_context_relative <50>
+            man_get_attribute <mat_value>
+            var_number_set_from_atom <B>
+            var_number_get <A>
+            if_numa_neq_numb_then <1>
+            var_number_get <A>
+            uni_use_last_atom_value <mat_value>
+            man_end_context
+            man_update_display
+            uni_sync_skip <1>
+            man_set_context_relative <1>
+            rich_get_text_style
+            var_number_set_from_atom <A>
+            man_end_context
+            man_set_context_relative <42>
+            var_number_get <A>
+            var_number_set <B, 1>
+            if_numa_and_numb_then <1, 2>
+            mat_value <1>
+            uni_sync_skip <1>
+            mat_value <0>
+            uni_sync_skip <2>
+            man_change_context_relative <43>
+            var_number_get <A>
+            var_number_set <B, 2>
+            if_numa_and_numb_then <1, 2>
+            mat_value <1>
+            uni_sync_skip <1>
+            mat_value <0>
+            uni_sync_skip <2>
+            man_change_context_relative <44>
+            var_number_get <A>
+            var_number_set <B, 4>
+            if_numa_and_numb_then <1, 2>
+            mat_value <1>
+            uni_sync_skip <1>
+            mat_value <0>
+            uni_sync_skip <2>
+            man_end_context
+            man_update_display
+          uni_end_stream
+          >
+        man_start_object <org_group, "">
+          mat_orientation <hlt>
+          mat_bool_tool_group <yes>
+          mat_bool_resize_horizontal <yes>
+          mat_bool_resize_vertical <yes>
+          man_start_object <org_group, "">
+            mat_orientation <hft>
+            man_start_object <trigger, "">
+              mat_vertical_spacing <2>
+              mat_bool_small_icon <yes>
+              mat_context_help <"Text Color">
+              mat_horizontal_spacing <0>
+              mat_vertical_spacing <2>
+              mat_relative_tag <60>
+              mat_art_id <1-0-31462>
+              act_replace_select_action
+                  <
+                  uni_start_stream
+                    rich_text_color
+                  uni_end_stream
+                  >
+              man_end_object
+              man_start_object <trigger, "">
+                mat_bool_small_icon <yes>
+                mat_context_help <"Background Color">
+                mat_horizontal_spacing <2>
+                mat_relative_tag <61>
+                mat_art_id <1-0-31463>
+                act_replace_select_action
+                    <
+                    uni_start_stream
+                      rich_background_color
+                    uni_end_stream
+                    >
+                man_end_object
+              man_end_object
+              man_start_object <org_group, "">
+                mat_orientation <hft>
+                man_start_object <trigger, "">
+                  mat_bool_small_icon <yes>
+                  mat_context_help <"Reduce Font Size">
+                  mat_art_id <1-0-31459>
+                  mat_horizontal_spacing <0>
+                  mat_relative_tag <41>
+                  act_replace_select_action
+                      <
+                      uni_start_stream
+                        rich_font_size <1>
+                      uni_end_stream
+                      >
+                  man_end_object
+                  man_start_object <trigger, "">
+                    mat_bool_small_icon <yes>
+                    mat_context_help <"Reset Font Size">
+                    mat_relative_tag <64>
+                    mat_horizontal_spacing <0>
+                    mat_art_id <1-0-31460>
+                    act_replace_select_action
+                        <
+                        uni_start_stream
+                          rich_font_size <3>
+                        uni_end_stream
+                        >
+                    man_end_object
+                    man_start_object <trigger, "">
+                      mat_bool_small_icon <yes>
+                      mat_context_help <"Enlarge Font Size">
+                      mat_relative_tag <65>
+                      mat_horizontal_spacing <2>
+                      mat_art_id <1-0-31461>
+                      act_replace_select_action
+                          <
+                          uni_start_stream
+                            rich_font_size <7>
+                          uni_end_stream
+                          >
+                      man_end_object
+                    man_end_object
+                    man_start_object <org_group, "">
+                      mat_orientation <hfc>
+                      man_start_object <sms_list, "">
+                        mat_bool_list_icons <yes>
+                        man_start_object <trigger, "">
+                          mat_bool_small_icon <yes>
+                          mat_context_help <"Bold">
+                          mat_relative_tag <42>
+                          mat_horizontal_spacing <0>
+                          mat_trigger_style <group_state>
+                          mat_art_id <1-0-31464>
+                          act_replace_select_action
+                              <
+                              uni_start_stream
+                                rich_font_attribute <1>
+                              uni_end_stream
+                              >
+                            act_set_criterion <23>
+                            act_replace_action
+                                <
+                                uni_start_stream
+                                  rich_font_attribute <1>
+                                uni_end_stream
+                                >
+                            man_end_object
+                            man_start_object <trigger, "">
+                              mat_bool_small_icon <yes>
+                              mat_context_help <"Italics">
+                              mat_relative_tag <43>
+                              mat_horizontal_spacing <0>
+                              mat_trigger_style <group_state>
+                              mat_art_id <1-0-31465>
+                              act_replace_select_action
+                                  <
+                                  uni_start_stream
+                                    rich_font_attribute <2>
+                                  uni_end_stream
+                                  >
+                                act_set_criterion <23>
+                                act_replace_action
+                                    <
+                                    uni_start_stream
+                                      rich_font_attribute <2>
+                                    uni_end_stream
+                                    >
+                                man_end_object
+                                man_start_object <trigger, "">
+                                  mat_bool_small_icon <yes>
+                                  mat_context_help <"Underline">
+                                  mat_relative_tag <44>
+                                  mat_horizontal_spacing <2>
+                                  mat_trigger_style <group_state>
+                                  mat_art_id <1-0-31466>
+                                  act_replace_select_action
+                                      <
+                                      uni_start_stream
+                                        rich_font_attribute <4>
+                                      uni_end_stream
+                                      >
+                                    act_set_criterion <23>
+                                    act_replace_action
+                                        <
+                                        uni_start_stream
+                                          rich_font_attribute <4>
+                                        uni_end_stream
+                                        >
+                                    man_end_object
+                                  man_end_object
+                                man_end_object
+                                man_start_object <sss_list, "">
+                                  mat_relative_tag <50>
+                                  mat_bool_list_icons <yes>
+                                  mat_value <1>
+                                  man_start_object <trigger, "">
+                                    mat_bool_small_icon <yes>
+                                    mat_context_help <"Align Left">
+                                    mat_relative_tag <45>
+                                    mat_horizontal_spacing <0>
+                                    mat_trigger_style <group_state>
+                                    mat_art_id <1-0-31467>
+                                    act_replace_select_action
+                                        <
+                                        uni_start_stream
+                                          rich_font_justify <1>
+                                        uni_end_stream
+                                        >
+                                    man_end_object
+                                    man_start_object <trigger, "">
+                                      mat_bool_small_icon <yes>
+                                      mat_context_help <"Center">
+                                      mat_relative_tag <46>
+                                      mat_horizontal_spacing <0>
+                                      mat_trigger_style <group_state>
+                                      mat_art_id <1-0-31468>
+                                      act_replace_select_action
+                                          <
+                                          uni_start_stream
+                                            rich_font_justify <2>
+                                          uni_end_stream
+                                          >
+                                      man_end_object
+                                      man_start_object <trigger, "">
+                                        mat_bool_small_icon <yes>
+                                        mat_context_help <"Align Right">
+                                        mat_relative_tag <47>
+                                        mat_horizontal_spacing <0>
+                                        mat_trigger_style <group_state>
+                                        mat_art_id <1-0-31469>
+                                        act_replace_select_action
+                                            <
+                                            uni_start_stream
+                                              rich_font_justify <3>
+                                            uni_end_stream
+                                            >
+                                        man_end_object
+                                        man_start_object <trigger, "">
+                                          mat_bool_small_icon <yes>
+                                          mat_context_help <"Justify">
+                                          mat_relative_tag <48>
+                                          mat_horizontal_spacing <1>
+                                          mat_trigger_style <group_state>
+                                          mat_art_id <1-0-31471>
+                                          act_replace_select_action
+                                              <
+                                              uni_start_stream
+                                                rich_font_justify <4>
+                                              uni_end_stream
+                                              >
+                                          man_end_object
+                                        man_end_object
+                                      man_end_object
+                                      man_start_object <edit_view, "">
+                                        rich_manage
+                                        mat_size <57, 16, 32000>
+                                        mat_bool_writeable <yes>
+                                        mat_log_object <no_log>
+                                        mat_relative_tag <1>
+                                      man_end_object
+                                    man_end_object
+                                  man_update_end_object
+                                  man_end_context
+                                uni_end_stream

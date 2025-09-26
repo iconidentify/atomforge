@@ -1,0 +1,85 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Advanced WWW Preferences">
+    mat_orientation <vff>
+    mat_bool_modal <yes>
+    man_start_object <sms_list, "">
+      mat_orientation <vff>
+      man_start_object <trigger, "">
+        mat_title <"Cache web pages and graphics locally">
+        mat_relative_tag <1>
+        mat_bool_default <yes>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hcc>
+      man_start_object <ornament, "">
+        mat_font_sis <system, 9, normal>
+        mat_title <"Maximum disk space to use for cache:">
+        mat_vertical_spacing <5>
+      man_start_sibling <select_range, "">
+        mat_relative_tag <2>
+        mat_width <5>
+        mat_minimum <1>
+        mat_maximum <1000>
+        mat_increment <1>
+        mat_vertical_spacing <5>
+      man_start_sibling <ornament, " megabyte(s)">
+        mat_font_sis <system, 9, normal>
+        mat_vertical_spacing <5>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "OK">
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              de_start_extraction
+              man_set_context_relative <1>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-89>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_relative <2>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-90>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              xfer_refresh_prefs
+              man_close
+              man_update_display
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Purge Cache">
+          act_replace_select_action
+              <
+              uni_start_stream
+                async_alert <yes_no, "Are you sure you want to remove all items from your local cache?">
+                if_last_return_true_then <1>
+                www_purge_cache
+                uni_sync_skip <1>
+              uni_end_stream
+              >
+          man_start_sibling <trigger, "Cancel">
+            act_replace_select_action
+                <
+                uni_start_stream <00x>
+                  man_close_update
+                uni_end_stream
+                >
+            man_end_object
+            man_update_display
+            man_set_context_relative <1>
+            act_get_db_value <14x, 00x, 00x, 59x>
+            uni_use_last_atom_value <mat_value>
+            man_end_context
+            man_set_context_relative <2>
+            act_get_db_value <14x, 00x, 00x, 5ax>
+            uni_use_last_atom_value <mat_value>
+            man_end_context
+            man_update_display
+            uni_wait_off
+          uni_end_stream

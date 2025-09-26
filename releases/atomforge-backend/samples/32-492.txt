@@ -1,0 +1,231 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "">
+    mat_object_id <32-492>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    de_start_extraction <0>
+    man_set_context_globalid <32-240>
+    man_set_context_relative <1>
+    de_set_data_type <var>
+    de_set_variable_id <10>
+    de_get_data_pointer
+    var_string_set_from_atom <A>
+    man_end_context
+    man_end_context
+    fm_start
+    fm_set_relative_path <"MPM">
+    fm_item_type <filename>
+    var_string_get <A>
+    uni_use_last_atom_string <fm_item_set>
+    fm_item_get <filespec>
+    var_string_set_from_atom <A>
+    var_string_save <A, 10>
+    fm_end
+    buf_clear_buffer
+    man_set_context_globalid <32-240>
+    man_set_context_relative <1>
+    de_set_data_type <text>
+    de_get_data_pointer
+    var_string_set_from_atom <A>
+    man_end_context
+    man_end_context
+    var_string_get <A>
+    uni_use_last_atom_string <mat_title>
+    de_end_extraction
+    man_start_object <org_group, "">
+      mat_orientation <hee>
+      man_start_object <org_group, "">
+        mat_orientation <vff>
+        man_start_object <edit_view, "Dial Validation Characters:">
+          mat_title_width <30>
+          mat_size <20, 1, 80>
+          mat_relative_tag <1>
+          mat_title_pos <left | center>
+          mat_bool_writeable <yes>
+          fm_start
+          fm_item_type <ini_data_type>
+          fm_item_set <"\x00">
+          fm_item_type <ini_group>
+          fm_item_set <"LOADVALUES">
+          fm_item_type <ini_key>
+          fm_item_set <"DIALSTR">
+          fm_item_type <ini_file>
+          var_lookup_by_id <A, 50331658>
+          uni_use_last_atom_string <fm_item_set>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_end
+        man_start_sibling <edit_view, "Tone String:">
+          mat_title_width <30>
+          mat_size <10, 1, 20>
+          mat_relative_tag <8>
+          mat_title_pos <left | center>
+          fm_start
+          fm_item_type <ini_data_type>
+          fm_item_set <"\x00">
+          fm_item_type <ini_group>
+          fm_item_set <"LOADVALUES">
+          fm_item_type <ini_key>
+          fm_item_set <"TONESTR">
+          fm_item_type <ini_file>
+          var_lookup_by_id <A, 50331658>
+          uni_use_last_atom_string <fm_item_set>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_end
+        man_start_sibling <edit_view, "Pulse String:">
+          mat_title_width <30>
+          mat_size <10, 1, 20>
+          mat_relative_tag <9>
+          mat_title_pos <left | center>
+          fm_start
+          fm_item_type <ini_data_type>
+          fm_item_set <"\x00">
+          fm_item_type <ini_group>
+          fm_item_set <"LOADVALUES">
+          fm_item_type <ini_key>
+          fm_item_set <"PULSESTR">
+          fm_item_type <ini_file>
+          var_lookup_by_id <A, 50331658>
+          uni_use_last_atom_string <fm_item_set>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_end
+        man_start_sibling <edit_view, "Inter-Character Delay Value:">
+          mat_title_width <30>
+          mat_size <10, 1, 5>
+          mat_relative_tag <2>
+          mat_title_pos <left | center>
+          mat_bool_writeable <yes>
+          fm_start
+          fm_item_type <ini_data_type>
+          fm_item_set <"\x00">
+          fm_item_type <ini_group>
+          fm_item_set <"LOADVALUES">
+          fm_item_type <ini_key>
+          fm_item_set <"ICDELAY">
+          fm_item_type <ini_file>
+          var_lookup_by_id <A, 50331658>
+          uni_use_last_atom_string <fm_item_set>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_end
+        man_start_sibling <edit_view, "Wait Character Delay Value:">
+          mat_title_width <30>
+          mat_size <10, 1, 5>
+          mat_relative_tag <3>
+          mat_title_pos <left | center>
+          mat_bool_writeable <yes>
+          fm_start
+          fm_item_type <ini_data_type>
+          fm_item_set <"\x00">
+          fm_item_type <ini_group>
+          fm_item_set <"LOADVALUES">
+          fm_item_type <ini_key>
+          fm_item_set <"DELAYVALUE">
+          fm_item_type <ini_file>
+          var_lookup_by_id <A, 50331658>
+          uni_use_last_atom_string <fm_item_set>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_end
+        man_start_sibling <edit_view, "Host name:">
+          mat_title_width <30>
+          mat_size <20, 1, 80>
+          mat_relative_tag <7>
+          mat_title_pos <left | center>
+          mat_bool_vertical_scroll <no>
+          mat_bool_resize_vertical <no>
+          mat_bool_resize_horizontal <no>
+          mat_bool_exportable <no>
+          mat_bool_importable <no>
+          fm_start
+          fm_item_type <ini_data_type>
+          fm_item_set <"\x00">
+          fm_item_type <ini_group>
+          fm_item_set <"HOST">
+          fm_item_type <ini_key>
+          fm_item_set <"ADDRESS">
+          fm_item_type <ini_file>
+          var_lookup_by_id <A, 50331658>
+          uni_use_last_atom_string <fm_item_set>
+          fm_ini_read_data
+          var_string_set_from_atom <A>
+          uni_use_last_atom_string <man_replace_data>
+          if_stra_eq_null_then <1>
+          mat_bool_hidden <yes>
+          man_update_display
+          uni_sync_skip <1>
+          fm_end
+        man_end_object
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hee>
+      man_start_object <trigger, "OK">
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              fm_start
+              fm_item_type <ini_data_type>
+              fm_item_set <"\x00">
+              fm_item_type <ini_file>
+              var_lookup_by_id <A, 50331658>
+              uni_use_last_atom_string <fm_item_set>
+              de_start_extraction <0>
+              fm_item_type <ini_key>
+              fm_item_set <"ADDRESS">
+              fm_item_type <ini_group>
+              fm_item_set <"HOST">
+              man_set_context_relative <7>
+              de_get_data_pointer
+              uni_use_last_atom_string <fm_ini_write_data>
+              fm_item_type <ini_group>
+              fm_item_set <"LOADVALUES">
+              fm_item_type <ini_key>
+              fm_item_set <"DIALSTR">
+              man_change_context_relative <1>
+              de_get_data_pointer
+              uni_use_last_atom_string <fm_ini_write_data>
+              fm_item_set <"TONESTR">
+              man_change_context_relative <8>
+              de_get_data_pointer
+              uni_use_last_atom_string <fm_ini_write_data>
+              fm_item_set <"PULSESTR">
+              man_change_context_relative <9>
+              de_get_data_pointer
+              uni_use_last_atom_string <fm_ini_write_data>
+              fm_item_type <ini_data_type>
+              fm_item_set <01x>
+              fm_item_type <ini_key>
+              fm_item_set <"ICDELAY">
+              man_change_context_relative <2>
+              de_get_data_pointer
+              uni_convert_last_atom_string <00x>
+              uni_use_last_atom_value <fm_ini_write_data>
+              fm_item_set <"DELAYVALUE">
+              man_change_context_relative <3>
+              de_get_data_pointer
+              uni_convert_last_atom_string <00x>
+              uni_use_last_atom_value <fm_ini_write_data>
+              man_end_context
+              de_end_extraction
+              fm_end
+              man_close_update
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Cancel">
+          act_replace_select_action
+              <
+              uni_start_stream <00x>
+                man_close_update
+              uni_end_stream <00x>
+              >
+          man_start_sibling <trigger, "Help">
+            mat_bool_invisible <yes>
+          man_end_object
+        man_end_object
+        man_update_display
+        uni_wait_off
+      uni_end_stream <00x>

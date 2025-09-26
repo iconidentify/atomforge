@@ -1,0 +1,53 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "">
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_style_id <32-114>
+    man_start_object <view, "">
+      mat_size <63, 10>
+      mat_relative_tag <1>
+      mat_vertical_spacing <3>
+      mat_bool_writeable <yes>
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "Previous \r Message">
+        mat_relative_tag <3>
+        mat_art_id <1-0-1283>
+        mat_bool_disabled <yes>
+        mat_command_key <98x, 00x>
+      man_start_sibling <trigger, "Read 1st \r Response">
+        mat_relative_tag <11>
+        mat_art_id <1-0-1613>
+      man_start_sibling <trigger, "List \r Responses">
+        mat_relative_tag <14>
+        mat_art_id <1-0-1611>
+        mat_vertical_spacing <3>
+      man_start_sibling <trigger, "Add \r Message">
+        mat_relative_tag <16>
+        mat_art_id <1-0-1609>
+        mat_vertical_spacing <3>
+      man_start_sibling <trigger, "Post \r Response">
+        mat_relative_tag <13>
+        mat_art_id <1-0-1612>
+        mat_vertical_spacing <3>
+      man_start_sibling <trigger, "Next \r Message">
+        mat_relative_tag <4>
+        mat_art_id <1-0-1282>
+        mat_vertical_spacing <3>
+        mat_bool_disabled <yes>
+        mat_command_key <99x, 00x>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hcf>
+      man_start_object <trigger, "Release">
+        mat_relative_tag <8>
+        mat_bool_invisible <yes>
+      man_start_sibling <trigger, "Hide">
+        mat_relative_tag <9>
+        mat_bool_invisible <yes>
+      man_start_sibling <trigger, "Delete">
+        mat_relative_tag <10>
+        mat_bool_invisible <yes>
+      man_end_object
+    man_end_object
+  uni_end_stream <00x>

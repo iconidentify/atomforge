@@ -1,0 +1,134 @@
+uni_start_stream <00x>
+  man_use_default_title
+  man_start_object <ind_group, "">
+    mat_object_id <32-4599>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_precise <yes>
+    mat_precise_width <289>
+    mat_precise_height <47>
+    mat_bool_resize_vertical <no>
+    mat_managed_by <60>
+    mmi_atr_rid_play <1>
+    mmi_atr_rid_pause <2>
+    mmi_atr_rid_stop <3>
+    mmi_atr_rid_counter_digit <25>
+    mmi_atr_type <2>
+    man_set_context_globalid <1>
+    var_lookup_by_id <A, 255>
+    var_string_get <A>
+    uni_save_result
+    man_end_context
+    uni_get_result
+    uni_use_last_atom_string <mmi_open_file>
+    man_start_object <org_group, "">
+      mat_orientation <hff>
+      mat_precise_x <0>
+      mat_precise_y <0>
+      mat_precise_width <289>
+      mat_precise_height <47>
+      mat_bool_background_tile <yes>
+      mat_art_id <1-0-2383>
+      man_start_object <trigger, "">
+        mat_relative_tag <1>
+        mat_art_id <1-0-3938>
+        act_replace_select_action
+            <
+            uni_start_stream <00x>
+              mmi_play
+            uni_end_stream
+            >
+          mat_precise_x <128>
+          mat_precise_y <5>
+          mat_trigger_style <default>
+          mat_color_face <130, 160, 180>
+        man_start_sibling <trigger, "">
+          mat_relative_tag <2>
+          mat_art_id <1-0-3937>
+          act_replace_select_action
+              <
+              uni_start_stream <00x>
+                mmi_pause
+              uni_end_stream
+              >
+            mat_precise_x <184>
+            mat_precise_y <5>
+            mat_trigger_style <default>
+            mat_color_face <130, 160, 180>
+          man_start_sibling <trigger, "">
+            mat_relative_tag <3>
+            mat_art_id <1-0-3940>
+            act_replace_select_action
+                <
+                uni_start_stream <00x>
+                  mmi_stop
+                uni_end_stream
+                >
+              mat_precise_x <237>
+              mat_precise_y <5>
+              mat_trigger_style <default>
+              mat_color_face <130, 160, 180>
+            man_start_sibling <org_group, "">
+              mat_orientation <hff>
+              mat_bool_background_flood <yes>
+              mat_color_face <1, 1, 1>
+              mat_frame_style <single_line_pop_out>
+              mat_color_frame_hilight <180, 180, 180>
+              mat_precise_x <10>
+              mat_precise_y <11>
+              mat_precise_width <104>
+              mat_precise_height <24>
+              man_start_object <ornament, "">
+                mat_relative_tag <25>
+                mat_art_id <1-0-3956>
+                mat_bool_disabled <yes>
+                mat_precise_y <11>
+                mat_precise_x <10>
+              man_start_sibling <ornament, "">
+                mat_relative_tag <26>
+                mat_art_id <1-0-3956>
+                mat_bool_disabled <yes>
+                mat_precise_y <11>
+                mat_precise_x <23>
+              man_start_sibling <ornament, "">
+                mat_art_id <1-0-3956>
+                mat_bool_disabled <yes>
+                mat_precise_y <11>
+                mat_precise_x <36>
+                mat_art_frame <10>
+              man_start_sibling <ornament, "">
+                mat_relative_tag <27>
+                mat_art_id <1-0-3956>
+                mat_bool_disabled <yes>
+                mat_precise_y <11>
+                mat_precise_x <49>
+              man_start_sibling <ornament, "">
+                mat_relative_tag <28>
+                mat_art_id <1-0-3956>
+                mat_bool_disabled <yes>
+                mat_precise_y <11>
+                mat_precise_x <62>
+              man_start_sibling <ornament, "">
+                mat_art_id <1-0-3956>
+                mat_bool_disabled <yes>
+                mat_precise_y <11>
+                mat_precise_x <75>
+                mat_art_frame <10>
+              man_start_sibling <ornament, "">
+                mat_relative_tag <29>
+                mat_art_id <1-0-3956>
+                mat_bool_disabled <yes>
+                mat_precise_y <11>
+                mat_precise_x <88>
+              man_start_sibling <ornament, "">
+                mat_relative_tag <30>
+                mat_art_id <1-0-3956>
+                mat_bool_disabled <yes>
+                mat_precise_y <11>
+                mat_precise_x <101>
+              man_end_object
+            man_end_object
+          man_end_object
+          man_update_display
+          uni_wait_off
+        uni_end_stream <00x>

@@ -1,0 +1,287 @@
+uni_start_stream <00x>
+  man_set_response_id <2099658>
+  idb_set_context <20-0-16>
+  idb_atr_offset <1>
+  idb_get_string
+  var_string_set_from_atom <A>
+  var_string_set <B,"New User  ">
+  idb_end_context
+  if_stra_eq_strb_then <10, 99>
+  async_alert <info, "Please register an account to use this feature.">
+  uni_sync_skip <10>
+  man_start_object <ind_group, "FlashSessions">
+    mat_object_id <32-2506>
+    mat_orientation <hff>
+    mat_position <center_center>
+    act_set_criterion <131>
+    act_replace_action
+        <
+        uni_start_stream
+          man_set_context_relative <20>
+          idb_set_context <20-0-55>
+          idb_atr_offset <0>
+          idb_get_value <04x>
+          if_last_return_true_then <1, 2>
+          mat_title <"(Sessions are scheduled)">
+          uni_sync_skip <1>
+          mat_title <"(No sessions scheduled)">
+          uni_sync_skip <2>
+          idb_end_context
+          man_update_display
+          man_end_context
+        uni_end_stream
+        >
+      man_start_object <org_group, "">
+        mat_orientation <vft>
+        man_start_object <org_group, "">
+          mat_orientation <hff>
+          man_start_object <trigger, "Schedule\rFlashSession">
+            mat_title_width <8>
+            mat_art_id <1-0-1288>
+            mat_vertical_spacing <5>
+            act_replace_select_action
+                <
+                uni_start_stream <00x>
+                  man_preset_gid <32-2101>
+                  if_last_return_true_then <1, 2>
+                  man_make_focus
+                  man_update_display
+                  uni_sync_skip <1>
+                  uni_wait_on
+                  uni_invoke_no_context <32-2101>
+                  uni_sync_skip <2>
+                uni_end_stream <00x>
+                >
+            man_start_sibling <trigger, "Activate\rSession Now">
+              mat_title_width <8>
+              mat_art_id <1-0-1314>
+              mat_vertical_spacing <5>
+              act_replace_select_action
+                  <
+                  uni_start_stream
+                    man_close_update
+                    sm_enter_paid
+                    uni_invoke_no_context <32-2522>
+                  uni_end_stream
+                  >
+              man_end_object
+            man_start_sibling <org_group, "">
+              mat_orientation <hff>
+              man_start_object <trigger, "Select\rNames">
+                mat_title_width <8>
+                mat_art_id <1-0-1493>
+                act_replace_select_action
+                    <
+                    uni_start_stream <00x>
+                      man_preset_gid <32-2164>
+                      if_last_return_true_then <1, 2>
+                      man_make_focus
+                      man_update_display
+                      uni_sync_skip <1>
+                      uni_wait_on
+                      uni_invoke_no_context <32-2164>
+                      uni_sync_skip <2>
+                    uni_end_stream <00x>
+                    >
+                man_start_sibling <trigger, "Walk Me\rThrough">
+                  mat_title_width <8>
+                  mat_art_id <1-0-1325>
+                  act_replace_select_action
+                      <
+                      uni_start_stream
+                        man_close_update
+                        uni_invoke_no_context <32-2507>
+                      uni_end_stream
+                      >
+                  man_end_object
+                man_end_object
+              man_start_sibling <org_group, "">
+                mat_orientation <hff>
+                mat_bool_precise <yes>
+                mat_precise_width <2>
+                mat_precise_height <230>
+                mat_bool_background_flood <yes>
+                mat_color_face <1>
+              man_start_sibling <ornament, "">
+                mat_size <1, 1>
+              man_start_sibling <org_group, "">
+                mat_orientation <vft>
+                man_start_object <sms_list, "">
+                  mat_orientation <hff>
+                  man_start_object <trigger, "Retrieve unread mail">
+                    mat_relative_tag <1>
+                    act_replace_select_action
+                        <
+                        uni_start_stream
+                          man_set_context_relative <1>
+                          de_start_extraction
+                          de_get_data_value
+                          uni_save_result
+                          man_change_context_relative <2>
+                          uni_get_result
+                          if_last_return_true_then <1, 2>
+                          mat_bool_disabled <no>
+                          uni_sync_skip <1>
+                          mat_bool_disabled <yes>
+                          mat_value <0>
+                          idb_start_obj <"b">
+                          idb_atr_globalid <20-0-58>
+                          idb_append_data <00x, 00x, 00x, 00x>
+                          idb_end_obj
+                          uni_sync_skip <2>
+                          man_end_context
+                          man_update_display
+                          idb_start_obj <"b">
+                          idb_atr_globalid <20-0-57>
+                          uni_get_result
+                          uni_use_last_atom_value <idb_append_data>
+                          idb_end_obj
+                          de_end_extraction
+                        uni_end_stream
+                        >
+                    man_end_object
+                  man_start_sibling <sms_list, "">
+                    mat_orientation <hcf>
+                    man_start_object <trigger, "...and attached files">
+                      mat_relative_tag <2>
+                      act_replace_select_action
+                          <
+                          uni_start_stream
+                            de_start_extraction
+                            man_set_context_relative <2>
+                            idb_start_obj <"b">
+                            idb_atr_globalid <20-0-58>
+                            de_get_data_value
+                            uni_use_last_atom_value <idb_append_data>
+                            idb_end_obj
+                            man_end_context
+                            de_end_extraction
+                          uni_end_stream
+                          >
+                      man_end_object
+                    man_start_sibling <sms_list, "">
+                      mat_orientation <hff>
+                      man_start_object <trigger, "Send outgoing mail">
+                        mat_relative_tag <3>
+                        act_replace_select_action
+                            <
+                            uni_start_stream
+                              de_start_extraction
+                              man_set_context_relative <3>
+                              idb_start_obj <"b">
+                              idb_atr_globalid <20-0-59>
+                              de_get_data_value
+                              uni_use_last_atom_value <idb_append_data>
+                              idb_end_obj
+                              man_end_context
+                              de_end_extraction
+                            uni_end_stream
+                            >
+                        man_end_object
+                      man_start_sibling <sms_list, "">
+                        mat_orientation <hff>
+                        man_start_object <trigger, "Download selected files">
+                          mat_relative_tag <4>
+                          act_replace_select_action
+                              <
+                              uni_start_stream
+                                de_start_extraction
+                                man_set_context_relative <4>
+                                idb_start_obj <"b">
+                                idb_atr_globalid <20-0-60>
+                                de_get_data_value
+                                uni_use_last_atom_value <idb_append_data>
+                                idb_end_obj
+                                man_end_context
+                                de_end_extraction
+                              uni_end_stream
+                              >
+                          man_end_object
+                        man_start_sibling <sms_list, "">
+                          mat_orientation <hff>
+                          man_start_object <trigger, "Retrieve unread newsgroup messages">
+                            mat_relative_tag <5>
+                            act_replace_select_action
+                                <
+                                uni_start_stream
+                                  de_start_extraction
+                                  man_set_context_relative <5>
+                                  idb_start_obj <"b">
+                                  idb_atr_globalid <20-0-84>
+                                  de_get_data_value
+                                  uni_use_last_atom_value <idb_append_data>
+                                  idb_end_obj
+                                  man_end_context
+                                  de_end_extraction
+                                uni_end_stream
+                                >
+                            man_end_object
+                          man_start_sibling <sms_list, "">
+                            mat_orientation <hff>
+                            man_start_object <trigger, "Send outgoing newsgroup messages">
+                              mat_relative_tag <6>
+                              mat_vertical_spacing <6>
+                              act_replace_select_action
+                                  <
+                                  uni_start_stream
+                                    de_start_extraction
+                                    man_set_context_relative <6>
+                                    idb_start_obj <"b">
+                                    idb_atr_globalid <20-0-85>
+                                    de_get_data_value
+                                    uni_use_last_atom_value <idb_append_data>
+                                    idb_end_obj
+                                    man_end_context
+                                    de_end_extraction
+                                  uni_end_stream
+                                  >
+                              man_end_object
+                            man_start_sibling <org_group, "">
+                              mat_orientation <hcf>
+                              man_start_object <ornament, "">
+                                mat_title_width <16>
+                                mat_relative_tag <20>
+                                mat_font_id <arial>
+                                mat_font_size <9>
+                                mat_font_style <italic>
+                                idb_set_context <20-0-55>
+                                idb_atr_offset <0>
+                                idb_get_value <04x>
+                                if_last_return_true_then <1, 2>
+                                mat_title <"(Sessions are scheduled)">
+                                uni_sync_skip <1>
+                                mat_title <"(No sessions scheduled)">
+                                uni_sync_skip <2>
+                                idb_end_context
+                              man_end_object
+                            man_end_object
+                          man_end_object
+                          uni_wait_off
+                          man_update_display
+                          man_set_context_relative <1>
+                          act_get_db_value <14x, 00x, 00x, 39x>
+                          uni_save_result
+                          uni_use_last_atom_value <mat_value>
+                          man_change_context_relative <2>
+                          act_get_db_value <14x, 00x, 00x, 3ax>
+                          uni_use_last_atom_value <mat_value>
+                          uni_get_result
+                          if_last_return_false_then <1>
+                          mat_bool_disabled <yes>
+                          uni_sync_skip <1>
+                          man_change_context_relative <3>
+                          act_get_db_value <14x, 00x, 00x, 3bx>
+                          uni_use_last_atom_value <mat_value>
+                          man_change_context_relative <4>
+                          act_get_db_value <14x, 00x, 00x, 3cx>
+                          uni_use_last_atom_value <mat_value>
+                          man_change_context_relative <5>
+                          act_get_db_value <14x, 00x, 00x, 54x>
+                          uni_use_last_atom_value <mat_value>
+                          man_change_context_relative <6>
+                          act_get_db_value <14x, 00x, 00x, 55x>
+                          uni_use_last_atom_value <mat_value>
+                          man_end_context
+                          man_update_display
+                          uni_sync_skip <99>
+                        uni_end_stream <00x>

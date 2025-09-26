@@ -1,0 +1,21 @@
+uni_start_stream <00x>
+  man_use_default_title
+  man_start_object <ind_group, "">
+    mat_object_id <32-4589>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_style_id <32-4589>
+    mat_dirty_query <yes>
+    man_start_object <edit_view, "">
+      mat_size <60, 14>
+      mat_relative_tag <1>
+      mat_bool_vertical_scroll <no>
+      mat_bool_writeable <yes>
+      mat_managed_by <63>
+      chart_bool_show_tools <yes>
+      mat_width <570>
+      mat_height <350>
+    man_end_object
+    man_update_display
+    uni_wait_off
+  uni_end_stream <00x>

@@ -1,0 +1,216 @@
+uni_start_stream <00x>
+  man_use_default_title
+  man_start_object <ind_group, "">
+    mat_orientation <vff>
+    mat_bool_background_tile <yes>
+    mat_art_id <1-0-3390>
+    mat_style_id <32-4633>
+    act_set_criterion <200>
+    act_replace_action
+        <
+        uni_start_stream
+          man_set_context_relative <1>
+          morg_obj_count_children
+          if_last_return_false_then <10, 20>
+          man_set_context_relative <10>
+          mat_bool_disabled <yes>
+          man_change_context_relative <11>
+          mat_bool_disabled <yes>
+          man_change_context_relative <12>
+          mat_bool_disabled <yes>
+          man_change_context_relative <13>
+          mat_bool_disabled <no>
+          man_change_context_relative <14>
+          mat_bool_disabled <yes>
+          man_end_context
+          uni_sync_skip <10>
+          man_set_context_relative <14>
+          mat_bool_disabled <no>
+          man_end_context
+          morg_view_has_mult_selections
+          if_last_return_true_then <1, 2>
+          man_set_context_relative <10>
+          mat_bool_disabled <yes>
+          man_change_context_relative <11>
+          mat_bool_disabled <no>
+          man_change_context_relative <12>
+          mat_bool_disabled <yes>
+          man_change_context_relative <13>
+          mat_bool_disabled <yes>
+          man_end_context
+          uni_sync_skip <1>
+          morg_obj_set_context_selection
+          man_set_context_relative <10>
+          mat_bool_disabled <no>
+          man_change_context_relative <13>
+          mat_bool_disabled <no>
+          man_end_context
+          morg_obj_can_delete
+          uni_save_result
+          man_set_context_relative <11>
+          uni_get_result
+          if_last_return_true_then <3, 4>
+          mat_bool_disabled <no>
+          uni_sync_skip <3>
+          mat_bool_disabled <yes>
+          uni_sync_skip <4>
+          man_end_context
+          morg_obj_can_rename
+          uni_save_result
+          man_set_context_relative <12>
+          uni_get_result
+          if_last_return_true_then <3, 4>
+          mat_bool_disabled <no>
+          uni_sync_skip <3>
+          mat_bool_disabled <yes>
+          uni_sync_skip <4>
+          man_end_context
+          morg_obj_can_create
+          uni_save_result
+          man_set_context_relative <13>
+          uni_get_result
+          if_last_return_true_then <3, 4>
+          mat_bool_disabled <no>
+          uni_sync_skip <3>
+          mat_bool_disabled <yes>
+          uni_sync_skip <4>
+          man_end_context
+          uni_sync_skip <2>
+          uni_sync_skip <20>
+          man_end_context
+          man_update_display
+        uni_end_stream
+        >
+      mat_position <center_center>
+      man_start_object <view, "">
+        mat_size <70, 16>
+        mat_relative_tag <1>
+        morg_manage
+        mat_font_sis <arial, 9, normal>
+        morg_view_set_to_spawn_path
+        act_set_criterion <128>
+        act_replace_action
+            <
+            uni_start_stream
+              act_do_action <200>
+            uni_end_stream
+            >
+          act_set_criterion <129>
+          act_replace_action
+              <
+              uni_start_stream
+                man_close_update
+              uni_end_stream
+              >
+            act_set_criterion <130>
+            act_replace_action
+                <
+                uni_start_stream
+                  act_do_action <200>
+                uni_end_stream
+                >
+              mat_bool_writeable <yes>
+            man_start_sibling <org_group, "">
+              mat_orientation <hff>
+              man_start_object <org_group, "">
+                mat_orientation <hef>
+                man_start_object <trigger, "Open">
+                  mat_relative_tag <10>
+                  mat_trigger_style <rectangle>
+                  mat_font_sis <arial, 10, bold>
+                  mat_bool_default <yes>
+                  act_replace_select_action
+                      <
+                      uni_start_stream
+                        man_set_context_relative <1>
+                        morg_view_select_object
+                        man_end_context
+                      uni_end_stream
+                      >
+                  man_start_sibling <trigger, "Delete">
+                    mat_relative_tag <11>
+                    mat_trigger_style <rectangle>
+                    mat_font_sis <arial, 10, bold>
+                    act_replace_select_action
+                        <
+                        uni_start_stream
+                          man_set_context_relative <1>
+                          morg_delete_current_object
+                          man_end_context
+                        uni_end_stream
+                        >
+                    man_start_sibling <trigger, "Rename">
+                      mat_relative_tag <12>
+                      mat_trigger_style <rectangle>
+                      mat_font_sis <arial, 10, bold>
+                      mat_horizontal_spacing <10>
+                      act_replace_select_action
+                          <
+                          uni_start_stream
+                            man_set_context_relative <1>
+                            morg_prompt_rename_object
+                            man_end_context
+                          uni_end_stream
+                          >
+                      man_start_sibling <trigger, "Add Folder">
+                        mat_relative_tag <13>
+                        mat_trigger_style <rectangle>
+                        mat_font_sis <arial, 10, bold>
+                        mat_horizontal_spacing <10>
+                        act_replace_select_action
+                            <
+                            uni_start_stream
+                              man_set_context_relative <1>
+                              morg_prompt_create_folder
+                              man_end_context
+                            uni_end_stream
+                            >
+                        man_start_sibling <trigger, "Search">
+                          mat_relative_tag <14>
+                          mat_trigger_style <rectangle>
+                          mat_font_sis <arial, 10, bold>
+                          act_replace_select_action
+                              <
+                              uni_start_stream
+                                man_set_context_relative <1>
+                                morg_view_search
+                                man_end_context
+                              uni_end_stream
+                              >
+                          man_end_object
+                        man_start_sibling <org_group, "">
+                          mat_orientation <hff>
+                          man_start_object <trigger, "FlashSessions">
+                            mat_trigger_style <rectangle>
+                            mat_font_sis <arial, 10, bold>
+                            act_replace_select_action
+                                <
+                                uni_start_stream
+                                  idb_exists <20-0-62>
+                                  if_last_return_true_then <1, 2>
+                                  man_do_magic_response_id <2099658>
+                                  uni_invoke_no_context <32-2506>
+                                  uni_sync_skip <1>
+                                  uni_invoke_no_context <32-2507>
+                                  uni_sync_skip <2>
+                                uni_end_stream
+                                >
+                            man_end_object
+                          man_start_sibling <org_group, "">
+                            mat_orientation <hef>
+                            man_start_object <trigger, "Help">
+                              mat_trigger_style <rectangle>
+                              mat_font_sis <arial, 10, bold>
+                              act_replace_select_action
+                                  <
+                                  uni_start_stream
+                                    async_exec_context_help <50x, 65x, 72x, 73x, 6fx, 6ex, 61x, 6cx, 20x, 46x, 69x, 6cx, 69x, 6ex, 67x, 20x, 43x, 61x, 62x, 69x, 6ex, 65x, 74x>
+                                  uni_end_stream
+                                  >
+                              man_end_object
+                            man_end_object
+                          man_end_object
+                          man_update_display
+                          act_do_action <200>
+                          uni_wait_off
+                        uni_end_stream <00x>

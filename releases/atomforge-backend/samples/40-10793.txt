@@ -1,0 +1,310 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "">
+    mat_object_id <40-10793>
+    mat_style_id <40-10793>
+    mat_orientation <vff>
+    de_start_extraction <0>
+    man_set_context_globalid <40-10737>
+    man_set_context_relative <1>
+    de_set_data_type <var>
+    de_set_variable_id <10>
+    de_get_data_pointer
+    var_string_set_from_atom <A>
+    man_end_context
+    man_end_context
+    var_string_set <B,"USER.MDM">
+    if_stra_eq_strb_then <10, 30>
+    fm_start
+    fm_set_relative_path <"MPM">
+    fm_item_type <filename>
+    var_string_get <B>
+    uni_use_last_atom_string <fm_item_set>
+    fm_item_get <filespec>
+    var_string_set_from_atom <A>
+    var_string_save <A, 10>
+    fm_end
+    man_set_context_globalid <40-10737>
+    man_set_context_relative <1>
+    de_set_data_type <text>
+    de_get_data_pointer
+    var_string_set_from_atom <E>
+    man_end_context
+    man_end_context
+    var_string_get <E>
+    uni_use_last_atom_string <mat_title>
+    de_end_extraction
+    uni_sync_skip <10>
+    fm_start
+    fm_item_type <ini_data_type>
+    fm_item_set <01x>
+    fm_item_type <ini_group>
+    fm_item_set <"CUSTOM">
+    fm_item_type <ini_key>
+    fm_item_set <"ISCUSTOM">
+    fm_set_relative_path <"MPM">
+    fm_item_type <filename>
+    fm_item_set <"MODEM.INI">
+    fm_item_get <filespec>
+    fm_item_type <ini_file>
+    uni_use_last_atom_string <fm_item_set>
+    var_string_set_from_atom <D>
+    fm_ini_read_data
+    uni_save_result
+    fm_end
+    uni_get_result
+    if_last_return_true_then <11>
+    async_alert <yes_no, "You already have a Custom Modem Profile.\x7fDo you wish to delete it and copy the current\x7fProfile to the Custom Profile area?">
+    if_last_return_false_then <11>
+    man_close_update
+    man_end_context
+  uni_abort_stream
+  uni_sync_skip <11>
+  fm_start
+  fm_set_relative_path <"MPM">
+  fm_item_type <ini_file>
+  fm_item_set <"USER.MDM">
+  fm_ini_delete_file
+  fm_item_type <filename>
+  var_string_get <A>
+  uni_use_last_atom_string <fm_item_set>
+  fm_item_get <filespec>
+  fm_copy_file <"USER.MDM">
+  fm_item_type <filename>
+  var_string_get <B>
+  uni_use_last_atom_string <fm_item_set>
+  fm_item_get <filespec>
+  var_string_set_from_atom <A>
+  var_string_save <A, 10>
+  fm_item_type <ini_data_type>
+  fm_item_set <01x>
+  fm_item_type <ini_group>
+  fm_item_set <"CUSTOM">
+  fm_item_type <ini_key>
+  fm_item_set <"ISCUSTOM">
+  fm_set_relative_path <"MPM">
+  fm_item_type <filename>
+  fm_item_set <"MODEM.INI">
+  fm_item_get <filespec>
+  fm_item_type <ini_file>
+  uni_use_last_atom_string <fm_item_set>
+  fm_ini_write_data <01x>
+  fm_end
+  mat_title <"Custom Modem Profile">
+  var_string_set_from_atom <E>
+  var_string_save <E, 11>
+  async_alert <info, "The currently selected profile has been copied to the\x7fCustom Modem Profile for future editing.">
+  uni_sync_skip <30>
+  mat_position <center_center>
+  mat_bool_modal <yes>
+  man_start_object <edit_view, "Setup Modem String:">
+    mat_title_width <20>
+    mat_size <40, 1, 80>
+    mat_relative_tag <1>
+    fm_start
+    fm_item_type <ini_data_type>
+    fm_item_set <"\x00">
+    fm_item_type <ini_group>
+    fm_item_set <"COMMANDS">
+    fm_item_type <ini_key>
+    fm_item_set <"SETUP">
+    fm_item_type <ini_file>
+    var_lookup_by_id <A, 50331658>
+    uni_use_last_atom_string <fm_item_set>
+    fm_ini_read_data
+    uni_use_last_atom_string <man_replace_data>
+    fm_end
+    mat_title_pos <left | center>
+    mat_bool_writeable <yes>
+  man_start_sibling <edit_view, "Restore Modem String:">
+    mat_title_width <20>
+    mat_size <40, 1, 80>
+    mat_relative_tag <2>
+    fm_start
+    fm_item_type <ini_data_type>
+    fm_item_set <"\x00">
+    fm_item_type <ini_group>
+    fm_item_set <"COMMANDS">
+    fm_item_type <ini_key>
+    fm_item_set <"RESTORE">
+    fm_item_type <ini_file>
+    var_lookup_by_id <A, 50331658>
+    uni_use_last_atom_string <fm_item_set>
+    fm_ini_read_data
+    uni_use_last_atom_string <man_replace_data>
+    fm_end
+    mat_title_pos <left | center>
+    mat_bool_writeable <yes>
+  man_start_sibling <edit_view, "Dial Prefix:">
+    mat_title_width <20>
+    mat_size <40, 1, 80>
+    mat_relative_tag <3>
+    fm_start
+    fm_item_type <ini_data_type>
+    fm_item_set <"\x00">
+    fm_item_type <ini_group>
+    fm_item_set <"COMMANDS">
+    fm_item_type <ini_key>
+    fm_item_set <"DIALPRFX">
+    fm_item_type <ini_file>
+    var_lookup_by_id <A, 50331658>
+    uni_use_last_atom_string <fm_item_set>
+    fm_ini_read_data
+    uni_use_last_atom_string <man_replace_data>
+    fm_end
+    mat_title_pos <left | center>
+    mat_bool_writeable <yes>
+  man_start_sibling <edit_view, "Dial Suffix:">
+    mat_title_width <20>
+    mat_size <40, 1, 80>
+    mat_relative_tag <4>
+    fm_start
+    fm_item_type <ini_data_type>
+    fm_item_set <"\x00">
+    fm_item_type <ini_group>
+    fm_item_set <"COMMANDS">
+    fm_item_type <ini_key>
+    fm_item_set <"DIALSUFX">
+    fm_item_type <ini_file>
+    var_lookup_by_id <A, 50331658>
+    uni_use_last_atom_string <fm_item_set>
+    fm_ini_read_data
+    uni_use_last_atom_string <man_replace_data>
+    fm_end
+    mat_title_pos <left | center>
+    mat_bool_writeable <yes>
+  man_start_sibling <edit_view, "Disconnect String:">
+    mat_title_width <20>
+    mat_size <40, 1, 80>
+    mat_relative_tag <5>
+    fm_start
+    fm_item_type <ini_data_type>
+    fm_item_set <"\x00">
+    fm_item_type <ini_group>
+    fm_item_set <"COMMANDS">
+    fm_item_type <ini_key>
+    fm_item_set <"DISC">
+    fm_item_type <ini_file>
+    var_lookup_by_id <A, 50331658>
+    uni_use_last_atom_string <fm_item_set>
+    fm_ini_read_data
+    uni_use_last_atom_string <man_replace_data>
+    fm_end
+    mat_title_pos <left | center>
+    mat_bool_writeable <yes>
+  man_start_sibling <edit_view, "Escape String:">
+    mat_title_width <20>
+    mat_size <40, 1, 80>
+    mat_relative_tag <6>
+    fm_start
+    fm_item_type <ini_data_type>
+    fm_item_set <"\x00">
+    fm_item_type <ini_group>
+    fm_item_set <"COMMANDS">
+    fm_item_type <ini_key>
+    fm_item_set <"ESC">
+    fm_item_type <ini_file>
+    var_lookup_by_id <A, 50331658>
+    uni_use_last_atom_string <fm_item_set>
+    fm_ini_read_data
+    uni_use_last_atom_string <man_replace_data>
+    fm_end
+    mat_title_pos <left | center>
+    mat_bool_writeable <yes>
+  man_start_sibling <edit_view, "Reset String:">
+    mat_title_width <20>
+    mat_size <40, 1, 80>
+    mat_relative_tag <7>
+    fm_start
+    fm_item_type <ini_data_type>
+    fm_item_set <"\x00">
+    fm_item_type <ini_group>
+    fm_item_set <"COMMANDS">
+    fm_item_type <ini_key>
+    fm_item_set <"RESET">
+    fm_item_type <ini_file>
+    var_lookup_by_id <A, 50331658>
+    uni_use_last_atom_string <fm_item_set>
+    fm_ini_read_data
+    uni_use_last_atom_string <man_replace_data>
+    fm_end
+    mat_title_pos <left | center>
+    mat_bool_writeable <yes>
+  man_start_sibling <org_group, "">
+    mat_orientation <hef>
+    man_start_object <trigger, "OK">
+      mat_bool_default <yes>
+      act_replace_select_action
+          <
+          uni_start_stream
+            fm_start
+            fm_item_type <ini_data_type>
+            fm_item_set <"\x00">
+            fm_item_type <ini_group>
+            fm_item_set <"COMMANDS">
+            fm_item_type <ini_file>
+            var_lookup_by_id <A, 50331658>
+            uni_use_last_atom_string <fm_item_set>
+            de_start_extraction <0>
+            fm_item_type <ini_key>
+            fm_item_set <"SETUP">
+            man_set_context_relative <1>
+            de_get_data_pointer
+            uni_use_last_atom_string <fm_ini_write_data>
+            fm_item_set <"RESTORE">
+            man_change_context_relative <2>
+            buf_clear_buffer
+            de_get_data_pointer
+            uni_use_last_atom_string <fm_ini_write_data>
+            fm_item_set <"DIALPRFX">
+            man_change_context_relative <3>
+            buf_clear_buffer
+            de_get_data_pointer
+            uni_use_last_atom_string <fm_ini_write_data>
+            fm_item_set <"DIALSUFX">
+            man_change_context_relative <4>
+            buf_clear_buffer
+            de_get_data_pointer
+            uni_use_last_atom_string <fm_ini_write_data>
+            fm_item_set <"DISC">
+            man_change_context_relative <5>
+            buf_clear_buffer
+            de_get_data_pointer
+            uni_use_last_atom_string <fm_ini_write_data>
+            fm_item_set <"ESC">
+            man_change_context_relative <6>
+            buf_clear_buffer
+            de_get_data_pointer
+            uni_use_last_atom_string <fm_ini_write_data>
+            fm_item_set <"RESET">
+            man_change_context_relative <7>
+            buf_clear_buffer
+            de_get_data_pointer
+            uni_use_last_atom_string <fm_ini_write_data>
+            man_end_context
+            de_end_extraction
+            fm_end
+            man_end_context
+            man_set_context_globalid <40-10737>
+            man_set_context_relative <1>
+            man_get_index_by_title <"Custom Modem Profile">
+            uni_use_last_atom_value <mat_value>
+            man_update_display
+            man_end_context
+            man_set_context_globalid <40-10793>
+            man_close_update
+          uni_end_stream
+          >
+      man_start_sibling <trigger, "Cancel">
+        act_replace_select_action
+            <
+            uni_start_stream <00x>
+              man_close_update
+            uni_end_stream <00x>
+            >
+        man_start_sibling <trigger, "Help">
+          mat_bool_invisible <yes>
+        man_end_object
+      man_end_object
+      man_update_display
+      uni_wait_off
+    uni_end_stream <00x>

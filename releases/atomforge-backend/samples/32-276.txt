@@ -1,0 +1,164 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Set up America Online">
+    mat_object_id <32-276>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <ornament, "">
+      mat_size <44, 6>
+      man_append_data <"If you're trying to call America Online through a switchboard or\x7fyou need to dial \"9\" or another prefix to access an outside line,\x7fenter that prefix in the box below.  Please note that most phone\x7fsystems require a brief pause after the prefix.  To indicate a\x7fpause, enter a comma after the prefix you've entered in the box.\x7f\x7f">
+    man_start_sibling <org_group, "">
+      mat_orientation <hee>
+      man_start_object <edit_view, "1-800-xxx-yyyy">
+        mat_title_width <13>
+        mat_size <10, 1, 10>
+        mat_relative_tag <1>
+        mat_title_pos <right | center>
+        mat_bool_vertical_scroll <no>
+        mat_bool_resize_vertical <no>
+        mat_bool_resize_horizontal <no>
+        mat_bool_exportable <no>
+        mat_bool_importable <no>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <vee>
+      man_start_object <ornament, "">
+        mat_size <20, 2>
+        man_append_data <"\x7fSelect the type of phone line you have:\x7f">
+      man_start_sibling <sss_list, "">
+        mat_orientation <hce>
+        mat_relative_tag <2>
+        man_start_object <trigger, "Tone">
+          mat_value <1>
+        man_start_sibling <trigger, "Pulse">
+        man_end_object
+      man_end_object
+    man_start_sibling <sms_list, "">
+      mat_orientation <hee>
+      man_start_object <trigger, "Require a \"1\" before \"800\"">
+        mat_relative_tag <3>
+        mat_vertical_spacing <2>
+        act_replace_select_action
+            <
+            uni_start_stream
+              man_set_context_relative <3>
+              de_start_extraction
+              de_get_data_value
+              uni_save_result
+              man_change_context_relative <1>
+              uni_get_result
+              if_last_return_true_then <1, 2>
+              mat_title <"1-800-xxx-yyyy">
+              uni_sync_skip <1>
+              mat_title <"800-xxx-yyyy">
+              uni_sync_skip <2>
+              man_end_context
+              man_update_display
+            uni_end_stream
+            >
+          mat_value <1>
+        man_end_object
+      man_start_sibling <org_group, "">
+        mat_orientation <hcf>
+        man_start_object <ornament, "">
+          mat_size <24, 1>
+          man_append_data <"Click on the \"OK\" button to continue.">
+        man_end_object
+      man_start_sibling <org_group, "">
+        mat_orientation <hee>
+        man_start_object <trigger, "OK">
+          mat_title_width <6>
+          mat_bool_default <yes>
+          act_replace_select_action
+              <
+              uni_start_stream
+                de_start_extraction <0>
+                man_set_context_relative <1>
+                de_get_data_pointer
+                var_string_set_from_atom <A, A, B>
+                idb_start_obj <"t">
+                idb_atr_globalid <20-2-0>
+                uni_use_last_atom_string <idb_append_data>
+                idb_end_obj
+                uni_sync_skip <1>
+                buf_clear_buffer
+                idb_start_obj <"b">
+                idb_atr_globalid <20-0-23>
+                if_stra_eq_null_then <1, 2>
+                idb_append_data <00x>
+                uni_sync_skip <1>
+                idb_append_data <01x>
+                uni_sync_skip <2>
+                idb_end_obj
+                man_change_context_relative <2>
+                idb_start_obj <"b">
+                idb_atr_globalid <20-0-22>
+                de_get_data_value
+                var_number_set_from_atom <A>
+                if_numa_eq_one_then <1, 2>
+                idb_append_data <01x>
+                uni_sync_skip <1>
+                idb_append_data <00x>
+                uni_sync_skip <2>
+                idb_end_obj
+                buf_clear_buffer
+                man_change_context_relative <3>
+                idb_start_obj <"t">
+                idb_atr_globalid <20-3-16>
+                de_get_data_value
+                var_number_set_from_atom <A>
+                if_numa_eq_one_then <1, 2>
+                idb_append_data <31x, 2dx>
+                uni_sync_skip <1>
+                idb_append_data <00x>
+                uni_sync_skip <2>
+                idb_end_obj
+                de_end_extraction
+                buf_close_buffer
+                man_end_context
+                uni_invoke_no_context <32-277>
+                man_close_update <32-276>
+              uni_end_stream
+              >
+          man_start_sibling <trigger, "Cancel">
+            mat_title_width <6>
+            act_replace_select_action
+                <
+                uni_start_stream <00x>
+                  man_close_update
+                uni_end_stream <00x>
+                >
+            man_end_object
+          man_end_object
+          man_update_display
+          man_set_context_globalid <32-276>
+          man_update_display
+          man_set_context_relative <1>
+          act_get_db_value <14x, 00x, 00x, 17x>
+          if_last_return_true_then <1>
+          act_get_db_record <20-2-0>
+          uni_use_last_atom_string <man_replace_data>
+          uni_sync_skip <1>
+          man_change_context_relative <2>
+          act_get_db_value <14x, 00x, 00x, 16x>
+          var_number_set_from_atom <A>
+          if_numa_true_then <0, 2>
+          mat_value <1>
+          uni_sync_skip <1>
+          mat_value <2>
+          uni_sync_skip <2>
+          man_change_context_relative <3>
+          act_get_db_record <20-3-16>
+          var_string_set_from_atom <A>
+          if_stra_neq_null_then <1, 2>
+          mat_value <1>
+          uni_sync_skip <1>
+          mat_value <0>
+          man_change_context_relative <1>
+          mat_title <"800-xxx-yyyy">
+          uni_sync_skip <2>
+          man_end_context
+          man_update_display
+          man_end_context
+          uni_wait_off
+        uni_end_stream <00x>

@@ -1,0 +1,237 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "">
+    mat_object_id <32-476>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    de_start_extraction <0>
+    man_set_context_globalid <32-240>
+    man_set_context_relative <1>
+    de_set_data_type <var>
+    de_set_variable_id <10>
+    de_get_data_pointer
+    var_string_set_from_atom <A>
+    man_end_context
+    man_end_context
+    fm_start
+    fm_set_relative_path <"MPM">
+    fm_item_type <filename>
+    var_string_get <A>
+    uni_use_last_atom_string <fm_item_set>
+    fm_item_get <filespec>
+    var_string_set_from_atom <A>
+    var_string_save <A, 10>
+    fm_end
+    man_set_context_globalid <32-240>
+    man_set_context_relative <1>
+    de_set_data_type <text>
+    de_get_data_pointer
+    var_string_set_from_atom <A>
+    man_end_context
+    man_end_context
+    var_string_get <A>
+    uni_use_last_atom_string <mat_title>
+    de_end_extraction
+    man_start_object <edit_view, "Setup Modem String:">
+      mat_title_width <20>
+      mat_size <40, 1, 80>
+      mat_relative_tag <1>
+      mat_title_pos <left | center>
+      mat_bool_writeable <yes>
+      fm_start
+      fm_item_type <ini_data_type>
+      fm_item_set <"\x00">
+      fm_item_type <ini_group>
+      fm_item_set <"COMMANDS">
+      fm_item_type <ini_key>
+      fm_item_set <"SETUP">
+      fm_item_type <ini_file>
+      var_lookup_by_id <A, 50331658>
+      uni_use_last_atom_string <fm_item_set>
+      fm_ini_read_data
+      uni_use_last_atom_string <man_replace_data>
+      fm_end
+    man_start_sibling <edit_view, "Restore Modem String:">
+      mat_title_width <20>
+      mat_size <40, 1, 80>
+      mat_relative_tag <2>
+      mat_title_pos <left | center>
+      mat_bool_writeable <yes>
+      fm_start
+      fm_item_type <ini_data_type>
+      fm_item_set <"\x00">
+      fm_item_type <ini_group>
+      fm_item_set <"COMMANDS">
+      fm_item_type <ini_key>
+      fm_item_set <"RESTORE">
+      fm_item_type <ini_file>
+      var_lookup_by_id <A, 50331658>
+      uni_use_last_atom_string <fm_item_set>
+      fm_ini_read_data
+      uni_use_last_atom_string <man_replace_data>
+      fm_end
+    man_start_sibling <edit_view, "Dial Prefix:">
+      mat_title_width <20>
+      mat_size <40, 1, 80>
+      mat_relative_tag <3>
+      mat_title_pos <left | center>
+      mat_bool_writeable <yes>
+      fm_start
+      fm_item_type <ini_data_type>
+      fm_item_set <"\x00">
+      fm_item_type <ini_group>
+      fm_item_set <"COMMANDS">
+      fm_item_type <ini_key>
+      fm_item_set <"DIALPRFX">
+      fm_item_type <ini_file>
+      var_lookup_by_id <A, 50331658>
+      uni_use_last_atom_string <fm_item_set>
+      fm_ini_read_data
+      uni_use_last_atom_string <man_replace_data>
+      fm_end
+    man_start_sibling <edit_view, "Dial Suffix:">
+      mat_title_width <20>
+      mat_size <40, 1, 80>
+      mat_relative_tag <4>
+      mat_title_pos <left | center>
+      mat_bool_writeable <yes>
+      fm_start
+      fm_item_type <ini_data_type>
+      fm_item_set <"\x00">
+      fm_item_type <ini_group>
+      fm_item_set <"COMMANDS">
+      fm_item_type <ini_key>
+      fm_item_set <"DIALSUFX">
+      fm_item_type <ini_file>
+      var_lookup_by_id <A, 50331658>
+      uni_use_last_atom_string <fm_item_set>
+      fm_ini_read_data
+      uni_use_last_atom_string <man_replace_data>
+      fm_end
+    man_start_sibling <edit_view, "Disconnect String:">
+      mat_title_width <20>
+      mat_size <40, 1, 80>
+      mat_relative_tag <5>
+      mat_title_pos <left | center>
+      mat_bool_writeable <yes>
+      fm_start
+      fm_item_type <ini_data_type>
+      fm_item_set <"\x00">
+      fm_item_type <ini_group>
+      fm_item_set <"COMMANDS">
+      fm_item_type <ini_key>
+      fm_item_set <"DISC">
+      fm_item_type <ini_file>
+      var_lookup_by_id <A, 50331658>
+      uni_use_last_atom_string <fm_item_set>
+      fm_ini_read_data
+      uni_use_last_atom_string <man_replace_data>
+      fm_end
+    man_start_sibling <edit_view, "Escape String:">
+      mat_title_width <20>
+      mat_size <40, 1, 80>
+      mat_relative_tag <6>
+      mat_title_pos <left | center>
+      mat_bool_writeable <yes>
+      fm_start
+      fm_item_type <ini_data_type>
+      fm_item_set <"\x00">
+      fm_item_type <ini_group>
+      fm_item_set <"COMMANDS">
+      fm_item_type <ini_key>
+      fm_item_set <"ESC">
+      fm_item_type <ini_file>
+      var_lookup_by_id <A, 50331658>
+      uni_use_last_atom_string <fm_item_set>
+      fm_ini_read_data
+      uni_use_last_atom_string <man_replace_data>
+      fm_end
+    man_start_sibling <edit_view, "Reset String:">
+      mat_title_width <20>
+      mat_size <40, 1, 80>
+      mat_relative_tag <7>
+      mat_title_pos <left | center>
+      mat_bool_writeable <yes>
+      fm_start
+      fm_item_type <ini_data_type>
+      fm_item_set <"\x00">
+      fm_item_type <ini_group>
+      fm_item_set <"COMMANDS">
+      fm_item_type <ini_key>
+      fm_item_set <"RESET">
+      fm_item_type <ini_file>
+      var_lookup_by_id <A, 50331658>
+      uni_use_last_atom_string <fm_item_set>
+      fm_ini_read_data
+      uni_use_last_atom_string <man_replace_data>
+      fm_end
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "OK">
+        act_replace_select_action
+            <
+            uni_start_stream
+              fm_start
+              fm_item_type <ini_data_type>
+              fm_item_set <"\x00">
+              fm_item_type <ini_group>
+              fm_item_set <"COMMANDS">
+              fm_item_type <ini_file>
+              var_lookup_by_id <A, 50331658>
+              uni_use_last_atom_string <fm_item_set>
+              de_start_extraction <0>
+              fm_item_type <ini_key>
+              fm_item_set <"SETUP">
+              man_set_context_relative <1>
+              de_get_data_pointer
+              uni_use_last_atom_string <fm_ini_write_data>
+              fm_item_set <"RESTORE">
+              man_change_context_relative <2>
+              buf_clear_buffer
+              de_get_data_pointer
+              uni_use_last_atom_string <fm_ini_write_data>
+              fm_item_set <"DIALPRFX">
+              man_change_context_relative <3>
+              buf_clear_buffer
+              de_get_data_pointer
+              uni_use_last_atom_string <fm_ini_write_data>
+              fm_item_set <"DIALSUFX">
+              man_change_context_relative <4>
+              buf_clear_buffer
+              de_get_data_pointer
+              uni_use_last_atom_string <fm_ini_write_data>
+              fm_item_set <"DISC">
+              man_change_context_relative <5>
+              buf_clear_buffer
+              de_get_data_pointer
+              uni_use_last_atom_string <fm_ini_write_data>
+              fm_item_set <"ESC">
+              man_change_context_relative <6>
+              buf_clear_buffer
+              de_get_data_pointer
+              uni_use_last_atom_string <fm_ini_write_data>
+              fm_item_set <"RESET">
+              man_change_context_relative <7>
+              buf_clear_buffer
+              de_get_data_pointer
+              uni_use_last_atom_string <fm_ini_write_data>
+              man_end_context
+              de_end_extraction
+              fm_end
+              man_close_update
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Cancel">
+          act_replace_select_action
+              <
+              uni_start_stream <00x>
+                man_close_update
+              uni_end_stream <00x>
+              >
+          man_start_sibling <trigger, "Help">
+            mat_bool_invisible <yes>
+          man_end_object
+        man_end_object
+        man_update_display
+        uni_wait_off
+      uni_end_stream <00x>

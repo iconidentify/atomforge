@@ -1,0 +1,44 @@
+uni_start_stream
+  man_get_top_window
+  uni_use_last_atom_value <man_set_context_globalid>
+  man_get_attribute <mat_title>
+  var_string_set_from_atom <A>
+  man_end_context
+  man_start_object <ind_group, "">
+    mat_bool_modal <yes>
+    mat_position <center_center>
+    mat_object_id <32-232>
+    mat_title <"Printing">
+    mat_orientation <vcf>
+    man_start_object <org_group, "">
+      mat_orientation <hce>
+      man_start_object <ornament, "">
+        mat_art_id <1-0-1408>
+      man_end_object
+      man_start_object <ornament, "">
+        mat_title <"   Now Printing: ">
+      man_end_object
+      man_start_object <ornament, "">
+        mat_relative_tag <1>
+        mat_height <1>
+        var_string_get <A>
+        uni_use_last_atom_string <mat_title>
+      man_end_object
+    man_end_object
+    man_start_object <trigger, "">
+      mat_title <"Cancel">
+      act_set_criterion <select>
+      act_append_action
+        <
+        uni_start_stream
+          fm_start
+          fm_broadcast <0ax>
+          fm_end
+          man_close
+          man_update_display
+        uni_end_stream
+        >
+    man_end_object
+    man_update_display
+  man_end_object
+uni_end_stream

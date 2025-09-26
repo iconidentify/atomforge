@@ -1,0 +1,34 @@
+uni_start_stream
+  man_set_response_id <8436>
+  man_start_object <ind_group, "">
+    mat_position <top_right>
+    mat_object_id <32-244>
+    mat_title <"Preferences">
+    mat_orientation <vff>
+    man_start_object <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "">
+        mat_art_id <1-0-1331>
+        mat_title <"Chat">
+        mat_command_key <43x, 00x>
+        act_set_criterion <select>
+        act_append_action
+          <
+          uni_start_stream
+            uni_invoke_no_context <32-245>
+          uni_end_stream
+          >
+      man_end_object
+      man_start_object <trigger, "">
+        mat_art_id <1-0-1292>
+        mat_command_key <46x, 00x>
+        mat_title <"File\rTransfer">
+      man_end_object
+      man_start_object <trigger, "">
+        mat_art_id <1-0-1305>
+        mat_command_key <4cx, 00x>
+        mat_title <"Look &\rFeel">
+      man_end_object
+    man_end_object
+  man_update_end_object
+uni_end_stream

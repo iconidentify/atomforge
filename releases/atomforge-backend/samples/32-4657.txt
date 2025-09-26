@@ -1,0 +1,42 @@
+uni_start_stream <00x>
+  man_use_default_title
+  man_start_object <ind_group, "">
+    mat_object_id <32-4657>
+    mat_orientation <vcf>
+    mat_position <center_center>
+    man_start_object <edit_view, "Enter the Place's Description:">
+      mat_size <40, 1, 72>
+      mat_relative_tag <1>
+      mat_bool_writeable <yes>
+      mat_validation <128>
+    man_start_sibling <edit_view, "Enter the Internet Address:">
+      mat_size <40, 1>
+      mat_relative_tag <2>
+      mat_vertical_spacing <5>
+      mat_bool_writeable <yes>
+      mat_validation <128>
+    man_start_sibling <trigger, "OK">
+      mat_title_width <7>
+      mat_bool_default <yes>
+      act_replace_select_action
+          <
+          uni_start_stream
+            de_validate <display_msg | terminate>
+            morg_set_bookmark_close_form
+            de_start_extraction <0>
+            man_set_context_relative <2>
+            de_get_data_pointer
+            uni_use_last_atom_string <morg_set_bookmark_url>
+            man_change_context_relative <1>
+            de_get_data_pointer
+            uni_save_result
+            man_end_context
+            de_end_extraction
+            uni_get_result
+            uni_use_last_atom_string <morg_modify_bookmark>
+          uni_end_stream
+          >
+      man_end_object
+      man_update_display
+      uni_wait_off
+    uni_end_stream <00x>

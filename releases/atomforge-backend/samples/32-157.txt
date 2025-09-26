@@ -1,0 +1,93 @@
+uni_start_stream <00x>
+  man_set_context_globalid <18-0-0>
+  man_start_object <ind_group, "Interact with Host">
+    mat_orientation <vff>
+    mat_position <center_center>
+    man_start_object <edit_view, "Question or comment:">
+      mat_size <40, 4, 256>
+      mat_relative_tag <1>
+      mat_bool_writeable <yes>
+      mat_validation <128>
+    man_start_sibling <org_group, "">
+      mat_orientation <hce>
+      man_start_object <trigger, "Ask a Question">
+        act_set_criterion <select>
+        act_append_action
+          <
+          uni_start_stream
+            uni_wait_on
+            de_validate <display_msg | terminate>
+            de_start_extraction
+            buf_set_token <"qc">
+            de_get_data
+            de_end_extraction
+            buf_close_buffer
+            man_set_context_globalid <18-0-0>
+            man_update_display
+          uni_end_stream
+          >
+      man_start_sibling <trigger, "Send a Comment">
+        act_set_criterion <select>
+        act_append_action
+          <
+          uni_start_stream
+            uni_wait_on
+            de_validate <display_msg | terminate>
+            de_start_extraction
+            buf_set_token <"qd">
+            de_get_data
+            de_end_extraction
+            buf_close_buffer
+            man_set_context_globalid <18-0-0>
+            man_update_display
+          uni_end_stream
+          >
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hce>
+      man_start_object <trigger, "Vote">
+        mat_title_width <7>
+        act_set_criterion <select>
+        act_append_action
+          <
+          uni_start_stream
+            uni_wait_on
+            de_validate <display_msg | terminate>
+            de_start_extraction
+            buf_set_token <"qF">
+            de_get_data
+            de_end_extraction
+            buf_close_buffer
+            man_set_context_globalid <18-0-0>
+            man_update_display
+          uni_end_stream
+          >
+      man_start_sibling <trigger, "Bid">
+        mat_title_width <7>
+        act_set_criterion <select>
+        act_append_action
+          <
+          uni_start_stream
+            uni_wait_on
+            de_validate <display_msg | terminate>
+            de_start_extraction
+            buf_set_token <"qG">
+            de_get_data
+            de_end_extraction
+            buf_close_buffer
+            man_set_context_globalid <18-0-0>
+            man_update_display
+          uni_end_stream
+          >
+      man_start_sibling <trigger, "Help">
+        mat_title_width <7>
+        act_replace_select_action
+            <
+            uni_start_stream <00x>
+            sm_send_k1 <8-50600>
+            >
+        man_end_object
+      man_end_object
+      man_update_display
+      uni_wait_off
+    uni_end_stream <00x>

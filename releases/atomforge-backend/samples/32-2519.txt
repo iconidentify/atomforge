@@ -1,0 +1,116 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "FlashSessions Walk-Through">
+    mat_object_id <32-2519>
+    mat_orientation <vft>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <org_group, "">
+      mat_orientation <hff>
+      man_start_object <ornament, "">
+        mat_art_id <1-0-1288>
+        mat_bool_disabled <yes>
+      man_start_sibling <ornament, "Starting Time">
+        mat_size <18, 1>
+        mat_font_id <times_roman>
+        mat_font_size <14>
+      man_end_object
+    man_start_sibling <ornament, "">
+      mat_art_id <1-0-1369>
+      mat_bool_disabled <yes>
+    man_start_sibling <ornament, "">
+      man_append_data <"Please enter the time of day when your first FlashSession should occur.  The format used is 24-hour time (midnight is hour zero, noon is hour 12, 11 pm is hour 23, etc.)">
+      mat_precise_width <400>
+      mat_precise_height <70>
+    man_start_sibling <org_group, "">
+      mat_orientation <hcf>
+      man_start_object <select_range, "">
+        mat_relative_tag <8>
+        mat_title <"Starting time:">
+        mat_title_pos <left | center | 4>
+        mat_width <3>
+        mat_increment <1>
+        mat_minimum <0>
+        mat_maximum <23>
+        mat_vertical_spacing <5>
+      man_end_object
+      man_start_object <dss_list, "">
+        mat_relative_tag <9>
+        mat_orientation <vff>
+        mat_title <" :">
+        mat_title_pos <left | center | 4>
+        mat_size <3, 1>
+        idb_set_context <20-0-61>
+        idb_atr_offset <0>
+        idb_get_value <04x>
+        mip_flip_it
+        var_number_set_from_atom <A>
+        man_start_object <trigger, "">
+          var_number_get <A>
+          uni_convert_last_atom_data
+          uni_use_last_atom_string <mat_title>
+        man_end_object
+        man_start_object <trigger, "">
+          var_number_add <30>
+          var_number_get <A>
+          uni_convert_last_atom_data
+          uni_use_last_atom_string <mat_title>
+        man_end_object
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "Continue">
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              de_start_extraction <0>
+              idb_set_context <20-0-54>
+              idb_atr_offset <28>
+              man_set_context_relative <8>
+              de_get_data_value
+              mip_flip_it
+              uni_use_last_atom_value <idb_append_data>
+              man_change_context_relative <9>
+              de_get_data_pointer
+              uni_convert_last_atom_string
+              mip_flip_it
+              uni_use_last_atom_value <idb_append_data>
+              man_end_context
+              idb_end_context
+              de_end_extraction
+              man_close_update
+              mip_action_command <07x>
+              uni_invoke_no_context <32-2520>
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Cancel">
+          act_replace_select_action
+              <
+              uni_start_stream <00x>
+                man_close_update
+              uni_end_stream <00x>
+              >
+          man_end_object
+        man_end_object
+        man_update_display
+        idb_set_context <20-0-54>
+        man_set_context_relative <8>
+        idb_atr_offset <28>
+        idb_get_value
+        uni_use_last_atom_value <mat_value>
+        man_change_context_relative <9>
+        idb_atr_offset <32>
+        idb_get_value
+        var_number_set_from_atom <A>
+        var_number_set <B, 30>
+        if_numa_lt_numb_then <10, 20>
+        mat_value <1>
+        uni_sync_skip <10>
+        mat_value <2>
+        uni_sync_skip <20>
+        man_end_context
+        idb_end_context
+        man_update_display
+        man_end_context
+        uni_wait_off
+      uni_end_stream <00x>

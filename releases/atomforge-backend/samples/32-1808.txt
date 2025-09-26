@@ -1,0 +1,47 @@
+uni_start_stream <00x>
+  man_preset_gid <59>
+  if_last_return_false_then <1>
+  man_set_context_globalid <1>
+  man_start_object <org_group, "">
+    uni_sync_skip <1>
+    man_start_object <ind_group, "Incoming FlashMail">
+      mat_object_id <32-1808>
+      mat_orientation <vff>
+      mat_position <center_center>
+      man_start_object <dss_list, "">
+        mat_orientation <vff>
+        mat_size <62, 10>
+        mat_relative_tag <16>
+        mat_ruler <8, 24>
+        mat_bool_list_icons <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              mip_action_command <14x>
+            uni_end_stream
+            >
+        man_start_sibling <org_group, "">
+          mat_orientation <hef>
+          man_start_object <trigger, "Open">
+            mat_relative_tag <1>
+            mat_bool_default <yes>
+            act_replace_select_action
+                <
+                uni_start_stream
+                  mip_action_command <14x>
+                uni_end_stream
+                >
+            man_start_sibling <trigger, "Delete">
+              mat_relative_tag <2>
+              act_replace_select_action
+                  <
+                  uni_start_stream
+                    lm_user_delete_item <2098960>
+                  uni_end_stream
+                  >
+              man_end_object
+            man_end_object
+            man_update_display
+          man_end_object
+          uni_wait_off
+        uni_end_stream <00x>

@@ -1,0 +1,79 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "FlashSessions Walk-Through">
+    mat_object_id <32-2518>
+    mat_orientation <vft>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <org_group, "">
+      mat_orientation <hff>
+      man_start_object <ornament, "">
+        mat_art_id <1-0-1288>
+        mat_bool_disabled <yes>
+      man_start_sibling <ornament, "FlashSession Frequency">
+        mat_size <21, 1>
+        mat_font_id <times_roman>
+        mat_font_size <14>
+      man_end_object
+    man_start_sibling <ornament, "">
+      mat_art_id <1-0-1369>
+      mat_bool_disabled <yes>
+    man_start_sibling <ornament, "">
+      man_append_data <"Please specify how often you would like FlashSessions to occur on the days that you selected:">
+      mat_precise_width <400>
+      mat_precise_height <40>
+    man_start_sibling <org_group, "">
+      mat_orientation <hcf>
+      man_start_object <sss_list, "">
+        mat_orientation <vlf>
+        mat_relative_tag <10>
+        man_start_object <trigger, "Every half hour">
+        man_start_sibling <trigger, "Every hour">
+        man_start_sibling <trigger, "Every 2 hours">
+        man_start_sibling <trigger, "Every 4 hours">
+        man_start_sibling <trigger, "Every 8 hours">
+        man_start_sibling <trigger, "Once each day">
+          mat_vertical_spacing <5>
+        man_end_object
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "Continue">
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              de_start_extraction <0>
+              idb_set_context <20-0-54>
+              idb_atr_offset <36>
+              man_set_context_relative <10>
+              de_get_data_value
+              mip_flip_it
+              uni_use_last_atom_value <idb_append_data>
+              man_end_context
+              idb_end_context
+              de_end_extraction
+              man_close_update
+              uni_invoke_no_context <32-2519>
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Cancel">
+          act_replace_select_action
+              <
+              uni_start_stream <00x>
+                man_close_update
+              uni_end_stream <00x>
+              >
+          man_end_object
+        man_end_object
+        man_update_display
+        idb_set_context <20-0-54>
+        man_set_context_relative <10>
+        idb_atr_offset <36>
+        idb_get_value
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        idb_end_context
+        man_update_display
+        man_end_context
+        uni_wait_off
+      uni_end_stream <00x>

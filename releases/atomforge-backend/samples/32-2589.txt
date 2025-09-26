@@ -1,0 +1,103 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Color Preference">
+    mat_object_id <32-2589>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <ornament, "">
+      mat_size <50, 6>
+      man_append_data <"When you start America Online, the application automatically tries to determine the number of colors available on your display.  Some video drivers do not properly report this information.  If you notice problems displaying graphics, try choosing the correct number of colors below instead of using the detection feature of AOL.">
+    man_start_sibling <org_group, "">
+      mat_orientation <hcf>
+      man_start_object <sss_list, "">
+        mat_orientation <vff>
+        mat_relative_tag <1>
+        man_start_object <trigger, "Detect Automatically">
+        man_start_sibling <trigger, "16 colors (Standard VGA)">
+        man_start_sibling <trigger, "256 colors">
+        man_start_sibling <trigger, "More than 256 colors">
+          mat_vertical_spacing <5>
+        man_end_object
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "OK">
+        man_make_focus
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              man_set_context_relative <1>
+              fm_start
+              de_start_extraction <0>
+              fm_item_type <ini_data_type>
+              fm_item_set <01x>
+              fm_item_type <ini_file>
+              fm_item_set <"AOL.INI">
+              fm_item_type <ini_group>
+              fm_item_set <"WAOL">
+              fm_item_type <ini_key>
+              fm_item_set <"COLORMODE">
+              de_get_data_value
+              var_number_set_from_atom <A>
+              var_number_decrement <A>
+              var_number_get <A>
+              uni_use_last_atom_value <fm_ini_write_data>
+              fm_end
+              de_end_extraction
+              man_end_context
+              man_close_update
+              man_set_context_globalid <1>
+              man_start_object <ind_group, "Restart AOL">
+                mat_bool_modal <yes>
+                mat_orientation <vff>
+                man_start_object <ornament, "">
+                  mat_size <40, 6>
+                  mat_title <"America Online must be restarted in order for this change to take effect.  After selecting 'OK' below to close this window, close all Preference windows and then close AOL (select 'Exit' from the File menu).  You can then restart AOL normally.">
+                man_end_object
+                man_start_object <org_group, "">
+                  mat_orientation <hee>
+                  man_start_object <trigger, "OK">
+                    act_replace_select_action
+                        <
+                        uni_start_stream
+                          man_close_update
+                        uni_end_stream
+                        >
+                    man_end_object
+                  man_end_object
+                  man_update_display
+                man_end_object
+                man_end_context
+              uni_end_stream
+              >
+          man_start_sibling <trigger, "Cancel">
+            act_replace_select_action
+                <
+                uni_start_stream
+                  man_close_update
+                uni_end_stream
+                >
+            man_end_object
+          man_end_object
+          man_update_display
+          man_set_context_relative <1>
+          fm_start
+          fm_item_type <ini_file>
+          fm_item_set <"AOL.INI">
+          fm_item_type <ini_data_type>
+          fm_item_set <01x>
+          fm_item_type <ini_group>
+          fm_item_set <"WAOL">
+          fm_item_type <ini_key>
+          fm_item_set <"COLORMODE">
+          fm_ini_read_data
+          var_number_set_from_atom <A>
+          var_number_increment <A>
+          var_number_get <A>
+          uni_use_last_atom_value <mat_value>
+          fm_end
+          man_end_context
+          man_update_display
+          uni_wait_off
+        uni_end_stream <00x>

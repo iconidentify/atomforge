@@ -1,0 +1,41 @@
+uni_start_stream <00x>
+  man_use_default_title
+  man_set_context_globalid <1>
+  man_start_object <ind_group, "">
+    mat_object_id <40-2517>
+    mat_orientation <vcc>
+    mat_position <center_center>
+    mat_bool_invisible <yes>
+    var_number_set <A, 1>
+    var_number_save <A, 101>
+    act_set_criterion <gain_focus>
+    act_replace_action
+        <
+        uni_start_stream
+          man_set_context_globalid <57>
+          man_set_context_relative <11>
+          mat_bool_disabled <yes>
+          man_change_context_relative <12>
+          mat_bool_disabled <yes>
+          man_end_context
+          man_update_display
+          man_end_context
+          man_set_context_globalid <40-1159>
+          mat_bool_invisible <yes>
+          man_update_display
+          man_end_context
+        uni_end_stream
+        >
+      man_start_object <edit_view, "">
+        mat_relative_tag <1>
+        mat_bool_horizontal_scroll <yes>
+        mat_bool_importable <no>
+        mat_bool_writeable <yes>
+        mat_bool_exportable <yes>
+        image_attr_image_cropable <01x>
+        mat_size <0, 0>
+        mat_bool_graphic_view <yes>
+        image_attr_dynamic_display <01x>
+      man_end_object
+    man_end_object
+  uni_end_stream <00x>

@@ -1,0 +1,20 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Online Gaming Forums Mailing List">
+    mat_object_id <32-729>
+    mat_orientation <vff>
+    man_start_object <view, "">
+      mat_height <11>
+      mat_horizontal_spacing <0>
+      mat_vertical_spacing <0>
+      mat_bool_writeable <yes>
+      man_append_data <"     The coordinators of the Online Gaming Forums will occasionally send mail to all interested patrons, informing them of upcoming events and activities.\x7f     Additionally, mailing lists of consenting members are made available to the gaming companies which ask for them.\x7f     If you would like to be placed on the Online Gaming Forms mailing list, select the \"OGF List Only\" option below.  If you would like to be on the OGF's mailing list AND you would like gaming companies to put you on their own mailing lists, select \"All Mailing Lists\" below.  You will need to supply your real name and address for the \"All Mailing Lists\" option.\x7f     At any time, you can request that your name to be removed from either sets of mailing lists by selecting \"Remove from Mailing Lists\" and entering your screen name.">
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "OGF List Only">
+      man_start_sibling <trigger, "All Mailing Lists">
+      man_start_sibling <trigger, "Remove from Mailing Lists">
+      man_end_object
+    man_end_object
+    man_update_display
+    uni_wait_off
+  uni_end_stream <00x>

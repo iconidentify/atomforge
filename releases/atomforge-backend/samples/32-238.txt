@@ -1,0 +1,337 @@
+uni_start_stream
+  man_set_response_id <8430>
+  man_start_object <ind_group, "">
+    mat_orientation <vcf>
+    mat_object_id <32-238>
+    mat_title <"Logging">
+    man_start_object <org_group, "">
+      mat_orientation <vcf>
+      man_start_object <ornament, "">
+        mat_size <6, 1>
+        mat_font_id <arial>
+        mat_font_size <12>
+        mat_font_style <bold>
+        man_append_data <"Chat Log">
+      man_end_object
+      man_start_object <org_group, "">
+        mat_orientation <hlf>
+        man_start_object <ornament, "">
+          mat_title <"Log file name:">
+        man_end_object
+        man_start_object <ornament, "">
+          mat_height <1>
+          mat_width <15>
+          mat_relative_tag <1>
+        man_end_object
+      man_end_object
+      man_start_object <org_group, "">
+        mat_orientation <hef>
+        man_start_object <trigger, "">
+          mat_title <"Open Log">
+          mat_relative_tag <2>
+          act_set_criterion <select>
+          act_append_action
+            <
+            uni_start_stream
+              fm_start
+              fm_item_type <persistent_path>
+              fm_item_set <14x, 00x, 01x, 1bx>
+              fm_item_type <filename>
+              fm_item_set <"chat.log">
+              fm_dialog_put_file <"Open Log">
+              fm_handle_error <display_msg | terminate>
+              fm_create_file
+              man_logging_command <4>
+              man_logging_command <0>
+              man_set_context_relative <1>
+              fm_item_get <filename>
+              uni_use_last_atom_string <mat_title>
+              man_end_context
+              man_set_context_relative <4>
+              mat_bool_disabled <no>
+              man_end_context
+              man_set_context_relative <2>
+              mat_bool_disabled <yes>
+              man_end_context
+              man_set_context_relative <3>
+              mat_bool_disabled <yes>
+              man_end_context
+              man_update_display
+              fm_end
+            uni_end_stream
+            >
+        man_end_object
+        man_start_object <trigger, "">
+          mat_title <"Append Log">
+          mat_relative_tag <3>
+          act_set_criterion <select>
+          act_append_action
+            <
+            uni_start_stream
+              fm_start
+              fm_item_type <persistent_path>
+              fm_item_set <14x, 00x, 01x, 1bx>
+              fm_dialog_get_file <"Append Log">
+              fm_handle_error <display_msg | terminate>
+              man_logging_command <4>
+              man_logging_command <1>
+              man_set_context_relative <1>
+              fm_item_get <filename>
+              uni_use_last_atom_string <mat_title>
+              man_set_context_relative <4>
+              mat_bool_disabled <no>
+              man_end_context
+              man_set_context_relative <2>
+              mat_bool_disabled <yes>
+              man_end_context
+              man_set_context_relative <3>
+              mat_bool_disabled <yes>
+              man_end_context
+              man_update_display
+              fm_end
+            uni_end_stream
+            >
+        man_end_object
+        man_start_object <trigger, "">
+          mat_title <"Close Log">
+          mat_relative_tag <4>
+          mat_bool_disabled <yes>
+          act_set_criterion <select>
+          act_append_action
+            <
+            uni_start_stream
+              fm_start
+              man_logging_command <4>
+              man_logging_command <2>
+              man_set_context_relative <1>
+              man_clear_object
+              man_end_context
+              man_set_context_relative <4>
+              mat_bool_disabled <yes>
+              man_end_context
+              man_set_context_relative <2>
+              mat_bool_disabled <no>
+              man_end_context
+              man_set_context_relative <3>
+              mat_bool_disabled <no>
+              man_end_context
+              man_update_display
+              fm_end
+            uni_end_stream
+            >
+        man_end_object
+      man_end_object
+      man_start_object <ornament, "">
+        mat_art_id <1-0-1363>
+      man_end_object
+    man_end_object
+    man_start_object <org_group, "">
+      mat_orientation <vcf>
+      man_start_object <ornament, "">
+        mat_size <8, 1>
+        mat_font_id <arial>
+        mat_font_size <12>
+        mat_font_style <bold>
+        mat_title <"Session Log">
+      man_end_object
+      man_start_object <org_group, "">
+        mat_orientation <hlf>
+        man_start_object <ornament, "">
+          mat_title <"Log file name:">
+        man_end_object
+        man_start_object <ornament, "">
+          mat_height <1>
+          mat_width <15>
+          mat_relative_tag <5>
+        man_end_object
+      man_end_object
+      man_start_object <org_group, "">
+        mat_orientation <hef>
+        man_start_object <trigger, "">
+          mat_title <"Open Log">
+          mat_relative_tag <6>
+          act_set_criterion <select>
+          act_append_action
+            <
+            uni_start_stream
+              fm_start
+              fm_item_type <persistent_path>
+              fm_item_set <14x, 00x, 01x, 1bx>
+              fm_item_type <filename>
+              fm_item_set <"session.log">
+              fm_dialog_put_file <"Open Log">
+              fm_handle_error <display_msg | terminate>
+              fm_create_file
+              man_logging_command <3>
+              man_logging_command <0>
+              man_set_context_relative <5>
+              fm_item_get <filename>
+              uni_use_last_atom_string <mat_title>
+              man_end_context
+              man_set_context_relative <8>
+              mat_bool_disabled <no>
+              man_end_context
+              man_set_context_relative <9>
+              mat_bool_disabled <no>
+              man_end_context
+              man_set_context_relative <6>
+              mat_bool_disabled <yes>
+              man_end_context
+              man_set_context_relative <7>
+              mat_bool_disabled <yes>
+              man_end_context
+              man_update_display
+              fm_end
+            uni_end_stream
+            >
+        man_end_object
+        man_start_object <trigger, "">
+          mat_title <"Append Log">
+          mat_relative_tag <7>
+          act_set_criterion <select>
+          act_append_action
+            <
+            uni_start_stream
+              fm_start
+              fm_item_type <persistent_path>
+              fm_item_set <14x, 00x, 01x, 1bx>
+              fm_dialog_get_file <"Append Log">
+              fm_handle_error <display_msg | terminate>
+              man_logging_command <3>
+              man_logging_command <1>
+              man_set_context_relative <5>
+              fm_item_get <filename>
+              uni_use_last_atom_string <mat_title>
+              man_end_context
+              man_set_context_relative <9>
+              mat_bool_disabled <no>
+              man_end_context
+              man_set_context_relative <8>
+              mat_bool_disabled <no>
+              man_end_context
+              man_set_context_relative <6>
+              mat_bool_disabled <yes>
+              man_end_context
+              man_set_context_relative <7>
+              mat_bool_disabled <yes>
+              man_end_context
+              man_update_display
+              fm_end
+            uni_end_stream
+            >
+        man_end_object
+        man_start_object <trigger, "">
+          mat_title <"Close Log">
+          mat_bool_disabled <yes>
+          mat_relative_tag <8>
+          act_set_criterion <select>
+          act_append_action
+            <
+            uni_start_stream
+              fm_start
+              man_logging_command <3>
+              man_logging_command <2>
+              man_set_context_relative <5>
+              man_clear_object
+              man_end_context
+              man_set_context_relative <9>
+              mat_bool_disabled <yes>
+              mat_value <0>
+              man_end_context
+              man_set_context_relative <8>
+              mat_bool_disabled <yes>
+              man_end_context
+              man_set_context_relative <7>
+              mat_bool_disabled <no>
+              man_end_context
+              man_set_context_relative <6>
+              mat_bool_disabled <no>
+              man_end_context
+              man_update_display
+              fm_end
+            uni_end_stream
+            >
+        man_end_object
+      man_end_object
+      man_start_object <sms_list, "">
+        mat_orientation <vlf>
+        man_start_object <trigger, "">
+          mat_relative_tag <9>
+          mat_title <"Log Instant Messages">
+          act_set_criterion <select>
+          act_append_action
+            <
+            uni_start_stream
+              de_start_extraction <0>
+              man_set_context_relative <9>
+              de_get_data_value
+              uni_save_result
+              man_end_context
+              de_end_extraction
+              buf_close_buffer
+              uni_get_result
+              var_number_set_from_atom <A>
+              if_numa_false_then <1, 2>
+              man_logging_command <6>
+              uni_sync_skip <1>
+              man_logging_command <5>
+              uni_sync_skip <2>
+            uni_end_stream
+            >
+        man_end_object
+      man_end_object
+    man_end_object
+  man_update_end_object
+  man_set_context_globalid <32-238>
+  man_item_get <3>
+  if_last_return_true_then <1>
+  fm_start
+  man_item_get <0>
+  uni_use_last_atom_value <fm_start>
+  man_set_context_relative <5>
+  fm_item_get <filename>
+  uni_use_last_atom_string <mat_title>
+  man_end_context
+  man_set_context_relative <8>
+  mat_bool_disabled <no>
+  man_end_context
+  man_set_context_relative <6>
+  mat_bool_disabled <yes>
+  man_end_context
+  man_set_context_relative <7>
+  mat_bool_disabled <yes>
+  man_end_context
+  man_update_display
+  fm_end
+  uni_sync_skip <1>
+  man_set_context_relative <9>
+  man_item_get <4>
+  if_last_return_true_then <3, 4>
+  mat_value <1>
+  uni_sync_skip <3>
+  mat_bool_disabled <yes>
+  uni_sync_skip <4>
+  man_end_context
+  man_update_display
+  man_item_get <2>
+  if_last_return_true_then <2>
+  fm_start
+  man_item_get <1>
+  uni_use_last_atom_value <fm_start>
+  man_set_context_relative <1>
+  fm_item_get <filename>
+  uni_use_last_atom_string <mat_title>
+  man_end_context
+  man_set_context_relative <4>
+  mat_bool_disabled <no>
+  man_end_context
+  man_set_context_relative <2>
+  mat_bool_disabled <yes>
+  man_end_context
+  man_set_context_relative <3>
+  mat_bool_disabled <yes>
+  man_end_context
+  man_update_display
+  fm_end
+  uni_sync_skip <2>
+uni_end_stream

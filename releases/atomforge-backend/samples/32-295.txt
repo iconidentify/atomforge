@@ -1,0 +1,158 @@
+uni_start_stream
+  man_set_context_globalid <1>
+  act_do_action <129>
+  man_end_context
+  man_close_update <32-5483>
+  uni_invoke_no_context <32-482>
+  man_set_context_globalid <20-0-41>
+  var_number_set <A, 128>
+  var_number_set <B, 139>
+  uni_start_loop
+  var_number_get <A>
+  uni_use_last_atom_value <man_check_and_set_context_rid>
+  if_last_return_true_then <1>
+  mat_bool_disabled <yes>
+  man_end_context
+  uni_sync_skip <1>
+  var_numa_increment
+  if_numa_lt_numb_then <2>
+  uni_end_loop
+  uni_sync_skip <2>
+  man_set_context_relative <1>
+  mat_title <"Set Up & Sign On">
+  act_replace_select_action
+      <
+      uni_start_stream
+        man_do_magic_response_id <8413>
+        uni_invoke_no_context <32-221>
+      uni_end_stream
+      >
+    man_end_context
+    man_set_context_relative <2>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <3>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <5>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <6>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <9>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <51>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_update_display
+    man_end_context
+    man_set_context_globalid <20-0-42>
+    man_set_context_relative <2>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <3>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <4>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <50>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_update_display
+    man_end_context
+    man_set_context_globalid <20-0-43>
+    man_set_context_relative <1>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <2>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <3>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <4>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <5>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <7>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <50>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <52>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_update_display
+    man_end_context
+    man_set_context_globalid <20-0-51>
+    man_set_context_relative <6>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <7>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_update_display
+    man_end_context
+    man_set_context_globalid <3>
+    man_set_context_relative <1>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <3>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <5>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <6>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <12>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <13>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <14>
+    mat_bool_disabled <yes>
+    man_end_context
+    var_number_set <A, 0>
+    async_launcher_name <41x, 54x, 54x>
+    if_last_return_false_then <1>
+    man_set_context_relative <15>
+    mat_bool_disabled <yes>
+    man_end_context
+    uni_sync_skip <1>
+    man_set_context_relative <17>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <18>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <20>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <51>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <53>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_set_context_relative <60>
+    mat_bool_disabled <yes>
+    man_end_context
+    man_update_display
+    man_end_context
+    man_update_display <32-221>
+    act_get_db_value <14x, 00x, 00x, 2bx>
+    if_last_return_true_then <1>
+    async_playsound <"Goodbye">
+    uni_sync_skip <1>
+    uni_invoke_local <32-2404>
+    uni_wait_off
+  uni_end_stream

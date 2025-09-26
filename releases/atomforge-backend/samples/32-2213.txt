@@ -1,0 +1,51 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Do Flashsession Now">
+    mat_object_id <32-2213>
+    mat_orientation <vcf>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <ornament, "">
+      mat_size <36, 4>
+      man_append_data <"Check the box below if you wish to be signed off from\x7fAmerica Online when the Flashsession is complete,\x7fthen click \"OK\" to begin the Flashsession.\x7f">
+    man_start_sibling <sms_list, "">
+      mat_orientation <hcf>
+      man_start_object <trigger, "Sign off when done">
+        mat_relative_tag <1>
+        mat_bool_default <yes>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "OK">
+        mat_title_width <6>
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              de_start_extraction
+              man_set_context_relative <1>
+              de_get_data_value
+              uni_save_result
+              de_end_extraction
+              man_end_context
+              man_close_update
+              uni_get_result
+              if_last_return_true_then <1, 2>
+              mip_action_command <0cx>
+              uni_sync_skip <1>
+              mip_action_command <0bx>
+              uni_sync_skip <2>
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Cancel">
+          mat_title_width <6>
+          act_replace_select_action
+              <
+              uni_start_stream <00x>
+                man_close_update
+              uni_end_stream <00x>
+              >
+          man_end_object
+        man_end_object
+        man_update_display
+        uni_wait_off
+      uni_end_stream <00x>

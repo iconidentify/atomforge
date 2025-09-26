@@ -1,0 +1,53 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Untitled">
+    mat_orientation <vff>
+    mat_bool_modal <yes>
+    man_start_object <ornament, "Name:\t">
+      mat_size <40, 1, 35>
+      mat_relative_tag <1>
+      mat_title_pos <left | center>
+    man_start_sibling <edit_view, "Address">
+      mat_size <40, 1, 35>
+      mat_relative_tag <2>
+      mat_title_pos <left | center>
+      mat_bool_vertical_scroll <no>
+    man_start_sibling <edit_view, "">
+      mat_size <40, 1, 35>
+      mat_relative_tag <3>
+      mat_title_pos <left | center>
+      mat_bool_vertical_scroll <no>
+    man_start_sibling <edit_view, "City">
+      mat_size <40, 1, 35>
+      mat_relative_tag <4>
+      mat_title_pos <left | center>
+      mat_bool_vertical_scroll <no>
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <edit_view, "State">
+        mat_size <5, 1, 2>
+        mat_relative_tag <5>
+        mat_title_pos <left | center>
+      man_start_sibling <edit_view, "Zip Code">
+        mat_size <12, 1, 12>
+        mat_relative_tag <6>
+        mat_title_pos <left | center>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "Continue">
+        act_replace_select_action
+            <
+            uni_start_stream <00x>
+            de_ez_send_form <"at">
+            >
+        man_start_sibling <trigger, "Cancel">
+          act_replace_select_action
+              <
+              uni_start_stream <00x>
+              sm_send_token_arg <"mV", 0>
+              >
+          man_end_object
+        man_end_object
+        man_update_display
+        uni_wait_off
+      uni_end_stream <00x>

@@ -1,0 +1,493 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "World Wide Web">
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_background_tile <yes>
+    mat_art_id <1-0-3902>
+    mat_style_id <40-10407>
+    act_set_criterion <200>
+    act_replace_action
+        <
+        uni_start_stream
+          man_set_context_relative <1>
+          www_can_go_back
+          var_number_set_from_atom <A>
+          man_end_context
+          man_set_context_relative <10>
+          if_numa_true_then <1, 2>
+          mat_bool_disabled <no>
+          uni_sync_skip <1>
+          mat_bool_disabled <yes>
+          uni_sync_skip <2>
+          man_end_context
+          man_set_context_relative <11>
+          mat_bool_disabled <no>
+          man_end_context
+          man_set_context_relative <1>
+          www_can_go_forward
+          var_number_set_from_atom <A>
+          man_end_context
+          man_set_context_relative <12>
+          if_numa_true_then <1, 2>
+          mat_bool_disabled <no>
+          uni_sync_skip <1>
+          mat_bool_disabled <yes>
+          uni_sync_skip <2>
+          man_end_context
+          man_update_display
+        uni_end_stream
+        >
+      act_set_criterion <201>
+      act_replace_action
+          <
+          uni_start_stream
+            if_stra_neq_null_then <3>
+            man_set_context_relative <2>
+            man_start_object <trigger, "">
+              var_string_get <A>
+              uni_use_last_atom_string <mat_title>
+            man_end_object
+            man_is_rendered
+            if_last_return_true_then <1>
+            man_update_display
+            uni_sync_skip <1>
+            man_end_context
+            uni_sync_skip <3>
+          uni_end_stream
+          >
+        man_start_object <org_group, "">
+          mat_orientation <hff>
+          man_start_object <org_group, "">
+            mat_orientation <hlf>
+            man_start_object <org_group, "">
+              mat_orientation <hff>
+              mat_bool_precise <yes>
+              mat_precise_width <205>
+              mat_precise_height <68>
+              mat_bool_background_pic <yes>
+              mat_art_id <1-0-3912>
+              man_start_object <trigger, "">
+                mat_relative_tag <10>
+                mat_art_id <1-0-3904>
+                mat_bool_disabled <yes>
+                act_replace_select_action
+                    <
+                    uni_start_stream
+                      man_set_context_relative <1>
+                      www_go_back
+                      man_end_context
+                    uni_end_stream
+                    >
+                  mat_precise_x <4>
+                  mat_precise_y <2>
+                  mat_context_help <"Click here to go back\x7fto the previous page.">
+                man_start_sibling <trigger, "">
+                  mat_relative_tag <11>
+                  mat_art_id <1-0-3906>
+                  mat_bool_disabled <yes>
+                  act_replace_select_action
+                      <
+                      uni_start_stream
+                        man_set_context_relative <1>
+                        www_reload
+                        man_end_context
+                      uni_end_stream
+                      >
+                    mat_precise_x <48>
+                    mat_precise_y <2>
+                    mat_context_help <"Click here to reload\x7fthe current document.">
+                  man_start_sibling <trigger, "">
+                    mat_relative_tag <12>
+                    mat_art_id <1-0-3905>
+                    mat_bool_disabled <yes>
+                    act_replace_select_action
+                        <
+                        uni_start_stream
+                          man_set_context_relative <1>
+                          www_go_forward
+                          man_end_context
+                        uni_end_stream
+                        >
+                      mat_precise_x <92>
+                      mat_precise_y <2>
+                      mat_context_help <"Go forward to the next\x7fpage in your list.">
+                    man_start_sibling <trigger, "">
+                      mat_relative_tag <13>
+                      mat_art_id <1-0-3910>
+                      act_replace_select_action
+                          <
+                          uni_start_stream
+                            uni_invoke_no_context <32-4619>
+                          uni_end_stream
+                          >
+                        mat_precise_x <144>
+                        mat_precise_y <2>
+                        mat_context_help <"Click here to access\x7fyour Favorite Places.">
+                        mat_sink <"Favorite Places">
+                        async_is_known_subaccount
+                        if_last_return_false_then <171>
+                        mat_bool_disabled <yes>
+                        uni_sync_skip <171>
+                      man_start_sibling <ornament, "Back">
+                        mat_size <20, 1>
+                        mat_precise_x <15>
+                        mat_precise_y <46>
+                        mat_precise_width <30>
+                        mat_precise_height <12>
+                        mat_font_sis <arial, 8, normal>
+                      man_start_sibling <ornament, "Reload">
+                        mat_size <20, 1>
+                        mat_precise_x <54>
+                        mat_precise_y <46>
+                        mat_precise_width <34>
+                        mat_precise_height <12>
+                        mat_font_sis <arial, 8, normal>
+                      man_start_sibling <ornament, "Forward">
+                        mat_size <20, 1>
+                        mat_precise_x <94>
+                        mat_precise_y <46>
+                        mat_precise_width <44>
+                        mat_precise_height <12>
+                        mat_font_sis <arial, 8, normal>
+                      man_start_sibling <ornament, "Places">
+                        mat_size <20, 1>
+                        mat_precise_x <150>
+                        mat_precise_y <46>
+                        mat_precise_width <50>
+                        mat_precise_height <12>
+                        mat_font_sis <arial, 8, normal>
+                      man_end_object
+                    man_start_sibling <org_group, "">
+                      mat_orientation <hff>
+                      mat_bool_precise <yes>
+                      mat_precise_width <109>
+                      mat_precise_height <68>
+                      mat_bool_background_pic <yes>
+                      mat_art_id <1-0-3914>
+                      man_start_object <trigger, "">
+                        mat_relative_tag <14>
+                        mat_art_id <1-0-3907>
+                        mat_precise_x <4>
+                        mat_precise_y <2>
+                        mat_context_help <"Click here to reload this document\x7fusing the clearest possible graphics.">
+                      man_start_sibling <trigger, "">
+                        mat_relative_tag <15>
+                        mat_art_id <1-0-3908>
+                        mat_precise_x <48>
+                        mat_precise_y <2>
+                        mat_context_help <"Click here to hide the\x7fgraphics in this document.">
+                      man_start_sibling <ornament, "Original">
+                        mat_size <20, 1>
+                        mat_precise_x <8>
+                        mat_precise_y <46>
+                        mat_precise_width <40>
+                        mat_precise_height <13>
+                        mat_font_sis <arial, 8, normal>
+                      man_start_sibling <ornament, "Hide">
+                        mat_size <20, 1>
+                        mat_precise_x <60>
+                        mat_precise_y <46>
+                        mat_precise_width <24>
+                        mat_precise_height <12>
+                        mat_font_sis <arial, 8, normal>
+                      man_end_object
+                    man_start_sibling <org_group, "">
+                      mat_orientation <hff>
+                      mat_bool_precise <yes>
+                      mat_precise_width <148>
+                      mat_precise_height <68>
+                      mat_bool_background_pic <yes>
+                      mat_art_id <1-0-3913>
+                      man_start_object <trigger, "">
+                        mat_relative_tag <16>
+                        mat_art_id <1-0-3909>
+                        act_replace_action
+                            <
+                            uni_start_stream
+                              man_set_context_relative <1>
+                              lm_table_use_table <20-0-71>
+                              async_get_screen_name
+                              uni_use_last_atom_string <lm_table_use_key>
+                              lm_table_get_item
+                              uni_save_result
+                              if_last_return_false_then <1>
+                              idb_set_context <20-0-78>
+                              idb_atr_offset <0>
+                              idb_get_string
+                              var_string_set_from_atom <A>
+                              idb_end_context
+                              var_string_get <A>
+                              uni_save_result
+                              uni_use_last_atom_string <lm_table_set_item>
+                              uni_sync_skip <1>
+                              uni_get_result
+                              uni_use_last_atom_string <www_load_url>
+                              man_end_context
+                            uni_end_stream
+                            >
+                          mat_precise_x <4>
+                          mat_precise_y <2>
+                          mat_context_help <"Click here to return\x7fto your home page.">
+                        man_start_sibling <trigger, "">
+                          mat_relative_tag <17>
+                          mat_art_id <1-0-3910>
+                          act_replace_action
+                              <
+                              uni_start_stream
+                                async_exec_help_file <"www.hlp">
+                              uni_end_stream
+                              >
+                            mat_precise_x <48>
+                            mat_precise_y <2>
+                            mat_context_help <"Click here for more help!">
+                          man_start_sibling <trigger, "">
+                            mat_relative_tag <18>
+                            mat_art_id <1-0-3911>
+                            act_replace_select_action
+                                <
+                                uni_start_stream
+                                  man_set_context_relative <1>
+                                  www_stop
+                                  man_end_context
+                                uni_end_stream
+                                >
+                              mat_precise_x <92>
+                              mat_precise_y <2>
+                              mat_context_help <"Click here to stop transmission\x7fof the current document.">
+                            man_start_sibling <ornament, "Home">
+                              mat_size <20, 1>
+                              mat_precise_x <14>
+                              mat_precise_y <46>
+                              mat_precise_width <30>
+                              mat_precise_height <12>
+                              mat_font_sis <arial, 8, normal>
+                            man_start_sibling <ornament, "Help">
+                              mat_size <20, 1>
+                              mat_precise_x <60>
+                              mat_precise_y <46>
+                              mat_precise_width <28>
+                              mat_precise_height <13>
+                              mat_font_sis <arial, 8, normal>
+                            man_start_sibling <ornament, "Stop">
+                              mat_size <20, 1>
+                              mat_precise_x <104>
+                              mat_precise_y <46>
+                              mat_precise_width <28>
+                              mat_precise_height <13>
+                              mat_font_sis <arial, 8, normal>
+                            man_end_object
+                          man_end_object
+                        man_start_sibling <ornament, "">
+                          mat_relative_tag <20>
+                          mat_art_id <1-0-4089>
+                          mat_bool_disabled <yes>
+                        man_end_object
+                      man_start_sibling <dss_list, "">
+                        mat_orientation <vff>
+                        mat_size <48, 1>
+                        mat_relative_tag <2>
+                        mat_title_pos <left | top_or_left>
+                        act_get_db_value <14x, 00x, 00x, 51x>
+                        if_last_return_false_then <100, 101>
+                        mat_bool_invisible <yes>
+                        uni_sync_skip <100>
+                        mat_bool_exportable <yes>
+                        mat_bool_importable <yes>
+                        mat_bool_expand_to_fit <yes>
+                        mat_bool_list_allow_entry <yes>
+                        man_make_focus
+                        mat_sort_order <reverse>
+                        mat_font_sis <arial, 8, normal>
+                        mat_command_key <0dx, 00x>
+                        act_replace_select_action
+                            <
+                            uni_start_stream
+                              man_set_context_relative <2>
+                              de_start_extraction <0>
+                              de_get_data_pointer
+                              uni_save_result
+                              var_string_set_from_atom <A>
+                              de_end_extraction
+                              man_end_context
+                              if_stra_neq_null_then <5>
+                              man_set_context_relative <1>
+                              uni_get_result
+                              uni_use_last_atom_string <www_load_url>
+                              man_end_context
+                              uni_sync_skip <5>
+                            uni_end_stream
+                            >
+                          uni_sync_skip <101>
+                        man_start_sibling <view, "">
+                          mat_size <50, 18>
+                          mat_relative_tag <1>
+                          mat_bool_exportable <no>
+                          mat_bool_writeable <yes>
+                          www_manage
+                          mat_width <600>
+                          mat_height <400>
+                          act_set_criterion <134>
+                          act_replace_action
+                              <
+                              uni_start_stream
+                                man_set_context_relative <20>
+                                mat_art_animation_rate <200>
+                                man_update_display
+                                man_end_context
+                              uni_end_stream
+                              >
+                            act_set_criterion <135>
+                            act_replace_action
+                                <
+                                uni_start_stream
+                                  man_set_context_relative <20>
+                                  mat_art_animation_rate <0>
+                                  mat_art_frame <0>
+                                  man_update_display
+                                  man_end_context
+                                  act_do_action <200>
+                                  man_set_context_relative <1>
+                                  www_get_current_url
+                                  var_string_set_from_atom <A>
+                                  man_end_context
+                                  act_do_action <201>
+                                uni_end_stream
+                                >
+                              act_set_criterion <132>
+                              act_replace_action
+                                  <
+                                  uni_start_stream
+                                    man_set_context_relative <1>
+                                    www_get_current_title
+                                    uni_save_result
+                                    man_end_context
+                                    uni_get_result
+                                    uni_use_last_atom_string <mat_title>
+                                    man_update_display
+                                  uni_end_stream
+                                  >
+                                act_set_criterion <128>
+                                act_replace_action
+                                    <
+                                    uni_start_stream
+                                      man_set_context_relative <1>
+                                      www_get_current_url
+                                      uni_save_result
+                                      man_end_context
+                                      man_set_context_relative <2>
+                                      uni_get_result
+                                      uni_use_last_atom_string <man_replace_data>
+                                      man_end_context
+                                      uni_get_result
+                                      uni_use_last_atom_string <mat_url>
+                                      man_update_display
+                                    uni_end_stream
+                                    >
+                                  act_set_criterion <129>
+                                  act_replace_action
+                                      <
+                                      uni_start_stream
+                                        man_set_context_relative <1>
+                                        www_get_current_link
+                                        uni_save_result
+                                        man_end_context
+                                        man_set_context_relative <3>
+                                        uni_get_result
+                                        uni_use_last_atom_string <mat_title>
+                                        man_update_display
+                                        man_end_context
+                                      uni_end_stream
+                                      >
+                                    act_set_criterion <130>
+                                    act_replace_action
+                                        <
+                                        uni_start_stream
+                                          man_set_context_relative <1>
+                                          www_get_parts_complete
+                                          uni_save_result
+                                          man_end_context
+                                          man_set_context_relative <4>
+                                          uni_get_result
+                                          if_last_return_true_then <1, 2>
+                                          uni_get_result
+                                          uni_use_last_atom_value <mat_value>
+                                          mat_bool_hidden <no>
+                                          uni_sync_skip <1>
+                                          mat_bool_hidden <yes>
+                                          uni_sync_skip <2>
+                                          man_update_display
+                                          man_end_context
+                                        uni_end_stream
+                                        >
+                                      act_set_criterion <133>
+                                      act_replace_action
+                                          <
+                                          uni_start_stream
+                                            man_set_context_relative <1>
+                                            www_get_current_url
+                                            uni_save_result
+                                            man_end_context
+                                            uni_save_result
+                                            var_string_set_from_atom <A>
+                                            uni_sync_skip <1>
+                                          uni_end_stream
+                                          >
+                                        act_set_criterion <131>
+                                        act_replace_action
+                                            <
+                                            uni_start_stream
+                                              man_set_context_relative <1>
+                                              www_get_current_url
+                                              uni_save_result
+                                              man_end_context
+                                              uni_save_result
+                                              var_string_set_from_atom <A>
+                                              if_stra_neq_null_then <1>
+                                              uni_sync_skip <1>
+                                            uni_end_stream
+                                            >
+                                        man_start_sibling <org_group, "">
+                                          mat_orientation <hff>
+                                          man_start_object <ornament, "">
+                                            mat_size <50, 1>
+                                            mat_relative_tag <3>
+                                            mat_vertical_spacing <0>
+                                            mat_bool_precise <yes>
+                                            act_get_db_value <14x, 00x, 00x, 52x>
+                                            if_last_return_false_then <1>
+                                            mat_bool_invisible <yes>
+                                            uni_sync_skip <1>
+                                          man_end_object
+                                          man_start_object <range, "">
+                                            act_get_db_value <14x, 00x, 00x, 52x>
+                                            if_last_return_false_then <1>
+                                            mat_bool_invisible <yes>
+                                            uni_sync_skip <1>
+                                            mat_bool_hidden <yes>
+                                            mat_relative_tag <4>
+                                            mat_precise_width <100>
+                                            mat_precise_height <14>
+                                            mat_maximum <100>
+                                          man_end_object
+                                        man_end_object
+                                        man_update_display
+                                        man_set_context_globalid <1>
+                                        var_string_null <A>
+                                        var_lookup_by_id <A, 310>
+                                        var_string_null <B>
+                                        var_string_save <B, 310>
+                                        man_end_context
+                                        if_stra_neq_null_then <1, 2>
+                                        man_set_context_relative <1>
+                                        var_string_get <A>
+                                        uni_use_last_atom_string <www_load_url>
+                                        man_end_context
+                                        uni_get_result
+                                        var_string_set_from_atom <A>
+                                        uni_sync_skip <1>
+                                        man_set_context_relative <16>
+                                        act_do_action <select>
+                                        man_end_context
+                                        uni_sync_skip <2>
+                                        uni_wait_off
+                                      uni_end_stream <00x>

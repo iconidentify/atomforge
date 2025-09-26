@@ -1,0 +1,223 @@
+uni_start_stream <00x>
+  man_use_default_title
+  man_set_context_globalid <1>
+  man_start_object <ind_group, "">
+    mat_object_id <32-1960>
+    mat_orientation <vcc>
+    mat_position <center_center>
+    var_number_set <A, 1>
+    var_number_save <A, 101>
+    mat_dirty_query <yes>
+    act_set_criterion <gain_focus>
+    act_replace_action
+        <
+        uni_start_stream
+          de_start_extraction <0>
+          de_set_data_type <global_id>
+          de_get_data_value <current_object>
+          var_number_set_from_atom <A>
+          de_end_extraction
+          man_set_context_globalid <1>
+          var_number_get <A>
+          var_number_save <A, 100>
+          man_end_context
+          var_number_get <A>
+          uni_use_last_atom_value <man_set_context_globalid>
+          man_set_context_relative <1>
+          image_get_attr <16x, 1ex>
+          if_last_return_true_then <1, 2>
+          man_set_context_globalid <57>
+          man_set_context_relative <11>
+          mat_bool_disabled <no>
+          man_change_context_relative <12>
+          mat_title <"Show Image in Original Size">
+          mat_bool_disabled <no>
+          man_change_context_relative <1>
+          mat_bool_disabled <no>
+          uni_sync_skip <1>
+          man_set_context_globalid <57>
+          man_set_context_relative <11>
+          mat_bool_disabled <no>
+          man_change_context_relative <12>
+          mat_bool_disabled <no>
+          mat_title <"Fit Image to View">
+          man_change_context_relative <1>
+          mat_bool_disabled <no>
+          uni_sync_skip <2>
+          man_end_context
+          man_update_display <2>
+          man_end_context
+          man_end_context
+          man_set_context_globalid <40-1159>
+          man_get_attribute <mat_bool_invisible>
+          if_last_return_true_then <1>
+          var_lookup_by_id <B, 64>
+          if_numb_true_then <1>
+          mat_bool_invisible <no>
+          man_update_display
+          uni_sync_skip <1>
+          man_end_context
+        uni_end_stream
+        >
+      act_set_criterion <close>
+      act_replace_action
+          <
+          uni_start_stream
+            man_set_context_globalid <1>
+            var_lookup_by_id <A, 150>
+            var_numa_decrement
+            var_number_get <A>
+            if_numa_false_then <1>
+            man_close_update <40-1159>
+            man_set_context_globalid <57>
+            man_set_context_relative <11>
+            mat_title <"Show Tools">
+            mat_bool_disabled <yes>
+            man_change_context_relative <12>
+            mat_bool_disabled <yes>
+            man_end_context
+            man_end_context
+            man_update_display <2>
+            uni_sync_skip <1>
+            var_number_save <A, 150>
+            var_lookup_by_id <B, 151>
+            var_number_decrement <B>
+            var_number_save <B, 151>
+            man_end_context
+            if_numb_false_then <2>
+            man_set_context_globalid <40-1159>
+            mat_bool_invisible <yes>
+            man_update_display
+            man_end_context
+            uni_sync_skip <2>
+          uni_end_stream
+          >
+        act_set_criterion <14>
+        act_replace_action
+            <
+            uni_start_stream
+              man_set_context_globalid <1>
+              var_lookup_by_id <A, 151>
+              man_end_context
+              var_number_set <B, 1>
+              if_numa_eq_numb_then <1>
+              man_set_context_globalid <57>
+              man_set_context_relative <11>
+              mat_bool_disabled <yes>
+              man_change_context_relative <12>
+              mat_bool_disabled <yes>
+              man_end_context
+              man_update_display <2>
+              man_end_context
+              man_set_context_globalid <40-1159>
+              mat_bool_invisible <yes>
+              man_update_display
+              man_end_context
+              uni_sync_skip <1>
+              man_set_context_globalid <1>
+              var_lookup_by_id <A, 151>
+              var_numa_decrement
+              var_number_save <A, 151>
+              man_end_context
+            uni_end_stream
+            >
+          act_set_criterion <16>
+          act_replace_action
+              <
+              uni_start_stream
+                man_set_context_globalid <1>
+                var_lookup_by_id <A, 151>
+                man_end_context
+                if_numa_false_then <1>
+                man_set_context_globalid <40-1159>
+                mat_bool_invisible <yes>
+                man_update_display
+                man_end_context
+                man_set_context_globalid <57>
+                man_set_context_relative <11>
+                mat_bool_disabled <no>
+                man_change_context_relative <12>
+                mat_bool_disabled <no>
+                man_end_context
+                man_update_display <2>
+                man_end_context
+                uni_sync_skip <1>
+                man_set_context_globalid <1>
+                var_lookup_by_id <A, 151>
+                var_numa_increment
+                var_number_save <A, 151>
+                man_end_context
+              uni_end_stream
+              >
+            act_set_criterion <100>
+            act_replace_action
+                <
+                uni_start_stream
+                  man_preset_gid <40-1159>
+                  if_last_return_true_then <1, 2>
+                  man_make_focus
+                  man_update_display
+                  man_set_context_globalid <1>
+                  var_lookup_by_id <A, 150>
+                  var_numa_increment
+                  var_number_get <A>
+                  var_number_save <A, 150>
+                  var_lookup_by_id <A, 151>
+                  var_numa_increment
+                  var_number_get <A>
+                  var_number_save <A, 151>
+                  man_end_context
+                  uni_sync_skip <1>
+                  man_set_context_globalid <1>
+                  var_number_set <A, 1>
+                  var_number_save <A, 150>
+                  var_number_save <A, 151>
+                  uni_invoke_no_context <40-1159>
+                  man_end_context
+                  uni_sync_skip <2>
+                uni_end_stream
+                >
+              man_start_object <edit_view, "">
+                mat_relative_tag <1>
+                mat_bool_horizontal_scroll <yes>
+                mat_bool_importable <no>
+                mat_bool_writeable <yes>
+                mat_drop_data_type <3>
+                mat_bool_exportable <yes>
+                mat_bool_importable <yes>
+                mat_dirty_query <yes>
+                image_attr_image_cropable <01x>
+                mat_size <0, 0>
+                mat_bool_graphic_view <yes>
+                image_attr_dynamic_display <01x>
+                act_set_criterion <20>
+                act_replace_action
+                    <
+                    uni_start_stream
+                      fm_start
+                      man_set_context_relative <1>
+                      var_lookup_by_id <A, 303>
+                      uni_save_result
+                      uni_get_result
+                      uni_use_last_atom_string <image_set_file_name>
+                      man_end_context
+                      man_update_display
+                      fm_end
+                    uni_end_stream
+                    >
+                man_end_object
+              man_end_object
+              xfer_bool_in_progress
+              man_set_context_globalid <32-1960>
+              act_do_action <100>
+              man_end_context
+              uni_sync_skip <1>
+              man_set_context_globalid <57>
+              man_set_context_relative <11>
+              mat_bool_disabled <no>
+              man_change_context_relative <12>
+              mat_bool_disabled <no>
+              man_end_context
+              man_update_display <2>
+              man_end_context
+            uni_end_stream <00x>

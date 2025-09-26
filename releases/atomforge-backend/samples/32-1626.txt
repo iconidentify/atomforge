@@ -1,0 +1,46 @@
+uni_start_stream
+  idb_set_context <20-0-258>
+  idb_atr_offset <0>
+  idb_get_value <04x>
+  var_number_set_from_atom <B>
+  idb_end_context
+  var_number_get <A>
+  uni_use_last_atom_value <idb_set_context>
+  idb_atr_offset <0>
+  idb_get_value <04x>
+  var_number_set_from_atom <D>
+  var_number_set <C, 4>
+  uni_start_loop
+  var_number_get <C>
+  uni_use_last_atom_value <idb_atr_offset>
+  idb_get_value <04x>
+  var_number_set_from_atom <A>
+  if_numa_neq_numb_then <1>
+  var_number_get <C>
+  var_number_set_from_atom <A>
+  var_number_add <8>
+  var_number_get <A>
+  var_number_set_from_atom <C>
+  var_number_decrement <D>
+  var_number_get <D>
+  var_number_set_from_atom <A>
+  if_numa_true_then <2>
+  uni_end_loop
+  uni_sync_skip <1>
+  var_number_get <C>
+  var_number_set_from_atom <A>
+  var_number_add <4>
+  var_number_get <A>
+  uni_use_last_atom_value <idb_atr_offset>
+  idb_get_value <04x>
+  uni_use_last_atom_value <uni_invoke_local>
+  idb_end_context
+  var_number_set <A, 0>
+  if_numa_true_then <3>
+  uni_sync_skip <2>
+  idb_atr_offset <8>
+  idb_get_value <04x>
+  uni_use_last_atom_value <uni_invoke_local>
+  idb_end_context
+  uni_sync_skip <3>
+uni_end_stream

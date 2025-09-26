@@ -1,0 +1,331 @@
+uni_start_stream
+  man_insert_object_before <31>
+  mat_title <"*">
+  man_start_object <trigger, "Invoke Database Record...">
+    act_replace_select_action
+        <
+        uni_start_stream
+          uni_invoke_no_context <32-2501>
+        uni_end_stream
+        >
+    man_end_object
+    man_start_object <trigger, "Delete Database Record...">
+      act_replace_select_action
+          <
+          uni_start_stream
+            uni_invoke_no_context <32-2502>
+          uni_end_stream
+          >
+      man_end_object
+      man_start_object <trigger, "Update Database Record...">
+        mat_shortcut_key <"U">
+        mat_command_key <55x>
+        act_replace_select_action
+            <
+            uni_start_stream
+            sm_send_token_arg <"f7", 4>
+            >
+        man_end_object
+        man_start_object <trigger, "Display Art Record...">
+          act_replace_select_action
+              <
+              uni_start_stream
+                uni_invoke_no_context <32-2557>
+              uni_end_stream
+              >
+          man_end_object
+          man_start_object <ornament, "">
+          man_end_object
+          man_start_object <dss_list, "Art Administration">
+            man_start_object <trigger, "Modify Binary/Picture Record...">
+              act_replace_select_action
+                  <
+                  uni_start_stream
+                  sm_send_token_arg <"f7", 3>
+                  >
+              man_end_object
+              man_start_object <trigger, "Upload Binary File...">
+                act_replace_select_action
+                    <
+                    uni_start_stream
+                    sm_send_token_arg <"f7", 2>
+                    >
+                man_end_object
+                man_start_object <trigger, "Upload Picture File...">
+                  act_replace_select_action
+                      <
+                      uni_start_stream
+                      sm_send_token_arg <"f7", 1>
+                      >
+                  man_end_object
+                man_end_object
+                man_start_object <ornament, "">
+                man_end_object
+                man_start_object <trigger, "Set Network Address">
+                  mat_shortcut_key <"S">
+                  act_replace_select_action
+                      <
+                      uni_start_stream
+                        uni_invoke_no_context <32-478>
+                      uni_end_stream
+                      >
+                  man_end_object
+                  man_start_object <trigger, "Set Version Number">
+                    mat_shortcut_key <"V">
+                    act_replace_select_action
+                        <
+                        uni_start_stream
+                          uni_invoke_no_context <32-2411>
+                        uni_end_stream
+                        >
+                    man_end_object
+                    man_start_object <trigger, "Set Promo Code">
+                      mat_shortcut_key <"V">
+                      act_replace_select_action
+                          <
+                          uni_start_stream
+                            uni_invoke_no_context <32-4603>
+                          uni_end_stream
+                          >
+                      man_end_object
+                      man_start_object <trigger, "Manage Tools">
+                        mat_shortcut_key <"M">
+                        act_replace_select_action
+                            <
+                            uni_start_stream
+                              mt_manage_tools
+                            uni_end_stream
+                            >
+                        man_end_object
+                        man_start_object <ornament, "">
+                        man_end_object
+                        man_start_object <trigger, "Clear Poison Tree">
+                          act_replace_select_action
+                              <
+                              uni_start_stream
+                                idb_delete_obj <85>
+                                async_alert <info, "The poison tree has been cleared.">
+                              uni_end_stream
+                              >
+                          man_end_object
+                          man_start_object <trigger, "Erase Acct Info">
+                            act_replace_select_action
+                                <
+                                uni_start_stream
+                                  uni_invoke_local <32-503>
+                                  async_alert <info, "Account info has been erased.">
+                                uni_end_stream
+                                >
+                            man_end_object
+                            man_start_object <trigger, "Set Affinity Group">
+                              act_replace_select_action
+                                  <
+                                  uni_start_stream
+                                    uni_invoke_no_context <32-1640>
+                                  uni_end_stream
+                                  >
+                              man_end_object
+                              man_start_object <ornament, "">
+                              man_end_object
+                              man_start_object <dss_list, "FlashSessions">
+                                man_start_object <trigger, "Set FlashSession Minute...">
+                                  act_replace_select_action
+                                      <
+                                      uni_start_stream
+                                        uni_invoke_no_context <32-2539>
+                                      uni_end_stream
+                                      >
+                                  man_end_object
+                                  man_start_object <trigger, "Reset scheduler info">
+                                    act_replace_select_action
+                                        <
+                                        uni_start_stream
+                                          idb_delete_obj <20-0-54>
+                                          idb_delete_obj <20-0-55>
+                                          idb_delete_obj <20-0-56>
+                                          idb_delete_obj <20-0-61>
+                                        uni_end_stream
+                                        >
+                                    man_end_object
+                                    man_start_object <ornament, "">
+                                    man_end_object
+                                    man_start_object <trigger, "Enable Newsgroups">
+                                      act_replace_select_action
+                                          <
+                                          uni_start_stream
+                                            idb_start_obj <"b">
+                                            idb_atr_globalid <20-0-86>
+                                            idb_atr_offset <0>
+                                            idb_append_data <01x>
+                                            idb_end_obj
+                                          uni_end_stream
+                                          >
+                                      man_end_object
+                                      man_start_object <trigger, "Disable Newsgroups">
+                                        act_replace_select_action
+                                            <
+                                            uni_start_stream
+                                              idb_delete_obj <20-0-86>
+                                            uni_end_stream
+                                            >
+                                        man_end_object
+                                      man_end_object
+                                      man_start_object <dss_list, "WAOLSock Debug">
+                                        man_start_object <trigger, "Event 1">
+                                          act_replace_select_action
+                                              <
+                                              uni_start_stream
+                                                mt_waolsock_debug <1>
+                                              uni_end_stream
+                                              >
+                                          man_end_object
+                                          man_start_object <trigger, "Event 2">
+                                            act_replace_select_action
+                                                <
+                                                uni_start_stream
+                                                  mt_waolsock_debug <2>
+                                                uni_end_stream
+                                                >
+                                            man_end_object
+                                            man_start_object <trigger, "Event 3">
+                                              act_replace_select_action
+                                                  <
+                                                  uni_start_stream
+                                                    mt_waolsock_debug <3>
+                                                  uni_end_stream
+                                                  >
+                                              man_end_object
+                                            man_end_object
+                                            man_start_object <dss_list, "Crash Application">
+                                              man_start_object <trigger, "Int 13">
+                                                act_replace_select_action
+                                                    <
+                                                    uni_start_stream
+                                                      mt_test_crash
+                                                    uni_end_stream
+                                                    >
+                                                man_end_object
+                                                man_start_object <trigger, "Divide by 0">
+                                                  act_replace_select_action
+                                                      <
+                                                      uni_start_stream
+                                                        mt_test_crash <1>
+                                                      uni_end_stream
+                                                      >
+                                                  man_end_object
+                                                  man_start_object <trigger, "Stack Fault">
+                                                    act_replace_select_action
+                                                        <
+                                                        uni_start_stream
+                                                          mt_test_crash <2>
+                                                        uni_end_stream
+                                                        >
+                                                    man_end_object
+                                                  man_end_object
+                                                  man_start_object <trigger, "Reload CCLs">
+                                                    act_replace_select_action
+                                                        <
+                                                        uni_start_stream
+                                                          ccl_reload_networks
+                                                          async_alert <info, "CCLs reloaded.">
+                                                        uni_end_stream
+                                                        >
+                                                    man_end_object
+                                                    man_start_object <trigger, "Set Proxy Configuration">
+                                                      act_replace_select_action
+                                                          <
+                                                          uni_start_stream
+                                                            uni_invoke_no_context <32-4674>
+                                                          uni_end_stream
+                                                          >
+                                                      man_end_object
+                                                      man_start_object <trigger, "DebugBreak()">
+                                                        act_replace_select_action
+                                                            <
+                                                            uni_start_stream
+                                                              mt_break
+                                                            uni_end_stream
+                                                            >
+                                                        man_end_object
+                                                        man_start_object <trigger, "Invoke WAOL Snoop">
+                                                          act_replace_select_action
+                                                              <
+                                                              uni_start_stream
+                                                                mt_set_spy_mode
+                                                              uni_end_stream
+                                                              >
+                                                          man_end_object
+                                                          man_start_object <trigger, "Invoke Atomdebug">
+                                                            act_replace_select_action
+                                                                <
+                                                                uni_start_stream
+                                                                  mt_start_atomdebug
+                                                                uni_end_stream
+                                                                >
+                                                            man_end_object
+                                                            man_start_object <trigger, "Open/View Diag File">
+                                                              act_replace_select_action
+                                                                  <
+                                                                  uni_start_stream
+                                                                    mt_open_diag
+                                                                  uni_end_stream
+                                                                  >
+                                                              man_end_object
+                                                              man_start_object <trigger, "Delete Artwork In Top Form">
+                                                                act_replace_select_action
+                                                                    <
+                                                                    uni_start_stream
+                                                                      mt_delete_art_in_top_form
+                                                                    uni_end_stream
+                                                                    >
+                                                                man_end_object
+                                                                man_start_object <trigger, "Show Groups In Top Form">
+                                                                  act_replace_select_action
+                                                                      <
+                                                                      uni_start_stream
+                                                                        mt_hilight_groups_in_top_form
+                                                                      uni_end_stream
+                                                                      >
+                                                                  man_end_object
+                                                                  man_start_object <dss_list, "Cheats">
+                                                                    man_start_object <trigger, "Disable Free/Paid Curtain">
+                                                                      act_replace_select_action
+                                                                          <
+                                                                          uni_start_stream
+                                                                            idb_start_obj <"b">
+                                                                            idb_atr_globalid <20-0-107>
+                                                                            idb_atr_offset <0>
+                                                                            idb_append_data <01x>
+                                                                            idb_end_obj
+                                                                          uni_end_stream
+                                                                          >
+                                                                      man_end_object
+                                                                      man_start_object <trigger, "Enable Free/Paid Curtain">
+                                                                        act_replace_select_action
+                                                                            <
+                                                                            uni_start_stream
+                                                                              idb_delete_obj <20-0-107>
+                                                                            uni_end_stream
+                                                                            >
+                                                                        man_end_object
+                                                                        man_start_object <ornament, "">
+                                                                        man_end_object
+                                                                        man_start_object <trigger, "Disable Inactivity Timer">
+                                                                          act_replace_select_action
+                                                                              <
+                                                                              uni_start_stream
+                                                                                mt_set_timeout_mode <01x>
+                                                                              uni_end_stream
+                                                                              >
+                                                                          man_end_object
+                                                                          man_start_object <trigger, "Enable Inactivity Timer">
+                                                                            act_replace_select_action
+                                                                                <
+                                                                                uni_start_stream
+                                                                                  mt_set_timeout_mode <00x>
+                                                                                uni_end_stream
+                                                                                >
+                                                                            man_end_object
+                                                                          man_end_object
+                                                                        man_update_end_object
+                                                                      uni_end_stream

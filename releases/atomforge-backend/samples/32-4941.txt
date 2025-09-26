@@ -1,0 +1,21 @@
+uni_start_stream
+  man_use_default_title
+  man_set_context_globalid <1>
+  man_start_object <ind_group, "">
+    mat_form_icon <1-0-1290>
+    var_number_set <A, 1>
+    var_number_save <A, 101>
+    mat_dirty_query <yes>
+    mat_object_id <32-4941>
+    mat_style_id <32-233>
+    mat_orientation <vcf>
+    man_start_object <edit_view, "">
+      mat_size <64, 22, 32000>
+      rich_manage
+      mat_bool_writeable <yes>
+      mat_log_object <no_log>
+      mat_relative_tag <1>
+    man_end_object
+  man_update_end_object
+  man_end_context
+uni_end_stream

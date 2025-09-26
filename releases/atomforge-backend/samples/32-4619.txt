@@ -1,0 +1,165 @@
+uni_start_stream <00x>
+  man_preset_gid <32-4619>
+  if_last_return_true_then <1>
+  man_make_focus
+  man_update_display
+uni_abort_stream
+uni_sync_skip <1>
+async_is_known_subaccount
+if_last_return_false_then <1>
+async_alert <info, "This feature can only be used by registered screen names (not New User or Guest).">
+uni_abort_stream
+uni_sync_skip <1>
+man_set_context_globalid <1>
+man_start_object <ind_group, "Favorite Places">
+  mat_object_id <32-4619>
+  mat_orientation <vff>
+  mat_position <top_left>
+  act_set_criterion <200>
+  act_replace_action
+      <
+      uni_start_stream
+        man_set_context_relative <1>
+        morg_view_has_mult_selections
+        if_last_return_true_then <1, 2>
+        man_set_context_relative <13>
+        mat_bool_disabled <yes>
+        man_change_context_relative <17>
+        mat_bool_disabled <yes>
+        man_change_context_relative <16>
+        mat_bool_disabled <yes>
+        man_change_context_relative <18>
+        mat_bool_disabled <yes>
+        man_change_context_relative <11>
+        mat_bool_disabled <no>
+        man_end_context
+        uni_sync_skip <1>
+        morg_obj_set_context_selection
+        man_set_context_relative <13>
+        mat_bool_disabled <no>
+        man_change_context_relative <17>
+        mat_bool_disabled <no>
+        man_change_context_relative <18>
+        morg_obj_can_rename
+        if_last_return_true_then <3, 4>
+        mat_bool_disabled <no>
+        uni_sync_skip <3>
+        mat_bool_disabled <yes>
+        uni_sync_skip <4>
+        man_change_context_relative <16>
+        morg_obj_get_class
+        var_number_set_from_atom <A>
+        var_number_set <B, 2>
+        if_numa_eq_numb_then <3, 4>
+        mat_bool_disabled <no>
+        uni_sync_skip <3>
+        mat_bool_disabled <yes>
+        uni_sync_skip <4>
+        man_change_context_relative <11>
+        morg_obj_can_delete
+        if_last_return_true_then <3, 4>
+        mat_bool_disabled <no>
+        uni_sync_skip <3>
+        mat_bool_disabled <yes>
+        uni_sync_skip <4>
+        man_end_context
+        uni_sync_skip <2>
+        man_end_context
+        man_update_display
+      uni_end_stream
+      >
+    man_start_object <view, "">
+      mat_size <40, 16>
+      mat_relative_tag <1>
+      mat_bool_writeable <yes>
+      morg_manage
+      mat_font_sis <arial, 9, normal>
+      morg_view_path <"Favorite Places">
+      morg_view_include_root <yes>
+      act_set_criterion <129>
+      act_replace_action
+          <
+          uni_start_stream
+            man_close_update
+          uni_end_stream
+          >
+        act_set_criterion <130>
+        act_replace_action
+            <
+            uni_start_stream
+              act_do_action <200>
+            uni_end_stream
+            >
+        man_start_sibling <org_group, "">
+          mat_orientation <hef>
+          man_start_object <trigger, "Add Folder">
+            mat_relative_tag <13>
+            act_replace_select_action
+                <
+                uni_start_stream
+                  man_set_context_relative <1>
+                  morg_prompt_create_folder
+                  man_end_context
+                uni_end_stream
+                >
+            man_start_sibling <trigger, "Add Favorite Place">
+              mat_relative_tag <17>
+              act_replace_select_action
+                  <
+                  uni_start_stream
+                    uni_invoke_no_context <32-4618>
+                  uni_end_stream
+                  >
+              man_end_object
+            man_start_sibling <org_group, "">
+              mat_orientation <hef>
+              man_start_object <trigger, "Connect">
+                mat_relative_tag <16>
+                mat_bool_disabled <yes>
+                mat_bool_default <yes>
+                act_replace_select_action
+                    <
+                    uni_start_stream
+                      man_set_context_relative <1>
+                      morg_jump_bookmark
+                      man_end_context
+                    uni_end_stream
+                    >
+                man_start_sibling <trigger, "Modify">
+                  mat_relative_tag <18>
+                  mat_bool_disabled <yes>
+                  act_replace_select_action
+                      <
+                      uni_start_stream
+                        man_set_context_relative <1>
+                        morg_obj_set_context_selection
+                        morg_obj_get_class
+                        var_number_set_from_atom <A>
+                        var_number_set <B, 2>
+                        if_numa_eq_numb_then <17, 18>
+                        morg_edit_bookmark
+                        uni_sync_skip <17>
+                        morg_prompt_rename_object
+                        uni_sync_skip <18>
+                        man_end_context
+                      uni_end_stream
+                      >
+                  man_start_sibling <trigger, "Delete">
+                    mat_relative_tag <11>
+                    mat_bool_disabled <yes>
+                    act_replace_select_action
+                        <
+                        uni_start_stream
+                          man_set_context_relative <1>
+                          morg_delete_current_object
+                          man_end_context
+                        uni_end_stream
+                        >
+                    man_end_object
+                  man_end_object
+                  man_update_display
+                  act_do_action <200>
+                  uni_sync_skip <48>
+                  man_end_context
+                  uni_wait_off
+                uni_end_stream <00x>

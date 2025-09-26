@@ -1,0 +1,231 @@
+uni_start_stream
+  idb_set_context <20-0-16>
+  idb_atr_offset <1>
+  idb_get_string
+  var_string_set_from_atom <A>
+  var_string_set <B,"New User  ">
+  idb_end_context
+  if_stra_eq_strb_then <10, 99>
+  async_error_box <"Please register an account first.">
+  uni_sync_skip <10>
+  lm_table_use_table <20-0-50>
+  man_start_object <ind_group, "">
+    mat_bool_modal <yes>
+    mat_orientation <vef>
+    mat_object_id <32-242>
+    mat_title <"Edit Stored Passwords">
+    man_start_object <org_group, "">
+      mat_orientation <vce>
+      man_start_object <ornament, "">
+        mat_font_sis <arial, 9, normal>
+        mat_height <4>
+        mat_width <35>
+        man_append_data <"Note: Storing your passwords does not change them. To change your passwords go to Keyword: PASSWORD when you're online.">
+      man_end_object
+      man_start_object <org_group, "">
+        mat_orientation <vef>
+        man_start_object <org_group, "">
+          mat_orientation <hef>
+          man_start_object <ornament, "">
+            mat_title <"Screen Name">
+          man_end_object
+          man_start_object <ornament, "">
+            mat_title <"Password">
+          man_end_object
+        man_end_object
+        man_start_object <org_group, "">
+          mat_orientation <hef>
+          man_start_object <ornament, "">
+            mat_height <1>
+            mat_width <10>
+            mat_relative_tag <1>
+            mat_bool_hidden <yes>
+          man_end_object
+          man_start_object <edit_view, "">
+            mat_height <1>
+            mat_width <10>
+            mat_capacity <8>
+            mat_bool_protected_input <yes>
+            mat_relative_tag <2>
+            mat_bool_hidden <yes>
+          man_end_object
+        man_end_object
+        man_start_object <org_group, "">
+          mat_orientation <hef>
+          man_start_object <ornament, "">
+            mat_height <1>
+            mat_width <10>
+            mat_relative_tag <3>
+            mat_bool_hidden <yes>
+          man_end_object
+          man_start_object <edit_view, "">
+            mat_height <1>
+            mat_width <10>
+            mat_relative_tag <4>
+            mat_capacity <8>
+            mat_bool_protected_input <yes>
+            mat_bool_hidden <yes>
+          man_end_object
+        man_end_object
+        man_start_object <org_group, "">
+          mat_orientation <hef>
+          man_start_object <ornament, "">
+            mat_height <1>
+            mat_width <10>
+            mat_relative_tag <5>
+            mat_bool_hidden <yes>
+          man_end_object
+          man_start_object <edit_view, "">
+            mat_height <1>
+            mat_width <10>
+            mat_capacity <8>
+            mat_bool_protected_input <yes>
+            mat_relative_tag <6>
+            mat_bool_hidden <yes>
+          man_end_object
+        man_end_object
+        man_start_object <org_group, "">
+          mat_orientation <hef>
+          man_start_object <ornament, "">
+            mat_height <1>
+            mat_width <10>
+            mat_relative_tag <7>
+            mat_bool_hidden <yes>
+          man_end_object
+          man_start_object <edit_view, "">
+            mat_height <1>
+            mat_width <10>
+            mat_capacity <8>
+            mat_bool_protected_input <yes>
+            mat_relative_tag <8>
+            mat_bool_hidden <yes>
+          man_end_object
+        man_end_object
+        man_start_object <org_group, "">
+          mat_orientation <hef>
+          man_start_object <ornament, "">
+            mat_height <1>
+            mat_width <10>
+            mat_relative_tag <9>
+            mat_bool_hidden <yes>
+          man_end_object
+          man_start_object <edit_view, "">
+            mat_height <1>
+            mat_width <10>
+            mat_capacity <8>
+            mat_bool_protected_input <yes>
+            mat_bool_hidden <yes>
+            mat_relative_tag <10>
+          man_end_object
+        man_end_object
+        man_start_object <org_group, "">
+          mat_orientation <hef>
+          man_start_object <trigger, "">
+            mat_bool_default <yes>
+            mat_title <"OK">
+            act_set_criterion <select>
+            act_append_action
+              <
+              uni_start_stream
+                lm_table_use_table <20-0-50>
+                lm_table_clear
+                de_start_extraction <0>
+                var_number_set <A, 1>
+                var_number_set <B, 10>
+                uni_start_loop
+                var_number_get <A>
+                uni_use_last_atom_value <man_set_context_relative>
+                man_get_attribute <mat_bool_hidden>
+                if_last_return_true_then <7>
+                man_end_context
+                var_number_set <C, 0>
+                if_last_return_true_then <20>
+                uni_sync_skip <7>
+                de_get_data_pointer
+                uni_use_last_atom_string <lm_table_use_key>
+                man_end_context
+                var_number_increment <A>
+                var_number_get <A>
+                uni_use_last_atom_value <man_set_context_relative>
+                man_get_attribute <mat_bool_hidden>
+                if_last_return_false_then <14>
+                de_get_data_pointer
+                uni_use_last_atom_string <lm_table_set_item>
+                uni_sync_skip <14>
+                man_end_context
+                var_number_increment <A>
+                if_numa_lt_numb_then <20>
+                uni_end_loop
+                uni_sync_skip <20>
+                de_end_extraction
+                man_close
+                man_update_display
+              uni_end_stream
+              >
+          man_end_object
+          man_start_object <trigger, "">
+            mat_title <"Cancel">
+            act_set_criterion <select>
+            act_append_action
+              <
+              uni_start_stream
+                man_close
+                man_update_display
+              uni_end_stream
+              >
+          man_end_object
+        man_end_object
+        man_update_display
+      man_end_object
+      man_set_context_globalid <32-242>
+      var_number_set <A, 6>
+      idb_set_context <20-0-16>
+      idb_atr_offset <0>
+      idb_get_value
+      var_number_set_from_atom <B>
+      if_numa_lte_numb_then <1>
+      var_number_set <B, 5>
+      uni_sync_skip <1>
+      var_number_set <C, 0>
+      var_number_set <D, 0>
+      var_string_set <B,"Guest     ">
+      var_number_set <A, 1>
+      uni_start_loop
+      uni_use_last_atom_value <idb_atr_offset>
+      var_number_increment <C>
+      var_number_get <C>
+      uni_use_last_atom_value <man_set_context_relative>
+      idb_get_string
+      var_string_set_from_atom <A>
+      if_stra_eq_strb_then <5>
+      var_number_set <D, 1>
+      uni_sync_skip <5>
+      var_string_get <A>
+      uni_use_last_atom_string <mat_title>
+      var_number_get <D>
+      uni_use_last_atom_value <mat_bool_hidden>
+      man_end_context
+      var_number_increment <C>
+      var_number_get <C>
+      uni_use_last_atom_value <man_set_context_relative>
+      var_string_get <A>
+      uni_use_last_atom_string <lm_table_get_item>
+      uni_save_result
+      if_last_return_true_then <15>
+      uni_get_result
+      uni_use_last_atom_string <man_replace_data>
+      uni_sync_skip <15>
+      var_number_get <D>
+      uni_use_last_atom_value <mat_bool_hidden>
+      man_end_context
+      var_number_decrement <B>
+      if_numb_true_then <2>
+      var_number_add <22>
+      uni_end_loop
+      uni_sync_skip <2>
+      man_update_display
+      man_end_context
+      idb_end_context
+      uni_sync_skip <99>
+      uni_wait_off
+    uni_end_stream

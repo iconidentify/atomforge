@@ -1,0 +1,74 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "">
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_style_id <32-189>
+    man_start_object <org_group, "">
+      mat_orientation <hef>
+      man_start_object <ornament, "">
+        mat_relative_tag <17>
+        mat_art_id <1-0-1307>
+        mat_bool_disabled <yes>
+      man_start_sibling <ornament, "">
+        mat_size <1, 1, 1>
+      man_start_sibling <org_group, "">
+        mat_orientation <vlc>
+        man_start_object <ornament, "Boards:">
+          mat_size <0, 0, 0>
+          mat_title_pos <above | center>
+        man_start_sibling <ornament, "">
+          mat_size <12, 1, 12>
+          mat_relative_tag <9>
+        man_end_object
+      man_start_sibling <org_group, "">
+        mat_orientation <vlc>
+        man_start_object <ornament, "Messages:">
+          mat_size <0, 0, 0>
+          mat_title_pos <above | center>
+        man_start_sibling <ornament, "">
+          mat_size <12, 1, 12>
+          mat_relative_tag <10>
+        man_end_object
+      man_start_sibling <org_group, "">
+        mat_orientation <vlc>
+        man_start_object <ornament, "Last Message:">
+          mat_size <0, 0, 0>
+          mat_title_pos <above | center>
+        man_start_sibling <ornament, "">
+          mat_size <11, 1, 11>
+          mat_relative_tag <11>
+        man_end_object
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <vcf>
+      man_start_object <ornament, "">
+        mat_size <40, 1, 0>
+      man_start_sibling <ornament, "">
+        mat_size <45, 3, 128>
+        mat_relative_tag <3>
+        mat_title_pos <right | center>
+      man_start_sibling <ornament, "">
+        mat_size <40, 1, 0>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hcf>
+      man_start_object <trigger, "Browse Boards">
+        mat_relative_tag <28>
+        mat_art_id <1-0-1323>
+      man_start_sibling <trigger, "Find New">
+        mat_relative_tag <27>
+        mat_art_id <1-0-1324>
+      man_start_sibling <trigger, "Find Since...">
+        mat_relative_tag <29>
+        mat_art_id <1-0-1330>
+      man_start_sibling <trigger, "Board Tools">
+        mat_relative_tag <31>
+        mat_art_id <1-0-1307>
+        mat_bool_invisible <yes>
+      man_start_sibling <trigger, "Help & Info">
+        mat_relative_tag <32>
+        mat_art_id <1-0-1325>
+      man_end_object
+    man_end_object
+    uni_invoke_local_preserve <32-190>
+  uni_end_stream <00x>

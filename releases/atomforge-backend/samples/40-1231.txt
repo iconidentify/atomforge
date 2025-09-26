@@ -1,0 +1,81 @@
+uni_start_stream
+  man_preset_gid <0>
+  man_set_context_globalid <31>
+  man_insert_object_before
+  mat_object_type <dss_list, "">
+  mat_object_id <40-1231>
+  mat_title <"Extras">
+  mat_shortcut_key <"X">
+  man_start_object <trigger, "">
+    mat_title <"Show Tools">
+    mat_shortcut_key <"S">
+    mat_relative_tag <1>
+    act_replace_select_action
+        <
+        uni_start_stream
+          man_set_context_globalid <40-1159>
+          man_get_attribute <mat_bool_invisible>
+          if_last_return_true_then <1, 2>
+          var_number_set <A, 1>
+          var_number_save <A, 64>
+          mat_bool_invisible <no>
+          man_update_display
+          man_end_context
+          man_set_context_globalid <40-1231>
+          man_set_context_relative <1>
+          mat_title <"Hide Tools">
+          mat_shortcut_key <"H">
+          uni_sync_skip <1>
+          var_number_set <A, 0>
+          var_number_save <A, 64>
+          mat_bool_invisible <yes>
+          man_update_display
+          man_end_context
+          man_set_context_globalid <40-1231>
+          man_set_context_relative <1>
+          mat_title <"Show Tools">
+          mat_shortcut_key <"S">
+          uni_sync_skip <2>
+          man_update_display
+          man_end_context
+        uni_end_stream
+        >
+    man_end_object
+    man_start_object <trigger, "">
+      mat_title <"Fit Image to View">
+      mat_shortcut_key <"F">
+      mat_relative_tag <2>
+      act_replace_select_action
+          <
+          uni_start_stream
+            man_set_context_globalid <1>
+            var_lookup_by_id <A, 100>
+            uni_use_last_atom_value <man_set_context_globalid>
+            man_set_context_relative <1>
+            image_get_attr <16x, 1ex>
+            if_last_return_false_then <3, 4>
+            image_attr_fit_to_view <yes>
+            man_end_context
+            man_end_context
+            man_set_context_globalid <40-1231>
+            man_set_context_relative <2>
+            mat_title <"Show Image in Original Size">
+            mat_shortcut_key <"O">
+            uni_sync_skip <3>
+            image_attr_fit_to_view <no>
+            man_end_context
+            man_end_context
+            man_set_context_globalid <40-1231>
+            man_set_context_relative <2>
+            mat_title <"Fit Image to View">
+            mat_shortcut_key <"F">
+            uni_sync_skip <4>
+            man_end_context
+            man_update_display
+            man_end_context
+          uni_end_stream
+          >
+      man_end_object
+    man_end_object
+    man_end_context
+  uni_end_stream

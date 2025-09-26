@@ -1,0 +1,35 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "">
+    mat_orientation <vff>
+    mat_style_id <32-44>
+    man_start_object <dss_list, "">
+      mat_orientation <vff>
+      mat_size <63>
+      mat_relative_tag <1>
+      mat_ruler <8, 23>
+      mat_bool_vertical_scroll <no>
+      mat_bool_list_icons <yes>
+    man_start_sibling <org_group, "">
+      mat_orientation <hcf>
+      man_start_object <trigger, "Read">
+        mat_relative_tag <2>
+        mat_bool_default <yes>
+      man_start_sibling <trigger, "Ignore">
+        mat_relative_tag <3>
+      man_start_sibling <trigger, "Show Status">
+        mat_relative_tag <4>
+      man_start_sibling <trigger, "More">
+        mat_relative_tag <5>
+        mat_bool_disabled <yes>
+      man_start_sibling <trigger, "Mark Unread">
+        mat_relative_tag <6>
+        mat_bool_disabled <yes>
+        mat_bool_invisible <yes>
+      man_start_sibling <trigger, "Mark Deleted">
+        mat_relative_tag <7>
+        mat_bool_disabled <yes>
+        mat_bool_invisible <yes>
+      man_end_object
+    man_end_object
+    man_update_display
+  uni_end_stream <00x>

@@ -1,0 +1,149 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Helper Applications">
+    mat_object_id <32-4653>
+    mat_orientation <vff>
+    mat_position <center_center>
+    act_set_criterion <128>
+    act_replace_action
+        <
+        uni_start_stream
+          man_set_context_relative <1>
+          man_close_children
+          fm_start
+          fm_item_type <ini_file>
+          fm_item_set <"VIEWERS.INI">
+          fm_item_type <ini_group>
+          fm_item_set <"VIEWERS">
+          fm_item_type <ini_section_size>
+          fm_item_set <"@\x00">
+          fm_ini_get_section
+          uni_start_loop
+          fm_ini_get_next_line
+          var_string_set_from_atom <A>
+          if_stra_neq_null_then <1>
+          fm_item_type <ini_key>
+          var_string_get <A>
+          uni_use_last_atom_string <fm_item_set>
+          fm_ini_read_data <00x>
+          uni_use_last_atom_string <man_preset_title>
+          man_start_object <trigger, "">
+            act_set_inheritance <02x>
+            var_string_save <A, 1>
+          man_end_object
+          uni_end_loop
+          uni_sync_skip <1>
+          fm_end
+          man_is_rendered
+          if_last_return_true_then <1>
+          man_update_display
+          man_end_context
+        uni_end_stream
+        >
+      man_start_object <org_group, "">
+        mat_orientation <hff>
+        man_start_object <dss_list, "">
+          mat_orientation <vff>
+          mat_size <40, 10>
+          mat_relative_tag <1>
+          mat_sort_order <alphabetical>
+          act_replace_select_action
+              <
+              uni_start_stream
+                man_set_context_relative <2>
+                act_do_action <select>
+                man_end_context
+              uni_end_stream
+              >
+          man_start_sibling <org_group, "">
+            mat_orientation <vft>
+            man_start_object <trigger, "Modify...">
+              mat_title_width <7>
+              mat_relative_tag <2>
+              act_replace_select_action
+                  <
+                  uni_start_stream
+                    de_start_extraction <0>
+                    man_set_context_relative <1>
+                    de_set_data_type <index>
+                    de_get_data_value
+                    var_number_set_from_atom <A>
+                    uni_use_last_atom_value <man_set_context_index>
+                    var_lookup_by_id <A, 1>
+                    man_end_context
+                    man_end_context
+                    de_end_extraction
+                    uni_invoke_no_context <32-4655>
+                  uni_end_stream
+                  >
+              man_start_sibling <trigger, "Delete">
+                mat_title_width <7>
+                act_replace_select_action
+                    <
+                    uni_start_stream
+                      async_alert <yes_no, "Are you sure you want to delete that helper application?">
+                      if_last_return_false_then <95>
+                    uni_abort_stream
+                    uni_sync_skip <95>
+                    de_start_extraction <0>
+                    man_set_context_relative <1>
+                    de_set_data_type <index>
+                    de_get_data_value
+                    uni_use_last_atom_value <man_set_context_index>
+                    var_lookup_by_id <A, 1>
+                    man_close
+                    man_end_context
+                    man_update_display
+                    man_end_context
+                    fm_start
+                    fm_item_type <ini_file>
+                    fm_item_set <"VIEWERS.INI">
+                    fm_item_type <ini_group>
+                    fm_item_set <"VIEWERS">
+                    fm_item_type <ini_key>
+                    var_string_get <A>
+                    uni_use_last_atom_string <fm_item_set>
+                    fm_ini_write_data
+                    fm_item_type <ini_group>
+                    var_string_get <A>
+                    uni_use_last_atom_string <fm_item_set>
+                    fm_item_type <ini_key>
+                    fm_item_set
+                    fm_ini_write_data
+                    de_end_extraction
+                    fm_end
+                  uni_end_stream
+                  >
+              man_end_object
+            man_end_object
+          man_start_sibling <org_group, "">
+            mat_orientation <hef>
+            man_start_object <trigger, "New...">
+              mat_title_width <7>
+              act_replace_select_action
+                  <
+                  uni_start_stream <00x>
+                    man_preset_gid <32-4654>
+                    if_last_return_true_then <1, 2>
+                    man_make_focus
+                    man_update_display
+                    uni_sync_skip <1>
+                    uni_wait_on
+                    uni_invoke_no_context <32-4654>
+                    uni_sync_skip <2>
+                  uni_end_stream <00x>
+                  >
+              man_start_sibling <trigger, "Close">
+                mat_title_width <7>
+                mat_bool_default <yes>
+                act_replace_select_action
+                    <
+                    uni_start_stream <00x>
+                      man_close_update
+                    uni_end_stream <00x>
+                    >
+                man_end_object
+              man_end_object
+              man_update_display
+              act_do_action <128>
+              uni_wait_off
+            uni_end_stream <00x>

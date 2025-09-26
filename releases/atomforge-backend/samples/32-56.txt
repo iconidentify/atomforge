@@ -1,0 +1,30 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Untitled">
+    mat_orientation <vff>
+    mat_bool_modal <yes>
+    man_start_object <ornament, "">
+      mat_size <35, 1, 30>
+      mat_relative_tag <1>
+    man_start_sibling <ornament, "">
+      mat_size <35, 1, 30>
+      man_append_data <"Do you want to continue?">
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "Yes">
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream <00x>
+            sm_p_send_token_arg <"mV", 1>
+            >
+        man_start_sibling <trigger, "No">
+          act_replace_select_action
+              <
+              uni_start_stream <00x>
+              sm_p_send_token_arg <"mV", 0>
+              >
+          man_end_object
+        man_end_object
+        man_update_display
+        uni_wait_off
+      uni_end_stream <00x>

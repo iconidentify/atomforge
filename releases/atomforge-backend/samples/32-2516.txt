@@ -1,0 +1,54 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "FlashSessions Walk-Through">
+    mat_object_id <32-2516>
+    mat_orientation <vft>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <org_group, "">
+      mat_orientation <hff>
+      man_start_object <ornament, "">
+        mat_art_id <1-0-1288>
+        mat_bool_disabled <yes>
+      man_start_sibling <ornament, "Schedule FlashSessions">
+        mat_size <22, 1>
+        mat_font_id <times_roman>
+        mat_font_size <14>
+      man_end_object
+    man_start_sibling <ornament, "">
+      mat_art_id <1-0-1369>
+      mat_bool_disabled <yes>
+    man_start_sibling <ornament, "">
+      man_append_data <"America Online has a flexible scheduler for FlashSessions.  You can set up the software to sign on at times you specify, carry out your instructions, then sign off.  If you have more than one screen name, this process will be repeated for each name you designate.\x7f\x7fYou don't have to use the scheduler to take advantage of FlashSessions.  You can start one at any time by selecting \"Activate FlashSession Now\" from the Mail menu.\x7f\x7fThe scheduler relies on your computer's internal clock.  Please be sure that your clock is set correctly.\x7f\x7fDo you want to schedule FlashSessions now?">
+      mat_precise_width <400>
+      mat_precise_height <260>
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "Yes">
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              man_close_update
+              uni_invoke_no_context <32-2517>
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "No">
+          act_replace_select_action
+              <
+              uni_start_stream
+                man_close_update
+                uni_invoke_no_context <32-2515>
+              uni_end_stream
+              >
+          man_start_sibling <trigger, "Cancel">
+            act_replace_select_action
+                <
+                uni_start_stream <00x>
+                  man_close_update
+                uni_end_stream <00x>
+                >
+            man_end_object
+          man_end_object
+          man_update_display
+          uni_wait_off
+        uni_end_stream <00x>

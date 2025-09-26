@@ -1,0 +1,111 @@
+uni_start_stream <00x>
+  man_set_context_globalid <1>
+  var_number_set <A, 0>
+  var_number_save <A, 161>
+  man_end_context
+  man_set_context_globalid <53>
+  man_start_object <ind_group, "">
+    mat_orientation <hfc>
+    mat_position <center_center>
+    mat_bool_non_closeable <yes>
+    mat_object_id <32-30>
+    man_start_object <org_group, "">
+      mat_orientation <vcf>
+      man_start_object <ornament, "">
+        mat_art_id <1-0-1642>
+      man_start_sibling <ornament, "">
+        mat_size <26, 1, 50>
+        mat_relative_tag <3>
+        mat_vertical_spacing <3>
+      man_start_sibling <org_group, "">
+        mat_orientation <hff>
+        man_start_object <trigger, "Click here">
+          mat_relative_tag <17>
+          mat_art_id <1-0-1394>
+          mat_bool_resize_vertical <yes>
+        man_start_sibling <ornament, "">
+          mat_size <27, 4, 250>
+          mat_relative_tag <10>
+        man_end_object
+      man_start_sibling <org_group, "">
+        mat_orientation <hff>
+        man_start_object <trigger, "Click here">
+          mat_relative_tag <18>
+          mat_art_id <1-0-1313>
+          mat_bool_resize_vertical <yes>
+        man_start_sibling <ornament, "">
+          mat_size <27, 4, 250>
+          mat_relative_tag <12>
+        man_end_object
+      man_start_sibling <trigger, "NEA Online">
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream_wait_on <00x>
+              sm_enter_free
+            sm_m_send_token_arg <"K1", 2-1921>
+            >
+        man_end_object
+      man_start_sibling <ornament, "">
+        mat_art_id <1-0-1431>
+      man_start_sibling <org_group, "">
+        mat_orientation <vcf>
+        man_start_object <org_group, "">
+          mat_orientation <hef>
+          man_start_object <ornament, "">
+            mat_art_id <1-0-1643>
+            mat_bool_disabled <yes>
+          man_start_sibling <org_group, "">
+            mat_orientation <vcf>
+            man_start_object <trigger, "No mail">
+              mat_relative_tag <22>
+              mat_art_id <1-0-1311>
+              act_replace_select_action
+                  <
+                  uni_start_stream_wait_on <00x>
+                  sm_m_send_token_arg <"eL">
+                  >
+              man_start_sibling <trigger, "New Services">
+                mat_relative_tag <21>
+                mat_art_id <1-0-1340>
+                act_replace_select_action
+                    <
+                    uni_start_stream_wait_on <00x>
+                    sm_send_f1 <32-377>
+                    >
+                man_end_object
+              man_end_object
+            man_start_sibling <org_group, "">
+              mat_orientation <hff>
+              mat_horizontal_spacing <3>
+              man_start_object <trigger, "Click here">
+                mat_relative_tag <19>
+                mat_art_id <1-0-1304>
+                mat_horizontal_spacing <3>
+                mat_bool_resize_vertical <yes>
+              man_start_sibling <ornament, "">
+                mat_size <27, 4, 250>
+                mat_relative_tag <14>
+              man_end_object
+            man_start_sibling <org_group, "">
+              mat_orientation <hff>
+              man_start_object <trigger, "Click here">
+                mat_relative_tag <20>
+                mat_art_id <1-0-1304>
+                mat_horizontal_spacing <3>
+                mat_bool_resize_vertical <yes>
+              man_start_sibling <ornament, "">
+                mat_size <27, 4, 250>
+                mat_relative_tag <16>
+              man_end_object
+            man_start_sibling <trigger, "Departments">
+              act_replace_select_action
+                  <
+                  uni_start_stream_wait_on
+                    man_do_magic_response_id <8414>
+                    uni_invoke_no_context <32-222>
+                  uni_wait_off_end_stream
+                  >
+              man_end_object
+            man_end_object
+          uni_end_stream <00x>

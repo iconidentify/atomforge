@@ -1,0 +1,12 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Document">
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_style_id <32-16>
+    man_start_object <view, "">
+      mat_size <55, 15>
+      mat_relative_tag <1>
+      mat_bool_writeable <yes>
+    man_end_object
+    man_update_display
+  uni_end_stream <00x>

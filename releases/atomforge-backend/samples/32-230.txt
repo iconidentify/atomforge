@@ -1,0 +1,58 @@
+uni_start_stream <00x>
+  man_set_response_id <8422>
+  man_start_object <ind_group, "Go To Keyword">
+    mat_orientation <vcc>
+    mat_position <center_center>
+    man_start_object <ornament, "">
+      mat_size <50, 1, 40>
+      mat_relative_tag <2>
+      mat_bool_invisible <yes>
+      man_append_data <"The keyword you entered is invalid.  Please try again.">
+    man_start_sibling <edit_view, "Enter Keyword:">
+      mat_height <1>
+      mat_size <32, 1, 32>
+      mat_relative_tag <1>
+      mat_title_pos <left | center>
+      mat_bool_vertical_scroll <no>
+      mat_bool_resize_vertical <no>
+      mat_bool_resize_horizontal <no>
+      mat_bool_writeable <yes>
+      mat_validation <128>
+      mat_validation <128>
+    man_start_sibling <org_group, "">
+      mat_orientation <hcf>
+      man_start_object <trigger, "OK">
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              uni_wait_on
+              de_validate <display_msg | terminate>
+              de_start_extraction
+              buf_set_token <"Kk">
+              de_get_data
+              de_end_extraction
+              buf_close_buffer
+              man_close_update
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Keyword List">
+          act_replace_select_action
+              <
+              uni_start_stream <00x>
+                idb_exists <32-375>
+                if_last_return_true_then <1, 2>
+                uni_invoke_no_context <32-375>
+                uni_sync_skip <1>
+                uni_wait_on
+                buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                buf_set_token <"f1">
+                buf_add_atom_data <2097527>
+                buf_close_buffer
+                uni_sync_skip <2>
+              uni_end_stream <00x>
+              >
+          man_end_object
+        man_end_object
+        man_update_display
+      uni_end_stream <00x>

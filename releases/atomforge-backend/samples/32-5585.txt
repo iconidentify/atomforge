@@ -1,0 +1,393 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "">
+    mat_unfocused <yes>
+    mat_orientation <vff>
+    mat_position <top_left>
+    mat_style_id <32-5585>
+    mat_bool_background_tile <yes>
+    mat_art_id <1-0-27256>
+    act_set_criterion <gain_focus>
+    act_replace_action
+        <
+        uni_start_stream
+          man_place_cursor <2>
+        uni_end_stream
+        >
+      act_set_criterion <7>
+      act_replace_action
+          <
+          uni_start_stream
+          uni_end_stream
+          >
+        act_set_criterion <8>
+        act_replace_action
+            <
+            uni_start_stream
+            uni_end_stream
+            >
+          act_set_criterion <10>
+          act_replace_action
+              <
+              uni_start_stream
+                man_set_context_relative <4>
+                mat_bool_disabled <no>
+                man_change_context_relative <5>
+                mat_bool_disabled <no>
+                man_end_context
+                man_update_display
+              uni_end_stream
+              >
+            act_set_criterion <11>
+            act_replace_action
+                <
+                uni_start_stream
+                  man_set_context_relative <4>
+                  mat_bool_disabled <yes>
+                  man_change_context_relative <5>
+                  mat_bool_disabled <yes>
+                  man_end_context
+                  man_make_focus
+                  man_update_display
+                uni_end_stream
+                >
+              act_set_criterion <32>
+              act_replace_action
+                  <
+                  uni_start_stream
+                    de_start_extraction <0>
+                    de_set_data_type <global_id>
+                    de_get_data
+                    var_number_set_from_atom <A>
+                    man_get_top_window
+                    var_number_set_from_atom <B>
+                    if_numa_neq_numb_then <3>
+                    uni_invoke_local_preserve <32-578>
+                    uni_sync_skip <3>
+                    de_end_extraction
+                    buf_close_buffer
+                  uni_end_stream
+                  >
+                act_set_criterion <210>
+                act_replace_action
+                    <
+                    uni_start_stream
+                      man_set_context_relative <2>
+                      rich_get_text_style
+                      var_number_set_from_atom <A>
+                      man_change_context_relative <42>
+                      var_number_get <A>
+                      var_number_set <B, 1>
+                      if_numa_and_numb_then <1, 2>
+                      mat_value <1>
+                      uni_sync_skip <1>
+                      mat_value <0>
+                      uni_sync_skip <2>
+                      man_change_context_relative <43>
+                      var_number_get <A>
+                      var_number_set <B, 2>
+                      if_numa_and_numb_then <1, 2>
+                      mat_value <1>
+                      uni_sync_skip <1>
+                      mat_value <0>
+                      uni_sync_skip <2>
+                      man_change_context_relative <44>
+                      var_number_get <A>
+                      var_number_set <B, 4>
+                      if_numa_and_numb_then <1, 2>
+                      mat_value <1>
+                      uni_sync_skip <1>
+                      mat_value <0>
+                      uni_sync_skip <2>
+                      man_end_context
+                      man_update_display
+                    uni_end_stream
+                    >
+                  man_start_object <ornament, "">
+                    mat_size <16, 1, 16>
+                    mat_relative_tag <1>
+                    mat_bool_invisible <yes>
+                    mat_bool_default_send <yes>
+                  man_start_sibling <view, "">
+                    rich_manage
+                    rich_bool_read_only <yes>
+                    mat_precise_height <80>
+                    mat_precise_width <320>
+                    mat_relative_tag <3>
+                    mat_ruler <11>
+                    mat_paragraph <yes>
+                    mat_bool_writeable <yes>
+                    mat_scroll_threshold <24576>
+                    mat_bool_force_scroll <yes>
+                    mat_log_object <im_log>
+                  man_start_sibling <ornament, "">
+                    mat_size <39, 2>
+                    mat_color_text <255, 32, 48>
+                    mat_font_style <bold>
+                    man_append_data <"Reminder:  AOL Staff will never ">
+                    man_append_data <"ask for your password or billing ">
+                    man_append_data <"information.  :-)">
+                    mat_relative_tag <6>
+                  man_start_sibling <org_group, "">
+                    mat_orientation <vft>
+                    man_start_object <org_group, "">
+                      mat_orientation <hlt>
+                      mat_bool_tool_group <yes>
+                      mat_bool_resize_horizontal <yes>
+                      mat_bool_resize_vertical <yes>
+                      man_start_object <org_group, "">
+                        mat_orientation <hft>
+                        man_start_object <trigger, "">
+                          mat_context_help <"Text Color">
+                          mat_relative_tag <60>
+                          mat_horizontal_spacing <0>
+                          mat_vertical_spacing <2>
+                          mat_bool_invisible <yes>
+                          mat_art_id <1-0-31462>
+                          mat_bool_small_icon <yes>
+                          act_replace_select_action
+                              <
+                              uni_start_stream
+                                rich_text_color
+                              uni_end_stream
+                              >
+                          man_start_sibling <trigger, "">
+                            mat_context_help <"Background Color">
+                            mat_relative_tag <61>
+                            mat_horizontal_spacing <3>
+                            mat_bool_invisible <yes>
+                            mat_art_id <1-0-31463>
+                            mat_bool_small_icon <yes>
+                            act_replace_select_action
+                                <
+                                uni_start_stream
+                                  rich_background_color
+                                uni_end_stream
+                                >
+                            man_end_object
+                          man_start_sibling <org_group, "">
+                            mat_orientation <hft>
+                            man_start_object <trigger, "">
+                              mat_context_help <"Reduce Font Size">
+                              mat_art_id <1-0-31459>
+                              mat_bool_small_icon <yes>
+                              mat_relative_tag <41>
+                              mat_horizontal_spacing <0>
+                              mat_bool_invisible <yes>
+                              act_replace_select_action
+                                  <
+                                  uni_start_stream
+                                    rich_font_size <1>
+                                  uni_end_stream
+                                  >
+                              man_start_sibling <trigger, "">
+                                mat_context_help <"Reset Font Size">
+                                mat_relative_tag <64>
+                                mat_horizontal_spacing <0>
+                                mat_bool_invisible <yes>
+                                mat_art_id <1-0-31460>
+                                mat_bool_small_icon <yes>
+                                act_replace_select_action
+                                    <
+                                    uni_start_stream
+                                      rich_font_size <3>
+                                    uni_end_stream
+                                    >
+                                man_start_sibling <trigger, "">
+                                  mat_context_help <"Enlarge Font Size">
+                                  mat_relative_tag <65>
+                                  mat_horizontal_spacing <3>
+                                  mat_bool_invisible <yes>
+                                  mat_art_id <1-0-31461>
+                                  mat_bool_small_icon <yes>
+                                  act_replace_select_action
+                                      <
+                                      uni_start_stream
+                                        rich_font_size <7>
+                                      uni_end_stream
+                                      >
+                                  man_end_object
+                                man_start_sibling <sms_list, "">
+                                  mat_bool_list_icons <yes>
+                                  mat_orientation <hlt>
+                                  man_start_object <trigger, "">
+                                    mat_context_help <"Bold">
+                                    mat_relative_tag <42>
+                                    mat_horizontal_spacing <0>
+                                    mat_bool_invisible <yes>
+                                    mat_trigger_style <group_state>
+                                    mat_art_id <1-0-31464>
+                                    mat_bool_small_icon <yes>
+                                    act_replace_select_action
+                                        <
+                                        uni_start_stream
+                                          rich_font_attribute <1>
+                                        uni_end_stream
+                                        >
+                                      act_set_criterion <23>
+                                      act_replace_action
+                                          <
+                                          uni_start_stream
+                                            rich_font_attribute <1>
+                                          uni_end_stream
+                                          >
+                                      man_start_sibling <trigger, "">
+                                        mat_context_help <"Italics">
+                                        mat_relative_tag <43>
+                                        mat_horizontal_spacing <0>
+                                        mat_bool_invisible <yes>
+                                        mat_trigger_style <group_state>
+                                        mat_art_id <1-0-31465>
+                                        mat_bool_small_icon <yes>
+                                        act_replace_select_action
+                                            <
+                                            uni_start_stream
+                                              rich_font_attribute <2>
+                                            uni_end_stream
+                                            >
+                                          act_set_criterion <23>
+                                          act_replace_action
+                                              <
+                                              uni_start_stream
+                                                rich_font_attribute <2>
+                                              uni_end_stream
+                                              >
+                                          man_start_sibling <trigger, "">
+                                            mat_context_help <"Underline">
+                                            mat_relative_tag <44>
+                                            mat_horizontal_spacing <3>
+                                            mat_bool_invisible <yes>
+                                            mat_trigger_style <group_state>
+                                            mat_art_id <1-0-31466>
+                                            mat_bool_small_icon <yes>
+                                            act_replace_select_action
+                                                <
+                                                uni_start_stream
+                                                  rich_font_attribute <4>
+                                                uni_end_stream
+                                                >
+                                              act_set_criterion <23>
+                                              act_replace_action
+                                                  <
+                                                  uni_start_stream
+                                                    rich_font_attribute <4>
+                                                  uni_end_stream
+                                                  >
+                                              man_end_object
+                                            man_end_object
+                                          man_start_sibling <edit_view, "">
+                                            rich_manage
+                                            mat_precise_height <80>
+                                            mat_precise_width <320>
+                                            mat_capacity <512>
+                                            mat_relative_tag <2>
+                                            mat_validation <128>
+                                            mat_bool_invisible <yes>
+                                          man_end_object
+                                        man_start_sibling <org_group, "">
+                                          mat_orientation <hce>
+                                          man_start_object <trigger, "Send">
+                                            mat_context_help <"Send Instant Message">
+                                            mat_command_key <0dx>
+                                            mat_bool_invisible <yes>
+                                            mat_relative_tag <4>
+                                            mat_color_face <100, 100, 178>
+                                            mat_color_text <240, 240, 240>
+                                            mat_color_top_edge <150, 200, 255>
+                                            mat_color_bottom_edge <1, 1, 1>
+                                            mat_trigger_style <place>
+                                            mat_font_id <arial>
+                                            mat_font_size <10>
+                                            mat_font_style <bold>
+                                            act_set_criterion <select>
+                                            act_append_action
+                                              <
+                                              uni_start_stream
+                                                uni_wait_on
+                                                de_validate <display_msg | terminate>
+                                                de_start_extraction
+                                                buf_set_token <"is">
+                                                man_set_context_relative <1>
+                                                de_get_data
+                                                man_end_context
+                                                man_set_context_relative <2>
+                                                de_get_data
+                                                man_end_context
+                                                de_end_extraction
+                                                buf_close_buffer
+                                                man_set_context_relative <2>
+                                                man_replace_data
+                                                man_make_focus
+                                                man_change_context_relative <42>
+                                                mat_value <0>
+                                                man_change_context_relative <43>
+                                                mat_value <0>
+                                                man_change_context_relative <44>
+                                                mat_value <0>
+                                                man_end_context
+                                                man_update_display
+                                              uni_end_stream
+                                              >
+                                          man_start_sibling <trigger, "Respond">
+                                            mat_context_help <"Click here to\x7fsend reply">
+                                            mat_relative_tag <5>
+                                            mat_color_face <100, 100, 178>
+                                            mat_color_text <240, 240, 240>
+                                            mat_color_top_edge <150, 200, 255>
+                                            mat_color_bottom_edge <1, 1, 1>
+                                            mat_trigger_style <place>
+                                            mat_font_id <arial>
+                                            mat_font_size <10>
+                                            mat_font_style <bold>
+                                            man_make_focus
+                                            act_replace_select_action
+                                                <
+                                                uni_start_stream
+                                                  man_set_context_relative <2>
+                                                  mat_bool_invisible <no>
+                                                  man_make_focus
+                                                  man_change_context_relative <4>
+                                                  mat_bool_invisible <no>
+                                                  man_change_context_relative <5>
+                                                  mat_bool_invisible <yes>
+                                                  man_change_context_relative <6>
+                                                  mat_bool_invisible <yes>
+                                                  man_change_context_relative <60>
+                                                  mat_bool_invisible <no>
+                                                  man_change_context_relative <61>
+                                                  mat_bool_invisible <no>
+                                                  man_change_context_relative <41>
+                                                  mat_bool_invisible <no>
+                                                  man_change_context_relative <64>
+                                                  mat_bool_invisible <no>
+                                                  man_change_context_relative <65>
+                                                  mat_bool_invisible <no>
+                                                  man_change_context_relative <42>
+                                                  mat_bool_invisible <no>
+                                                  man_change_context_relative <43>
+                                                  mat_bool_invisible <no>
+                                                  man_change_context_relative <44>
+                                                  mat_bool_invisible <no>
+                                                  man_end_context
+                                                  man_update_display
+                                                uni_end_stream
+                                                >
+                                            man_start_sibling <trigger, "Cancel">
+                                              mat_context_help <"Close window">
+                                              mat_color_face <100, 100, 178>
+                                              mat_color_text <240, 240, 240>
+                                              mat_color_top_edge <150, 200, 255>
+                                              mat_color_bottom_edge <1, 1, 1>
+                                              mat_trigger_style <place>
+                                              mat_font_id <arial>
+                                              mat_font_size <10>
+                                              mat_font_style <bold>
+                                              act_replace_select_action
+                                                  <
+                                                  uni_start_stream
+                                                    man_close_update
+                                                  uni_end_stream
+                                                  >
+                                              man_end_object
+                                            man_end_object
+                                            man_update_display
+                                          uni_end_stream

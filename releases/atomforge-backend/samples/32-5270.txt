@@ -1,0 +1,117 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Graphics Viewing Preferences">
+    mat_object_id <32-5270>
+    mat_style_id <32-5270>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <ornament, "">
+      mat_size <50, 6>
+      man_append_data <"While you are online AOL will save online art to your PC's hard drive, this saves time when you enter the area again as you already have the necessary online art. You can control how much art is stored on your PC by changing the number below. If you increase the disk space AOL will run faster but take more space on your hard drive.">
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <ornament, "">
+        mat_size <30, 1>
+        man_append_data <"Maximum disk space to use for online art: ">
+      man_end_object
+      man_start_object <select_range, "">
+        mat_relative_tag <12>
+        mat_minimum <1>
+        mat_maximum <1000>
+        mat_increment <1>
+      man_end_object
+      man_start_object <ornament, "">
+        mat_size <10, 1>
+        man_append_data <"megabyte(s)">
+      man_end_object
+    man_start_sibling <ornament, "">
+      mat_art_id <1-0-1369>
+      mat_bool_disabled <yes>
+    man_end_object
+    man_start_object <sms_list, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "Display image files on download">
+        mat_relative_tag <1>
+      man_end_object
+    man_end_object
+    man_start_object <select_range, "JPEG compression quality:">
+      mat_relative_tag <7>
+      mat_title_pos <left | center | 4>
+      mat_minimum <1>
+      mat_maximum <100>
+    man_end_object
+    man_start_object <ornament, "">
+      mat_art_id <1-0-1369>
+      mat_bool_disabled <yes>
+    man_end_object
+    man_start_object <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "Set Color Mode">
+        act_replace_select_action
+            <
+            uni_start_stream
+              man_close_update
+              uni_invoke_no_context <32-2589>
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "OK">
+          mat_bool_default <yes>
+          act_replace_select_action
+              <
+              uni_start_stream
+                de_start_extraction
+                man_set_context_relative <7>
+                idb_start_obj <"b">
+                idb_atr_globalid <20-0-280>
+                de_get_data_value
+                uni_use_last_atom_value <idb_append_data>
+                idb_end_obj
+                man_end_context
+                man_set_context_relative <1>
+                idb_start_obj <"b">
+                idb_atr_globalid <20-0-267>
+                de_get_data_value
+                uni_use_last_atom_value <idb_append_data>
+                idb_end_obj
+                man_end_context
+                man_set_context_relative <12>
+                idb_start_obj <"b">
+                idb_atr_globalid <20-0-206>
+                de_get_data_value
+                uni_use_last_atom_value <idb_append_data>
+                idb_end_obj
+                man_end_context
+                de_end_extraction
+                man_close
+                man_update_display
+              uni_end_stream
+              >
+          man_start_sibling <trigger, "Cancel">
+            act_replace_select_action
+                <
+                uni_start_stream <00x>
+                  man_close_update
+                uni_end_stream <00x>
+                >
+            man_end_object
+          man_end_object
+          man_update_display
+          man_set_context_relative <7>
+          act_get_db_value <14x, 00x, 01x, 18x>
+          uni_use_last_atom_value <mat_value>
+          man_set_context_relative <1>
+          act_get_db_value <14x, 00x, 01x, 0bx>
+          uni_use_last_atom_value <mat_value>
+          man_end_context
+          man_set_context_relative <12>
+          act_get_db_value <14x, 00x, 00x, cex>
+          uni_save_result
+          uni_use_last_atom_value <mat_value>
+          uni_get_result
+          if_last_return_false_then <31>
+          mat_value <10>
+          uni_sync_skip <31>
+          man_end_context
+          man_update_display
+          uni_wait_off
+        uni_end_stream <00x>

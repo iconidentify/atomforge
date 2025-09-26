@@ -1,0 +1,23 @@
+uni_start_stream
+  pictalk_attr_ctrl_id <07x, d3x>
+  pictalk_attr_art_id <14x, 00x, 01x, 8ex>
+  pictalk_update_art
+  pictalk_attr_ctrl_id <07x, d5x>
+  pictalk_attr_art_id <14x, 00x, 01x, 88x>
+  pictalk_update_art
+  pictalk_attr_ctrl_id <07x, d4x>
+  pictalk_attr_art_id <14x, 00x, 01x, 89x>
+  pictalk_update_art
+  pictalk_attr_ctrl_id <07x, d2x>
+  pictalk_attr_art_id <14x, 00x, 01x, 8ax>
+  pictalk_update_art
+  pictalk_attr_ctrl_id <07x, d2x>
+  pictalk_attr_art_id <14x, 00x, 01x, 8ax>
+  pictalk_update_art
+  pictalk_attr_ctrl_id <07x, d0x>
+  pictalk_attr_art_id <14x, 00x, 01x, 8bx>
+  pictalk_update_art
+  pictalk_attr_ctrl_id <07x, d1x>
+  pictalk_attr_art_id <14x, 00x, 01x, 8cx>
+  pictalk_update_art
+uni_end_stream

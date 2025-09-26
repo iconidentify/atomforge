@@ -1,0 +1,23 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Software Upgrade">
+    mat_object_id <32-136>
+    mat_orientation <vcf>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <ornament, "">
+      mat_size <40, 4>
+      mat_relative_tag <1>
+      man_append_data <"You will not be able to use the web browser until you accept this software update.  When you are ready">
+      man_append_data <" to update your software, simply attempt to access the web again.">
+    man_start_sibling <trigger, "OK">
+      mat_bool_default <yes>
+      act_replace_select_action
+          <
+          uni_start_stream <00x>
+            man_close_update
+          uni_end_stream <00x>
+          >
+      man_end_object
+      man_update_display
+      uni_wait_off
+    uni_end_stream <00x>

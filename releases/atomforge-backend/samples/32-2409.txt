@@ -1,0 +1,28 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Software Update">
+    mat_object_id <32-2409>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <ornament, "">
+      mat_size <40, 21>
+      mat_relative_tag <1>
+      man_append_data <"The Charting feature of America Online requires some additional files to be added to your America Onli">
+      man_append_data <"ne 2.5 software.  This can be done automatically for you at this time.\x7f\x7fSelect \"Update\" below to begin downloa">
+      man_append_data <"ding the charting software. This process will take about 4 minutes at 9600 baud, 3 minutes at 14,400 baud, or ">
+      man_append_data <"about a minute at 28,800 baud.  Immediately after the download completes, the chart will be displayed for you.">
+      man_append_data <"\x7f\x7fIf you would prefer to update your software at another time, select \"Cancel\" below.\x7f\x7fIf for any reason this ">
+      man_append_data <"update is interrupted, please completely exit and restart America Online.  This will allow us to complete addi">
+      man_append_data <"ng the new fuctionality.\x7f\x7fYou will not incur any regular hourly charges during this update.\x7f">
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "Update">
+        mat_relative_tag <2>
+        mat_bool_default <yes>
+      man_start_sibling <trigger, "Cancel">
+        mat_relative_tag <3>
+      man_end_object
+    man_end_object
+    man_update_display
+    uni_wait_off
+  uni_end_stream <00x>

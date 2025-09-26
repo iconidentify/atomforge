@@ -1,0 +1,22 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Error">
+    mat_object_id <32-4733>
+    mat_orientation <vcf>
+    mat_position <center_center>
+    man_start_object <view, "">
+      mat_size <50, 8>
+      mat_relative_tag <1>
+      mat_bool_writeable <yes>
+      man_append_data <"The following problems occurred while processing your request:\x7f\x7f">
+    man_start_sibling <trigger, "OK">
+      mat_bool_default <yes>
+      act_replace_select_action
+          <
+          uni_start_stream <00x>
+            man_close_update
+          uni_end_stream <00x>
+          >
+      man_end_object
+      man_update_display
+      uni_wait_off
+    uni_end_stream <00x>

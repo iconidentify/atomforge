@@ -1,0 +1,77 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Graphics Viewing Preferences">
+    mat_object_id <32-1987>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <sms_list, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "Display image files on download">
+        mat_relative_tag <1>
+      man_end_object
+    man_end_object
+    man_start_object <select_range, "JPEG compression quality:">
+      mat_relative_tag <7>
+      mat_title_pos <left | center | 4>
+      mat_minimum <1>
+      mat_maximum <100>
+    man_end_object
+    man_start_object <ornament, "">
+      mat_art_id <1-0-1369>
+      mat_bool_disabled <yes>
+    man_end_object
+    man_start_object <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "Set Color Mode">
+        act_replace_select_action
+            <
+            uni_start_stream
+              man_close_update
+              uni_invoke_no_context <32-2589>
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "OK">
+          mat_bool_default <yes>
+          act_replace_select_action
+              <
+              uni_start_stream
+                de_start_extraction
+                man_set_context_relative <7>
+                idb_start_obj <"b">
+                idb_atr_globalid <20-0-280>
+                de_get_data_value
+                uni_use_last_atom_value <idb_append_data>
+                idb_end_obj
+                man_end_context
+                man_set_context_relative <1>
+                idb_start_obj <"b">
+                idb_atr_globalid <20-0-267>
+                de_get_data_value
+                uni_use_last_atom_value <idb_append_data>
+                idb_end_obj
+                man_end_context
+                de_end_extraction
+                man_close
+                man_update_display
+              uni_end_stream
+              >
+          man_start_sibling <trigger, "Cancel">
+            act_replace_select_action
+                <
+                uni_start_stream <00x>
+                  man_close_update
+                uni_end_stream <00x>
+                >
+            man_end_object
+          man_end_object
+          man_update_display
+          man_set_context_relative <7>
+          act_get_db_value <14x, 00x, 01x, 18x>
+          uni_use_last_atom_value <mat_value>
+          man_set_context_relative <1>
+          act_get_db_value <14x, 00x, 01x, 0bx>
+          uni_use_last_atom_value <mat_value>
+          man_end_context
+          man_update_display
+          uni_wait_off
+        uni_end_stream <00x>

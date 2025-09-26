@@ -1,0 +1,50 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Performance Warning">
+    mat_object_id <40-25830>
+    mat_style_id <40-25830>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <org_group, "">
+      mat_orientation <hcf>
+      man_start_object <ornament, "">
+        mat_size <10, 1>
+        mat_font_id <times_roman>
+        mat_font_size <12>
+        man_append_data <"ATTENTION">
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hlf>
+      man_start_object <ornament, "">
+        mat_size <45, 16>
+        man_append_data <"Your Personal Filing Cabinet (PFC) has a lot of empty space in it. If you compact the PFC, you will reclaim this space on your hard disk and help America Online to load faster.\x7f\x7fYou can compact the PFC by selecting Compact Now, or you can wait until another time by selecting Don't Compact. If you wait, you can do it later by opening the PFC window and selecting the Compact button at the bottom.\x7f\x7fNote: You can set the free space level at which this warning appears. To do this, select the menu item Members, then select Set Preferences and then Personal Filing Cabinet.\x7f\x7fThis warning will not be displayed again until the next time your PFC needs to be compacted.">
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hcf>
+      man_start_object <ornament, "">
+        mat_size <20, 2>
+        man_append_data <"What would you like to do?">
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "Compact Now">
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              man_close_update
+              morg_pfc_compress_database
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Don't Compact">
+          act_replace_select_action
+              <
+              uni_start_stream
+                man_close_update
+              uni_end_stream
+              >
+          man_end_object
+        man_end_object
+        man_update_display
+        uni_wait_off
+      uni_end_stream <00x>

@@ -1,0 +1,52 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "">
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_style_id <32-100>
+    mat_dirty_query <yes>
+    man_start_object <org_group, "">
+      mat_orientation <hle>
+      man_start_object <edit_view, "Enter Title:">
+        mat_size <25, 1, 32>
+        mat_relative_tag <2>
+        mat_title_pos <left | center>
+        mat_bool_vertical_scroll <no>
+        mat_bool_resize_vertical <no>
+        mat_bool_resize_horizontal <no>
+        mat_validation <128>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hlf>
+      man_start_object <ornament, "">
+        mat_size <40, 1, 0>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <vfe>
+      man_start_object <edit_view, "Enter Brief Description">
+        mat_size <35, 2, 120>
+        mat_relative_tag <3>
+        mat_bool_resize_vertical <no>
+        mat_bool_resize_horizontal <no>
+        mat_bool_writeable <yes>
+        mat_validation <128>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hec>
+      man_start_object <trigger, "Create">
+        mat_art_id <1-0-1320>
+        act_replace_select_action
+            <
+            uni_start_stream <00x>
+            de_ez_send_form <"bf">
+            >
+        man_start_sibling <trigger, "Help & Info">
+          mat_art_id <1-0-1325>
+          act_replace_select_action
+              <
+              uni_start_stream <00x>
+              sm_send_k1 <8-50934>
+              >
+          man_end_object
+        man_end_object
+        man_update_display
+      uni_end_stream <00x>

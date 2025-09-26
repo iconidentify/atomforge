@@ -1,0 +1,180 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "New Helper Application">
+    mat_object_id <32-4654>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <edit_view, "Description (example:  JPEG Image Files):">
+      mat_size <50, 1>
+      mat_relative_tag <1>
+      mat_vertical_spacing <5>
+      mat_bool_writeable <yes>
+      mat_validation <128>
+    man_start_sibling <edit_view, "Content Type and Sub-Type (example:  image/jpeg):">
+      mat_size <50, 1>
+      mat_relative_tag <2>
+      mat_vertical_spacing <5>
+      mat_bool_writeable <yes>
+      mat_validation <128>
+    man_start_sibling <edit_view, "File Extensions (example:  jpg, jpeg):">
+      mat_size <50, 1>
+      mat_relative_tag <3>
+      mat_vertical_spacing <5>
+      mat_bool_writeable <yes>
+      mat_validation <128>
+    man_start_sibling <org_group, "">
+      mat_orientation <hfc>
+      man_start_object <edit_view, "Application Name (example:  mplayer):">
+        mat_size <42, 1>
+        mat_relative_tag <4>
+        mat_vertical_spacing <5>
+        mat_bool_writeable <yes>
+      man_start_sibling <trigger, "Browse...">
+        mat_relative_tag <6>
+        act_replace_select_action
+            <
+            uni_start_stream
+              fm_start
+              fm_item_type <file_type_ext>
+              fm_item_set <"exe">
+              fm_item_type <file_type_desc>
+              fm_item_set <"Applications (*.exe)">
+              fm_register
+              fm_item_get <file_type_id>
+              var_number_set_from_atom <A>
+              fm_add_file_type
+              fm_item_type <filename>
+              fm_item_set <"*.EXE">
+              fm_dialog_get_file <"Choose Application">
+              fm_item_get <error_code>
+              if_last_return_false_then <1>
+              man_set_context_relative <4>
+              fm_item_get <filespec>
+              uni_use_last_atom_string <man_replace_data>
+              man_update_display
+              man_end_context
+              uni_sync_skip <1>
+              fm_item_type <file_type_id>
+              var_number_get <A>
+              uni_use_last_atom_value <fm_item_set>
+              fm_unregister
+              fm_end
+            uni_end_stream
+            >
+        man_end_object
+      man_start_sibling <sss_list, "">
+        mat_orientation <hef>
+        mat_relative_tag <5>
+        man_start_object <trigger, "Use AOL to present it">
+          mat_vertical_spacing <5>
+          act_replace_select_action
+              <
+              uni_start_stream
+                man_set_context_relative <4>
+                mat_bool_hidden <yes>
+                mat_validation <0>
+                man_end_context
+                man_set_context_relative <6>
+                mat_bool_hidden <yes>
+                man_end_context
+                man_update_display
+              uni_end_stream
+              >
+          man_start_sibling <trigger, "Use a separate application">
+            act_replace_select_action
+                <
+                uni_start_stream
+                  man_set_context_relative <4>
+                  mat_bool_hidden <no>
+                  mat_validation <128>
+                  man_end_context
+                  man_set_context_relative <6>
+                  mat_bool_hidden <no>
+                  man_end_context
+                  man_update_display
+                uni_end_stream
+                >
+            man_end_object
+          man_start_sibling <org_group, "">
+            mat_orientation <hef>
+            man_start_object <trigger, "OK">
+              mat_title_width <7>
+              mat_bool_default <yes>
+              act_replace_select_action
+                  <
+                  uni_start_stream
+                    de_validate <display_msg | terminate>
+                    de_start_extraction <0>
+                    fm_start
+                    fm_item_type <ini_file>
+                    fm_item_set <"VIEWERS.INI">
+                    fm_item_type <ini_group>
+                    fm_item_set <"VIEWERS">
+                    fm_item_type <ini_key>
+                    man_set_context_relative <2>
+                    de_get_data_pointer
+                    var_string_set_from_atom <B>
+                    uni_use_last_atom_string <fm_item_set>
+                    man_end_context
+                    fm_item_type <ini_data_type>
+                    fm_item_set <"\x00">
+                    man_set_context_relative <1>
+                    de_get_data_pointer
+                    uni_save_result
+                    uni_use_last_atom_string <fm_ini_write_data>
+                    uni_get_result
+                    uni_use_last_atom_string <man_preset_title>
+                    man_end_context
+                    fm_item_type <ini_group>
+                    var_string_get <B>
+                    uni_use_last_atom_string <fm_item_set>
+                    fm_item_type <ini_key>
+                    fm_item_set <"Ext">
+                    man_set_context_relative <3>
+                    de_get_data_pointer
+                    uni_use_last_atom_string <fm_ini_write_data>
+                    man_end_context
+                    fm_item_type <ini_key>
+                    fm_item_set <"App">
+                    man_set_context_relative <5>
+                    de_get_data_value
+                    var_number_set_from_atom <A>
+                    man_end_context
+                    if_numa_eq_one_then <10, 20>
+                    fm_ini_write_data
+                    uni_sync_skip <10>
+                    man_set_context_relative <4>
+                    de_get_data_pointer
+                    uni_use_last_atom_string <fm_ini_write_data>
+                    man_end_context
+                    uni_sync_skip <20>
+                    fm_end
+                    de_end_extraction
+                    man_close_update
+                    man_set_context_globalid <32-4653>
+                    man_set_context_relative <1>
+                    man_start_object <trigger, "">
+                      var_string_save <B, 1>
+                    man_end_object
+                    man_end_context
+                    man_update_display
+                    man_end_context
+                  uni_end_stream
+                  >
+              man_start_sibling <trigger, "Cancel">
+                mat_title_width <7>
+                act_replace_select_action
+                    <
+                    uni_start_stream <00x>
+                      man_close_update
+                    uni_end_stream <00x>
+                    >
+                man_end_object
+              man_end_object
+              man_update_display
+              man_set_context_relative <5>
+              mat_value <2>
+              man_update_display
+              man_end_context
+              uni_wait_off
+            uni_end_stream <00x>

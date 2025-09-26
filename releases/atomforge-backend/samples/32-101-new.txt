@@ -1,0 +1,42 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Add A Message">
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_style_id <32-101>
+    mat_dirty_query <yes>
+    man_start_object <org_group, "">
+      mat_orientation <hlf>
+      man_start_object <ornament, "">
+        mat_size <10, 1, 10>
+        mat_font_size <14>
+        mat_font_style <bold>
+        man_append_data <"Post To:">
+      man_start_sibling <ornament, "">
+        mat_size <35, 2, 80>
+        mat_relative_tag <14>
+        mat_title_pos <left | center>
+        mat_ruler <5>
+        mat_font_size <12>
+      man_end_object
+    man_start_sibling <edit_view, "Enter Subject:">
+      mat_size <40, 1, 32>
+      mat_relative_tag <3>
+      mat_title_pos <left | center>
+      mat_bool_vertical_scroll <no>
+      mat_bool_resize_vertical <no>
+      mat_validation <128>
+    man_start_sibling <ornament, "">
+      mat_size <1, 1, 1>
+    man_start_sibling <edit_view, "Enter Text:">
+      mat_size <50, 6, 4048>
+      mat_relative_tag <4>
+      mat_bool_writeable <yes>
+      mat_validation <128>
+    man_start_sibling <org_group, "">
+      mat_orientation <hcc>
+      man_start_object <trigger, "Post">
+        mat_relative_tag <13>
+        mat_art_id <1-0-1609>
+      man_end_object
+    man_end_object
+  uni_end_stream <00x>

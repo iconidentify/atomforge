@@ -1,0 +1,376 @@
+uni_start_stream
+  man_set_context_globalid <3>
+  mat_value <1>
+  man_start_object <org_group, "">
+    mat_orientation <hff>
+    sm_set_plus_group <3fx, c1x>
+    man_start_object <org_group, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "">
+        mat_context_help <"Read New Mail">
+        mat_bool_disabled <yes>
+        mat_relative_tag <1>
+        mat_art_id <1-0-2368>
+        mat_horizontal_spacing <0>
+        mat_vertical_spacing <0>
+        act_replace_select_action
+            <
+            uni_start_stream_wait_on
+              sm_enter_paid
+              man_do_magic_token_arg <"eL">
+              if_last_return_false_then <1>
+              buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+              buf_set_token <"eL">
+              buf_close_buffer
+              uni_sync_skip <1>
+            uni_end_stream
+            >
+        man_end_object
+        man_start_object <trigger, "">
+          mat_context_help <"Compose Mail">
+          mat_relative_tag <2>
+          mat_art_id <1-0-2376>
+          mat_horizontal_spacing <3>
+          mat_vertical_spacing <0>
+          idb_exists <20-0-53>
+          if_last_return_false_then <1, 2>
+          act_replace_select_action
+              <
+              uni_start_stream_wait_on
+                sm_enter_paid
+                uni_invoke_no_context <32-226>
+              uni_wait_off_end_stream
+              >
+            uni_sync_skip <1>
+            act_replace_select_action
+                <
+                uni_start_stream_wait_on
+                  sm_enter_paid
+                  uni_invoke_no_context <32-2503>
+                uni_end_stream
+                >
+              uni_sync_skip <2>
+            man_end_object
+          man_end_object
+          man_start_object <org_group, "">
+            mat_orientation <hff>
+            man_start_object <trigger, "">
+              mat_context_help <"Main Menu">
+              mat_bool_disabled <yes>
+              mat_relative_tag <3>
+              mat_art_id <1-0-2365>
+              mat_horizontal_spacing <0>
+              mat_vertical_spacing <0>
+              act_replace_select_action
+                  <
+                  uni_start_stream_wait_on
+                    man_preset_gid <32-2569>
+                    if_last_return_true_then <1, 2>
+                    man_make_focus
+                    man_update_display
+                    uni_sync_skip <1>
+                    uni_wait_on
+                    uni_invoke_no_context <32-2569>
+                    uni_sync_skip <2>
+                  uni_wait_off_end_stream
+                  >
+              man_end_object
+              man_start_object <trigger, "">
+                mat_context_help <"In the Spotlight">
+                mat_bool_disabled <yes>
+                mat_art_id <1-0-2373>
+                mat_relative_tag <4>
+                mat_horizontal_spacing <0>
+                mat_vertical_spacing <0>
+                act_replace_select_action
+                    <
+                    uni_start_stream
+                      sm_enter_paid
+                      man_set_context_globalid <32-30>
+                      man_make_focus
+                      man_update_display
+                      man_end_context
+                    uni_wait_off_end_stream
+                    >
+                man_end_object
+                man_start_object <trigger, "">
+                  mat_context_help <"Member Services">
+                  mat_bool_disabled <yes>
+                  mat_art_id <1-0-2366>
+                  mat_relative_tag <5>
+                  mat_horizontal_spacing <0>
+                  mat_vertical_spacing <0>
+                  act_replace_select_action
+                      <
+                      uni_start_stream
+                      sm_send_free_f1 <40-4218>
+                    uni_end_stream
+                    >
+                man_end_object
+                man_start_object <trigger, "">
+                  mat_context_help <"Directory of Services">
+                  mat_bool_disabled <yes>
+                  mat_art_id <1-0-2372>
+                  mat_relative_tag <6>
+                  mat_horizontal_spacing <0>
+                  mat_vertical_spacing <0>
+                  act_set_criterion <select>
+                  act_append_action
+                    <
+                    uni_start_stream_wait_on
+                      sm_enter_paid
+                      man_do_magic_token_arg <"f1", 32-322>
+                      if_last_return_false_then <1>
+                      buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                      buf_set_token <"f1">
+                      buf_add_atom_data <2097474>
+                      buf_close_buffer
+                      uni_sync_skip <1>
+                    uni_end_stream
+                    >
+                man_end_object
+                man_start_object <trigger, "">
+                  mat_context_help <"People Connection">
+                  mat_bool_disabled <yes>
+                  mat_art_id <1-0-2384>
+                  mat_relative_tag <60>
+                  mat_horizontal_spacing <3>
+                  mat_vertical_spacing <0>
+                  act_replace_select_action
+                      <
+                      uni_start_stream_wait_on
+                        sm_enter_paid
+                        buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                        buf_set_token <"CJ">
+                        buf_close_buffer
+                      uni_end_stream
+                      >
+                  man_end_object
+                man_end_object
+                man_start_object <org_group, "">
+                  mat_orientation <hff>
+                  man_start_object <trigger, "">
+                    mat_context_help <"Quotes & Portfolios">
+                    mat_bool_disabled <yes>
+                    mat_relative_tag <14>
+                    mat_art_id <1-0-2374>
+                    mat_horizontal_spacing <0>
+                    mat_vertical_spacing <0>
+                    act_replace_select_action
+                        <
+                        uni_start_stream_wait_on
+                          sm_enter_paid
+                          man_do_magic_response_id <8391>
+                          if_last_return_false_then <1, 2>
+                          buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                          buf_set_token <"K1">
+                          buf_add_atom_data <587703>
+                          buf_close_buffer
+                          uni_sync_skip <1>
+                          man_make_focus
+                          man_update_display
+                          uni_wait_off
+                          uni_sync_skip <2>
+                        uni_end_stream
+                        >
+                    man_end_object
+                    man_start_object <trigger, "">
+                      mat_context_help <"Today's News">
+                      mat_bool_disabled <yes>
+                      mat_relative_tag <15>
+                      mat_art_id <1-0-2375>
+                      mat_horizontal_spacing <0>
+                      mat_vertical_spacing <0>
+                      act_replace_select_action
+                          <
+                          uni_start_stream_wait_on
+                            sm_enter_paid
+                          sm_send_f1 <32-2573>
+                          >
+                      man_end_object
+                      man_start_object <trigger, "">
+                        mat_context_help <"Center Stage">
+                        mat_bool_disabled <yes>
+                        mat_relative_tag <50>
+                        mat_art_id <1-0-2363>
+                        mat_horizontal_spacing <0>
+                        mat_vertical_spacing <0>
+                        act_replace_select_action
+                            <
+                            uni_start_stream_wait_on
+                            sm_send_paid_f1 <40-3760>
+                          uni_end_stream
+                          >
+                      man_end_object
+                      man_start_object <trigger, "">
+                        mat_context_help <"Internet Connection">
+                        mat_bool_disabled <yes>
+                        mat_relative_tag <51>
+                        mat_art_id <1-0-2359>
+                        mat_horizontal_spacing <0>
+                        mat_vertical_spacing <0>
+                        act_replace_select_action
+                            <
+                            uni_start_stream_wait_on
+                            sm_send_paid_f1 <32-2577>
+                          uni_end_stream
+                          >
+                      man_end_object
+                      man_start_object <trigger, "">
+                        mat_context_help <"New Features & Services">
+                        mat_relative_tag <18>
+                        mat_art_id <1-0-2367>
+                        mat_bool_disabled <yes>
+                        mat_horizontal_spacing <0>
+                        mat_vertical_spacing <0>
+                        act_replace_select_action
+                            <
+                            uni_start_stream_wait_on
+                              sm_enter_paid
+                              man_do_magic_token_arg <"K1", 32-377>
+                              buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                              buf_set_token <"K1">
+                              buf_add_atom_data <2097529>
+                              buf_close_buffer
+                            uni_end_stream
+                            >
+                        man_end_object
+                      man_end_object
+                      man_start_object <trigger, "">
+                        mat_context_help <"Discover America Online">
+                        mat_bool_disabled <yes>
+                        mat_relative_tag <52>
+                        mat_art_id <1-0-2362>
+                        mat_horizontal_spacing <3>
+                        mat_vertical_spacing <0>
+                        act_replace_select_action
+                            <
+                            uni_start_stream_wait_on
+                            sm_send_paid_f1 <40-5242>
+                          uni_end_stream
+                          >
+                      man_end_object
+                      man_start_object <org_group, "">
+                        mat_orientation <hff>
+                        man_start_object <trigger, "">
+                          mat_context_help <"Go to Keyword">
+                          mat_bool_disabled <yes>
+                          mat_relative_tag <12>
+                          mat_art_id <1-0-2364>
+                          mat_horizontal_spacing <0>
+                          mat_vertical_spacing <0>
+                          act_replace_select_action
+                              <
+                              uni_start_stream_wait_on <00x>
+                                man_do_magic_response_id <8422>
+                                uni_invoke_no_context <40-5792>
+                              uni_end_stream
+                              >
+                          man_end_object
+                          man_start_object <trigger, "">
+                            mat_context_help <"Download Manager">
+                            mat_relative_tag <11>
+                            mat_art_id <1-0-2361>
+                            mat_horizontal_spacing <0>
+                            mat_vertical_spacing <0>
+                            act_replace_select_action
+                                <
+                                uni_start_stream_wait_on
+                                  sm_enter_paid
+                                  xfer_invoke_dl_manager
+                                uni_end_stream
+                                >
+                            man_end_object
+                            man_start_object <trigger, "">
+                              mat_context_help <"File Search">
+                              mat_bool_disabled <yes>
+                              mat_relative_tag <13>
+                              mat_art_id <1-0-2360>
+                              mat_horizontal_spacing <0>
+                              mat_vertical_spacing <0>
+                              act_replace_select_action
+                                  <
+                                  uni_start_stream_wait_on
+                                    sm_enter_paid
+                                    man_do_magic_response_id <8245>
+                                    buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                                    buf_set_token <"K1">
+                                    buf_add_atom_data <536263>
+                                    buf_close_buffer
+                                    uni_sync_skip <1>
+                                  uni_end_stream
+                                  >
+                              man_end_object
+                              man_start_object <trigger, "">
+                                mat_context_help <"Online Clock">
+                                mat_relative_tag <17>
+                                mat_art_id <1-0-2353>
+                                mat_bool_disabled <yes>
+                                mat_horizontal_spacing <0>
+                                mat_vertical_spacing <0>
+                                act_replace_select_action
+                                    <
+                                    uni_start_stream_wait_on
+                                      buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                                      buf_set_token <"K1">
+                                      buf_add_atom_data <540323>
+                                      buf_close_buffer
+                                    uni_end_stream
+                                    >
+                                man_end_object
+                                man_start_object <trigger, "">
+                                  mat_context_help <"Personal Choices">
+                                  mat_relative_tag <53>
+                                  mat_art_id <1-0-2369>
+                                  mat_bool_disabled <yes>
+                                  mat_horizontal_spacing <3>
+                                  mat_vertical_spacing <0>
+                                  act_replace_select_action
+                                      <
+                                      uni_start_stream_wait_on
+                                      sm_send_f1 <40-4408>
+                                      >
+                                  man_end_object
+                                man_end_object
+                                man_start_object <org_group, "">
+                                  mat_orientation <hff>
+                                  man_start_object <trigger, "">
+                                    mat_context_help <"Print">
+                                    mat_relative_tag <19>
+                                    mat_art_id <1-0-2370>
+                                    mat_bool_disabled <no>
+                                    mat_horizontal_spacing <0>
+                                    mat_vertical_spacing <0>
+                                    act_replace_select_action
+                                        <
+                                        uni_start_stream
+                                          fm_start
+                                          fm_broadcast <09x>
+                                          fm_handle_error <display_msg | terminate>
+                                          fm_end
+                                        uni_end_stream
+                                        >
+                                    man_end_object
+                                    man_start_object <trigger, "">
+                                      mat_context_help <"Save">
+                                      mat_relative_tag <20>
+                                      mat_art_id <1-0-2371>
+                                      mat_bool_disabled <no>
+                                      mat_horizontal_spacing <0>
+                                      mat_vertical_spacing <0>
+                                      act_replace_select_action
+                                          <
+                                          uni_start_stream
+                                            fm_start
+                                            fm_broadcast <04x>
+                                            fm_handle_error <display_msg | terminate>
+                                            fm_end
+                                          uni_end_stream
+                                          >
+                                      man_end_object
+                                    man_end_object
+                                    mat_vertical_spacing <0>
+                                  man_end_object
+                                  man_update_display
+                                  man_end_context
+                                uni_end_stream

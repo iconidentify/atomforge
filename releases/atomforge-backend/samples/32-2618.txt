@@ -1,0 +1,127 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "">
+    mat_object_id <32-2618>
+    mat_style_id <32-2618>
+    mat_orientation <vff>
+    mat_bool_background_tile <yes>
+    mat_art_id <1-0-2383>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    mat_bool_non_closeable <yes>
+    man_start_object <org_group, "">
+      mat_orientation <vcf>
+      man_start_object <org_group, "">
+        mat_orientation <hlf>
+        man_start_object <ornament, "">
+          mat_art_id <1-0-2381>
+        man_start_sibling <ornament, "">
+          mat_art_id <1-0-2382>
+          mat_bool_disabled <yes>
+        man_end_object
+      man_start_sibling <org_group, "">
+        mat_orientation <hcf>
+        man_start_object <ornament, "">
+          mat_size <35, 2>
+          mat_font_sis <arial, 9, bold>
+          mat_color_text <1>
+          mat_orientation <hcf>
+          man_replace_data <"America Online ">
+          idb_exists <20-0-68>
+          if_last_return_true_then <194>
+          idb_set_context <20-0-68>
+          idb_atr_offset <0>
+          idb_get_data
+          uni_use_last_atom_string <man_append_data>
+          idb_end_context
+          uni_sync_skip <194>
+          man_append_data <" for Windows">
+          act_get_db_value <14x, 00x, 00x, d1x>
+          if_last_return_true_then <1>
+          man_append_data <" 95">
+          uni_sync_skip <1>
+        man_end_object
+      man_start_sibling <ornament, "">
+        mat_size <40, 13>
+        mat_font_sis <arial, 7, normal>
+        mat_orientation <hcf>
+        mat_color_text <2>
+        mat_title_pos <above | center>
+        man_append_data <"Copyright (C) 1996, America Online, Inc.\x7f\x7fAll graphics were created especially for America Online.\x7f\x7fPortions Copyright (C) 1995 AccuSoft Corporation\x7f\x7fAll Rights Reserved\x7f\x7f">
+      man_start_sibling <trigger, "Click me for version">
+        mat_command_key <52x, 01x>
+        mat_bool_invisible <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              man_set_context_globalid <53>
+              man_start_object <ind_group, "Version Information">
+                mat_bool_modal <yes>
+                mat_orientation <vee>
+                man_start_object <view, "">
+                  mat_size <40, 2>
+                  man_replace_data <"You are using America Online for Windows v">
+                  idb_exists <20-0-68>
+                  if_last_return_true_then <194>
+                  idb_set_context <20-0-68>
+                  idb_atr_offset <0>
+                  idb_get_data
+                  uni_use_last_atom_string <man_append_data>
+                  idb_end_context
+                  uni_sync_skip <194>
+                  man_append_data <", revision ">
+                  idb_set_context <20-0-6>
+                  idb_atr_offset <1>
+                  idb_get_value <01x>
+                  uni_convert_last_atom_data
+                  uni_use_last_atom_string <man_append_data>
+                  man_append_data <".">
+                  idb_atr_offset <2>
+                  idb_get_value <01x>
+                  uni_convert_last_atom_data
+                  uni_use_last_atom_string <man_append_data>
+                  idb_end_context
+                  man_append_data <".">
+                man_start_sibling <trigger, "">
+                  man_make_focus
+                  mat_title <"OK">
+                  mat_title_width <6>
+                  mat_bool_default <yes>
+                  act_replace_select_action
+                      <
+                      uni_start_stream
+                        man_close_update
+                      uni_end_stream
+                      >
+                  man_end_object
+                  man_update_display
+                man_end_object
+              uni_end_stream
+              >
+          man_start_sibling <trigger, "Click me for TOOL versions">
+            mat_command_key <54x, 01x>
+            mat_bool_default <yes>
+            mat_bool_invisible <yes>
+            act_replace_select_action
+                <
+                uni_start_stream
+                  cm_show_tools
+                uni_end_stream
+                >
+            man_start_sibling <trigger, "OK">
+              mat_title_width <5>
+              man_make_focus
+              mat_trigger_style <rectangle>
+              mat_color_text <1, 1, 1>
+              mat_font_sis <arial, 10, bold>
+              mat_bool_default <yes>
+              act_replace_select_action
+                  <
+                  uni_start_stream <00x>
+                    man_close_update
+                  uni_end_stream <00x>
+                  >
+              man_end_object
+            man_end_object
+            man_update_display
+            uni_wait_off
+          uni_end_stream <00x>

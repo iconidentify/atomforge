@@ -1,0 +1,28 @@
+uni_start_stream
+  man_set_context_globalid <32-666>
+  man_set_context_relative <16>
+  man_replace_data <"New Locality">
+  man_set_context_relative <1>
+  mat_value <1>
+  man_set_context_relative <3>
+  man_replace_data
+  man_set_context_relative <4>
+  mat_value <3>
+  man_set_context_relative <5>
+  mat_value <1>
+  man_set_context_relative <6>
+  man_replace_data
+  man_set_context_relative <7>
+  mat_value <3>
+  man_set_context_relative <8>
+  mat_value <1>
+  man_set_context_relative <11>
+  mat_value <0>
+  man_set_context_relative <12>
+  mat_bool_disabled <yes>
+  man_set_context_relative <13>
+  mat_value <0>
+  man_set_context_relative <14>
+  mat_bool_disabled <yes>
+  man_update_display
+uni_end_stream

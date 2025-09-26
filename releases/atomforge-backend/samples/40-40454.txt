@@ -1,0 +1,118 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Security Alerts">
+    mat_object_id <40-40454>
+    mat_style_id <40-40454>
+    mat_orientation <vff>
+    mat_position <center_center>
+    man_start_object <org_group, "">
+      mat_orientation <vff>
+      man_start_object <org_group, "">
+        mat_orientation <vff>
+        man_start_object <ornament, "Show an Alert Before :">
+          mat_size <20, 1>
+        man_start_sibling <sms_list, "">
+          mat_orientation <hff>
+          man_start_object <trigger, " Entering a Secure Document Environment">
+            mat_relative_tag <1>
+          man_end_object
+        man_start_sibling <sms_list, "">
+          mat_orientation <hff>
+          man_start_object <trigger, "Leaving a Secure Document Environment">
+            mat_relative_tag <5>
+          man_end_object
+        man_start_sibling <sms_list, "">
+          mat_orientation <hff>
+          man_start_object <trigger, " Viewing a Document With a Secure/Insecure Mix">
+            mat_relative_tag <2>
+          man_end_object
+        man_start_sibling <sms_list, "">
+          mat_orientation <hff>
+          man_start_object <trigger, " Submitting a Form">
+            mat_relative_tag <3>
+          man_end_object
+        man_end_object
+      man_start_sibling <org_group, "">
+        mat_orientation <hef>
+        man_start_object <trigger, "OK">
+          mat_relative_tag <4>
+          mat_bool_default <yes>
+          act_replace_select_action
+              <
+              uni_start_stream
+                de_start_extraction <0>
+                lm_table_use_table <20-0-202>
+                lm_table_use_key <"secureNew">
+                man_set_context_relative <1>
+                de_get_data_value
+                if_last_return_false_then <10, 11>
+                lm_table_set_item <"0">
+                uni_sync_skip <10>
+                lm_table_set_item <"1">
+                uni_sync_skip <11>
+                man_end_context
+                lm_table_use_key <"leaveSecureDoc">
+                man_set_context_relative <5>
+                de_get_data_value
+                if_last_return_false_then <50, 51>
+                lm_table_set_item <"0">
+                uni_sync_skip <50>
+                lm_table_set_item <"1">
+                uni_sync_skip <51>
+                man_end_context
+                lm_table_use_key <"mixedSecurity">
+                man_set_context_relative <2>
+                de_get_data_value
+                if_last_return_false_then <20, 21>
+                lm_table_set_item <"0">
+                uni_sync_skip <20>
+                lm_table_set_item <"1">
+                uni_sync_skip <21>
+                man_end_context
+                lm_table_use_key <"secureSubmit">
+                man_set_context_relative <3>
+                de_get_data_value
+                if_last_return_false_then <30, 31>
+                lm_table_set_item <"0">
+                uni_sync_skip <30>
+                lm_table_set_item <"1">
+                uni_sync_skip <31>
+                man_end_context
+                de_end_extraction
+                man_close_update
+              uni_end_stream
+              >
+          man_start_sibling <trigger, "Cancel">
+            act_replace_select_action
+                <
+                uni_start_stream
+                  man_close_update
+                uni_end_stream
+                >
+            man_end_object
+          man_end_object
+        man_end_object
+        man_update_display
+        lm_table_use_table <20-0-202>
+        man_set_context_relative <1>
+        lm_table_use_key <"secureNew">
+        lm_table_get_item_value
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <5>
+        lm_table_use_key <"leaveSecureDoc">
+        lm_table_get_item_value
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <2>
+        lm_table_use_key <"mixedSecurity">
+        lm_table_get_item_value
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <3>
+        lm_table_use_key <"secureSubmit">
+        lm_table_get_item_value
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_update_display
+        uni_wait_off
+      uni_end_stream <00x>

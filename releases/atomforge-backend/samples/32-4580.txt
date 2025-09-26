@@ -1,0 +1,609 @@
+uni_start_stream
+  man_start_object <ind_group, "">
+    mat_bool_modal <yes>
+    mat_orientation <vef>
+    mat_object_id <32-666>
+    mat_title <"Network Setup">
+    man_start_object <org_group, "">
+      mat_orientation <hcc>
+      man_start_object <edit_view, "">
+        mat_title_pos <left | center>
+        mat_title <"Location: ">
+        mat_height <1>
+        mat_width <20>
+        mat_capacity <20>
+        mat_relative_tag <16>
+        mat_validation <128>
+      man_end_object
+    man_end_object
+    man_start_object <org_group, "">
+      mat_orientation <hcc>
+      man_start_object <ornament, "">
+        mat_title <"Phone Type:">
+      man_end_object
+      man_start_object <sss_list, "">
+        mat_relative_tag <1>
+        man_start_object <trigger, "">
+          mat_title <"Touch Tone">
+        man_end_object
+        man_start_object <trigger, "">
+          mat_title <"Pulse">
+        man_end_object
+      man_end_object
+    man_end_object
+    man_start_object <org_group, "">
+      mat_orientation <hff>
+      man_start_object <org_group, "">
+        mat_border <01x>
+        mat_title <"First Try">
+        mat_orientation <vlf>
+        man_start_object <edit_view, "">
+          mat_height <1>
+          mat_width <20>
+          mat_relative_tag <3>
+          mat_capacity <48>
+          mat_title_pos <left | center>
+          mat_title <"Phone Number:">
+        man_end_object
+        man_start_object <dss_list, "">
+          mat_title_pos <left | center>
+          mat_title <"Modem Speed:     ">
+          mat_height <1>
+          mat_width <18>
+          mat_relative_tag <4>
+          man_start_object <trigger, "">
+            mat_title <"300 bps">
+          man_end_object
+          man_start_object <trigger, "">
+            mat_title <"1200 bps">
+          man_end_object
+          man_start_object <trigger, "">
+            mat_title <"2400 bps">
+          man_end_object
+          man_start_object <trigger, "">
+            mat_title <"4800 bps">
+          man_end_object
+          man_start_object <trigger, "">
+            mat_title <"9600 bps">
+          man_end_object
+          man_start_object <trigger, "">
+            mat_title <"14400 bps">
+          man_end_object
+          man_start_object <trigger, "">
+            mat_title <"19200 bps">
+          man_end_object
+          man_start_object <trigger, "">
+            mat_title <"28800 bps">
+          man_end_object
+          man_start_object <trigger, "">
+            mat_title <"38400 bps">
+          man_end_object
+          man_start_object <trigger, "">
+            mat_title <"57600 bps">
+          man_end_object
+        man_end_object
+        man_start_object <dss_list, "">
+          mat_title_pos <left | center>
+          mat_title <"Network:           ">
+          mat_height <1>
+          mat_width <18>
+          mat_relative_tag <5>
+          ccl_add_net_choices
+        man_end_object
+      man_end_object
+      man_start_object <org_group, "">
+        mat_orientation <vlf>
+        mat_border <01x>
+        mat_title <"Second Try">
+        man_start_object <edit_view, "">
+          mat_height <1>
+          mat_width <20>
+          mat_capacity <48>
+          mat_relative_tag <6>
+          mat_title <"Phone Number:">
+          mat_title_pos <left | center>
+        man_end_object
+        man_start_object <dss_list, "">
+          mat_title_pos <left | center>
+          mat_title <"Modem Speed:     ">
+          mat_height <1>
+          mat_width <18>
+          mat_relative_tag <7>
+          man_start_object <trigger, "">
+            mat_title <"300 bps">
+          man_end_object
+          man_start_object <trigger, "">
+            mat_title <"1200 bps">
+          man_end_object
+          man_start_object <trigger, "">
+            mat_title <"2400 bps">
+          man_end_object
+          man_start_object <trigger, "">
+            mat_title <"4800 bps">
+          man_end_object
+          man_start_object <trigger, "">
+            mat_title <"9600 bps">
+          man_end_object
+          man_start_object <trigger, "">
+            mat_title <"14400 bps">
+          man_end_object
+          man_start_object <trigger, "">
+            mat_title <"19200 bps">
+          man_end_object
+          man_start_object <trigger, "">
+            mat_title <"28800 bps">
+          man_end_object
+          man_start_object <trigger, "">
+            mat_title <"38400 bps">
+          man_end_object
+          man_start_object <trigger, "">
+            mat_title <"57600 bps">
+          man_end_object
+        man_end_object
+        man_start_object <dss_list, "">
+          mat_title <"Network:           ">
+          mat_title_pos <left | center>
+          mat_height <1>
+          mat_width <18>
+          mat_relative_tag <8>
+          ccl_add_net_choices
+        man_end_object
+      man_end_object
+    man_end_object
+    man_start_object <org_group, "">
+      mat_orientation <vcf>
+      man_start_object <org_group, "">
+        mat_orientation <hcf>
+        man_start_object <sms_list, "">
+          man_start_object <trigger, "">
+            mat_relative_tag <11>
+            mat_title <"Use the following prefix to reach an outside line:">
+            act_set_criterion <select>
+            act_append_action
+              <
+              uni_start_stream
+                de_start_extraction <0>
+                man_set_context_relative <11>
+                de_get_data_value
+                uni_save_result
+                man_end_context
+                de_end_extraction
+                buf_close_buffer
+                uni_get_result
+                var_number_set_from_atom <A>
+                if_numa_false_then <1, 2>
+                man_set_context_relative <12>
+                mat_bool_disabled <yes>
+                uni_sync_skip <1>
+                man_set_context_relative <12>
+                mat_bool_disabled <no>
+                uni_sync_skip <2>
+                man_end_context
+                man_update_display
+              uni_end_stream
+              >
+          man_end_object
+        man_end_object
+        man_start_object <edit_view, "">
+          mat_height <1>
+          mat_width <20>
+          mat_relative_tag <12>
+          mat_capacity <100>
+        man_end_object
+      man_end_object
+      man_start_object <org_group, "">
+        mat_orientation <hcf>
+        man_start_object <sms_list, "">
+          man_start_object <trigger, "">
+            mat_relative_tag <13>
+            mat_title <"Use the following command to disable call waiting:">
+            act_set_criterion <select>
+            act_append_action
+              <
+              uni_start_stream
+                de_start_extraction <0>
+                man_set_context_relative <13>
+                de_get_data_value
+                uni_save_result
+                man_end_context
+                de_end_extraction
+                buf_close_buffer
+                uni_get_result
+                var_number_set_from_atom <A>
+                if_numa_false_then <1, 2>
+                man_set_context_relative <14>
+                mat_bool_disabled <yes>
+                uni_sync_skip <1>
+                man_set_context_relative <14>
+                mat_bool_disabled <no>
+                uni_sync_skip <2>
+                man_end_context
+                man_update_display
+              uni_end_stream
+              >
+          man_end_object
+        man_end_object
+        man_start_object <edit_view, "">
+          mat_height <1>
+          mat_width <20>
+          mat_relative_tag <14>
+          mat_capacity <100>
+        man_end_object
+      man_end_object
+    man_end_object
+    man_start_object <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "">
+        mat_title <"Save">
+        act_set_criterion <select>
+        act_append_action
+          <
+          uni_start_stream
+            uni_wait_on
+            de_start_extraction <0>
+            var_number_set <D, 0>
+            man_set_context_relative <4>
+            de_set_data_type <index>
+            de_get_data_value
+            var_number_set_from_atom <A>
+            var_number_set <B, 3>
+            if_numa_gt_numb_then <20>
+            man_end_context
+            man_set_context_relative <5>
+            ccl_list_get_net
+            var_number_set_from_atom <A>
+            var_number_set <B, 2>
+            if_numa_eq_numb_then <30>
+            var_number_set <D, 1>
+            man_end_context
+            man_set_context_relative <4>
+            mat_value <3>
+            man_end_context
+            uni_sync_skip <30>
+            uni_sync_skip <20>
+            man_set_context_relative <7>
+            de_set_data_type <index>
+            de_get_data_value
+            var_number_set_from_atom <A>
+            var_number_set <B, 3>
+            if_numa_gt_numb_then <21>
+            man_end_context
+            man_set_context_relative <8>
+            ccl_list_get_net
+            var_number_set_from_atom <A>
+            var_number_set <B, 2>
+            if_numa_eq_numb_then <31>
+            var_number_set <D, 1>
+            man_end_context
+            man_set_context_relative <7>
+            mat_value <3>
+            man_end_context
+            uni_sync_skip <31>
+            uni_sync_skip <21>
+            de_end_extraction
+            var_number_swap_between_regs <B, D>
+            if_numb_true_then <40>
+            uni_invoke_no_context <40-9424>
+            uni_sync_skip <40>
+            de_start_extraction <0>
+            de_validate <display_msg | terminate>
+            man_set_context_relative <1>
+            de_get_data_value
+            var_number_set_from_atom <A>
+            man_end_context
+            idb_start_obj <"b">
+            idb_atr_globalid <20-0-22>
+            var_number_get <A>
+            if_numa_eq_one_then <1, 2>
+            idb_append_data <01x>
+            uni_sync_skip <1>
+            idb_append_data <00x>
+            uni_sync_skip <2>
+            idb_end_obj
+            idb_start_obj <"b">
+            idb_atr_globalid <20-0-23>
+            buf_clear_buffer
+            de_set_extraction_type <default>
+            de_set_data_type <default>
+            man_set_context_relative <11>
+            de_get_data_value
+            var_number_set_from_atom <A>
+            var_number_get <A>
+            uni_use_last_atom_value <idb_append_data>
+            man_end_context
+            idb_end_obj
+            idb_start_obj <"b">
+            idb_atr_globalid <20-0-24>
+            buf_clear_buffer
+            man_set_context_relative <13>
+            de_get_data_value
+            var_number_set_from_atom <B>
+            var_number_get <B>
+            uni_use_last_atom_value <idb_append_data>
+            man_end_context
+            idb_end_obj
+            if_numa_true_then <1>
+            idb_start_obj <"t">
+            idb_atr_globalid <20-2-0>
+            man_set_context_relative <12>
+            de_set_data_type <default>
+            de_get_data_pointer
+            uni_use_last_atom_string <idb_append_data>
+            buf_clear_buffer
+            man_end_context
+            idb_end_obj
+            uni_sync_skip <1>
+            if_numb_true_then <1>
+            idb_start_obj <"t">
+            idb_atr_globalid <20-2-4>
+            man_set_context_relative <14>
+            de_set_data_type <default>
+            de_get_data_pointer
+            uni_use_last_atom_string <idb_append_data>
+            buf_clear_buffer
+            man_end_context
+            idb_end_obj
+            uni_sync_skip <1>
+            idb_start_obj <"t">
+            idb_atr_globalid <20-0-10>
+            man_set_context_relative <3>
+            de_set_data_type <default>
+            de_get_data_pointer
+            var_string_set_from_atom <B>
+            uni_use_last_atom_string <idb_append_data>
+            buf_clear_buffer
+            man_end_context
+            idb_end_obj
+            idb_start_obj <"b">
+            idb_atr_globalid <20-0-17>
+            man_set_context_relative <4>
+            de_set_data_type <index>
+            de_get_data_value
+            var_number_set_from_atom <C>
+            uni_use_last_atom_value <idb_append_data>
+            buf_clear_buffer
+            man_end_context
+            idb_end_obj
+            idb_start_obj <"b">
+            idb_atr_globalid <20-0-19>
+            man_set_context_relative <5>
+            ccl_list_get_net
+            var_number_set_from_atom <D>
+            uni_use_last_atom_value <idb_append_data>
+            buf_clear_buffer
+            man_end_context
+            idb_end_obj
+            idb_start_obj <"t">
+            idb_atr_globalid <20-0-11>
+            man_set_context_relative <6>
+            de_set_data_type <default>
+            de_get_data_pointer
+            var_string_set_from_atom <A>
+            if_stra_eq_null_then <1, 2>
+            var_number_set <B, 0>
+            var_string_get <B>
+            uni_sync_skip <1>
+            var_number_set <B, 1>
+            var_string_get <A>
+            uni_sync_skip <2>
+            uni_use_last_atom_string <idb_append_data>
+            buf_clear_buffer
+            man_end_context
+            idb_end_obj
+            idb_start_obj <"b">
+            idb_atr_globalid <20-0-18>
+            man_set_context_relative <7>
+            de_set_data_type <index>
+            de_get_data_value
+            var_number_set_from_atom <A>
+            if_numb_false_then <1, 2>
+            var_number_get <C>
+            uni_sync_skip <1>
+            var_number_get <A>
+            uni_sync_skip <2>
+            uni_use_last_atom_value <idb_append_data>
+            buf_clear_buffer
+            man_end_context
+            idb_end_obj
+            idb_start_obj <"b">
+            idb_atr_globalid <20-0-20>
+            man_set_context_relative <8>
+            ccl_list_get_net
+            var_number_set_from_atom <A>
+            if_numb_false_then <1, 2>
+            var_number_get <D>
+            uni_sync_skip <1>
+            var_number_get <A>
+            uni_sync_skip <2>
+            uni_use_last_atom_value <idb_append_data>
+            man_end_context
+            idb_end_obj
+            man_set_context_relative <16>
+            de_set_data_type <default>
+            de_get_data_pointer
+            var_string_set_from_atom <D>
+            uni_save_result
+            man_end_context
+            de_end_extraction
+            uni_get_result
+            uni_use_last_atom_string <ccl_update_locality>
+            man_end_context
+            man_close_update <32-666>
+            buf_close_buffer
+            uni_wait_off
+            man_set_context_globalid <32-239>
+            man_set_context_relative <16>
+            var_string_get <D>
+            uni_use_last_atom_string <man_get_index_by_title>
+            uni_save_result
+            if_last_return_true_then <1>
+            uni_get_result
+            uni_use_last_atom_value <mat_value>
+            uni_sync_skip <1>
+            man_end_context
+            man_update_display
+            man_end_context
+          uni_end_stream
+          >
+        mat_bool_default <yes>
+      man_end_object
+      man_start_object <trigger, "">
+        mat_title <"Swap Phone Numbers">
+        act_set_criterion <select>
+        act_append_action
+          <
+          uni_start_stream
+            de_start_extraction <0>
+            man_set_context_relative <3>
+            de_get_data_pointer
+            var_string_set_from_atom <A>
+            man_end_context
+            buf_clear_buffer
+            man_set_context_relative <6>
+            de_get_data_pointer
+            var_string_set_from_atom <B>
+            man_end_context
+            buf_clear_buffer
+            man_set_context_relative <3>
+            var_string_copy_between_regs <B, C>
+            uni_use_last_atom_string <man_replace_data>
+            man_end_context
+            man_set_context_relative <6>
+            var_string_copy_stra_to_strb
+            uni_use_last_atom_string <man_replace_data>
+            man_end_context
+            de_set_data_type <index>
+            man_set_context_relative <4>
+            de_get_data_value
+            var_number_set_from_atom <B>
+            man_end_context
+            buf_clear_buffer
+            man_set_context_relative <7>
+            de_get_data_value
+            var_number_set_from_atom <A>
+            man_end_context
+            buf_clear_buffer
+            man_set_context_relative <4>
+            var_number_get <A>
+            uni_use_last_atom_value <mat_value>
+            man_end_context
+            man_set_context_relative <7>
+            var_number_get <B>
+            uni_use_last_atom_value <mat_value>
+            man_end_context
+            de_set_data_type <index>
+            man_set_context_relative <5>
+            de_get_data_value
+            var_number_set_from_atom <B>
+            man_end_context
+            buf_clear_buffer
+            man_set_context_relative <8>
+            de_get_data_value
+            var_number_set_from_atom <A>
+            man_end_context
+            buf_clear_buffer
+            man_set_context_relative <5>
+            var_number_get <A>
+            uni_use_last_atom_value <mat_value>
+            man_end_context
+            man_set_context_relative <8>
+            var_number_get <B>
+            uni_use_last_atom_value <mat_value>
+            man_end_context
+            de_end_extraction
+            buf_close_buffer
+            man_update_display
+          uni_end_stream
+          >
+      man_end_object
+      man_start_object <trigger, "">
+        mat_title <"Cancel">
+        act_set_criterion <select>
+        act_append_action
+          <
+          uni_start_stream
+            man_close
+            man_update_display
+          uni_end_stream
+          >
+      man_end_object
+    man_end_object
+    man_update_display
+  man_end_object
+  man_set_context_globalid <32-666>
+  act_get_db_value <14x, 00x, 00x, 16x>
+  var_number_set_from_atom <A>
+  man_set_context_relative <1>
+  if_numa_true_then <1, 2>
+  mat_value <1>
+  uni_sync_skip <1>
+  mat_value <2>
+  uni_sync_skip <2>
+  man_end_context
+  man_set_context_relative <11>
+  act_get_db_value <14x, 00x, 00x, 17x>
+  uni_save_result
+  uni_use_last_atom_value <mat_value>
+  man_end_context
+  man_set_context_relative <12>
+  uni_get_result
+  mat_bool_disabled <yes>
+  if_last_return_true_then <1>
+  mat_bool_disabled <no>
+  uni_sync_skip <1>
+  act_get_db_record <20-2-0>
+  uni_use_last_atom_string <man_replace_data>
+  man_end_context
+  man_set_context_relative <13>
+  act_get_db_value <14x, 00x, 00x, 18x>
+  uni_save_result
+  uni_use_last_atom_value <mat_value>
+  man_end_context
+  man_set_context_relative <14>
+  uni_get_result
+  mat_bool_disabled <yes>
+  if_last_return_true_then <1>
+  mat_bool_disabled <no>
+  uni_sync_skip <1>
+  act_get_db_record <20-2-4>
+  uni_use_last_atom_string <man_replace_data>
+  man_end_context
+  man_set_context_relative <3>
+  act_get_db_record <20-0-10>
+  uni_use_last_atom_string <man_replace_data>
+  man_end_context
+  man_set_context_relative <4>
+  act_get_db_value <14x, 00x, 00x, 11x>
+  uni_use_last_atom_value <mat_value>
+  man_end_context
+  man_set_context_relative <5>
+  act_get_db_value <14x, 00x, 00x, 13x>
+  uni_use_last_atom_value <ccl_list_set_net>
+  man_end_context
+  man_set_context_relative <6>
+  act_get_db_record <20-0-11>
+  uni_use_last_atom_string <man_replace_data>
+  man_end_context
+  man_set_context_relative <7>
+  act_get_db_value <14x, 00x, 00x, 12x>
+  uni_use_last_atom_value <mat_value>
+  man_end_context
+  man_set_context_relative <8>
+  act_get_db_value <14x, 00x, 00x, 14x>
+  uni_use_last_atom_value <ccl_list_set_net>
+  man_end_context
+  man_set_context_relative <16>
+  var_string_get <A>
+  uni_use_last_atom_string <man_replace_data>
+  man_end_context
+  man_update_display
+  man_end_context
+  uni_wait_off
+  man_set_context_globalid <32-221>
+  man_set_context_relative <16>
+  act_get_db_value <14x, 00x, 00x, 2ex>
+  uni_use_last_atom_value <mat_value>
+  man_end_context
+  man_update_display
+  man_end_context
+uni_end_stream

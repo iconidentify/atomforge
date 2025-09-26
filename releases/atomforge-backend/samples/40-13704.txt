@@ -1,0 +1,21 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "America Online">
+    mat_object_id <40-13704>
+    mat_orientation <vcf>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <ornament, "">
+      mat_size <30, 2, 40>
+      man_append_data <"You have not completely filled out this form.">
+    man_start_sibling <trigger, "OK">
+      mat_bool_default <yes>
+      act_replace_select_action
+          <
+          uni_start_stream <00x>
+            man_close_update
+          uni_end_stream <00x>
+          >
+      man_end_object
+      man_update_display
+      uni_wait_off
+    uni_end_stream <00x>

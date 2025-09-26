@@ -498,11 +498,21 @@ const App = (() => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const list = await res.json();
         el.examplesMenu.innerHTML = '';
-        (list || []).forEach(ex => {
+        const items = (list || []).slice(0, 200); // protect UX if very large
+
+        // If too many, make the menu scrollable with a fixed height via inline style
+        if (items.length > 12) {
+          el.examplesMenu.style.maxHeight = '50vh';
+          el.examplesMenu.style.overflowY = 'auto';
+          el.examplesMenu.style.minWidth = '360px';
+        }
+
+        items.forEach(ex => {
           const b = document.createElement('button');
           b.type = 'button';
           b.setAttribute('role','menuitem');
           b.textContent = ex.label || ex.name || 'Example';
+          b.title = `${b.textContent} — ${ex.size?.toLocaleString?.() || ''} bytes`;
           b.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();

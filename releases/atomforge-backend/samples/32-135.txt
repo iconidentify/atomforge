@@ -1,0 +1,29 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Software Update">
+    mat_object_id <32-135>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <ornament, "">
+      mat_size <40, 21>
+      mat_relative_tag <1>
+      man_append_data <"The area you are entering requires the America Online World Wide Web browser.  For you to access the b">
+      man_append_data <"rowser, we need to add some additional files to your America Online software.  We can do this automatically fo">
+      man_append_data <"r you at this time.\x7f\x7fSelect \"Update\" below to begin adding the web browser.  This process will take approximat">
+      man_append_data <"ely 9 minutes at 9600 baud, 6 minutes at 14,400 baud, or 3 minutes at 28,000 baud.  Immediately after the upda">
+      man_append_data <"te completes, you will enter the area you have requested.\x7f\x7fIf you would prefer to update your software at anot">
+      man_append_data <"her time, select \"Cancel\" below.\x7f\x7fIf for any reason this update is interrupted, please completely exit and res">
+      man_append_data <"tart America Online.  This will allow us to complete adding the new functionality.\x7f\x7fYou will not incur any reg">
+      man_append_data <"ular hourly charges during this update.">
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "Update">
+        mat_relative_tag <2>
+        mat_bool_default <yes>
+      man_start_sibling <trigger, "Cancel">
+        mat_relative_tag <3>
+      man_end_object
+    man_end_object
+    man_update_display
+    uni_wait_off
+  uni_end_stream <00x>

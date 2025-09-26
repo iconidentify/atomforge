@@ -1,0 +1,53 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "">
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_style_id <32-160>
+    man_start_object <ornament, "">
+      mat_size <40, 1, 40>
+      man_append_data <"Find Only the Messages Posted:">
+    man_start_sibling <org_group, "">
+      mat_orientation <hcf>
+      man_start_object <ornament, "">
+        mat_size <7, 1, 7>
+        mat_title_pos <left | center>
+        man_append_data <"In Last ">
+      man_start_sibling <edit_view, "">
+        mat_size <4, 1, 2>
+        mat_relative_tag <12>
+        mat_bool_vertical_scroll <no>
+        mat_bool_resize_vertical <no>
+        mat_bool_resize_horizontal <no>
+        mat_bool_exportable <no>
+        mat_bool_importable <no>
+        mat_validation <128>
+        man_append_data <"1">
+      man_start_sibling <ornament, "">
+        mat_size <8, 1, 8>
+        man_append_data <"  Day(s)">
+      man_end_object
+    man_end_object
+    uni_invoke_local_preserve <32-190>
+    man_start_object <ornament, "">
+      mat_size <1, 1, 1>
+    man_start_sibling <org_group, "">
+      mat_orientation <hcf>
+      man_start_object <trigger, "Search">
+        mat_art_id <1-0-1324>
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream <00x>
+            de_ez_send_form <"bs">
+            >
+        man_start_sibling <trigger, "Help & Info">
+          mat_art_id <1-0-1325>
+          act_replace_select_action
+              <
+              uni_start_stream <00x>
+              sm_send_k1 <8-49074>
+              >
+          man_end_object
+        man_end_object
+        man_update_display
+      uni_end_stream <00x>

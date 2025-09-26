@@ -1,0 +1,20 @@
+uni_start_stream <00x>
+  man_use_default_title
+  man_start_object <ind_group, "Navigation Window">
+    mat_orientation <vcf>
+    mat_position <cascade>
+    mat_style_id <32-493>
+    man_start_object <dss_list, "">
+      mat_orientation <vff>
+      mat_size <36, 12>
+      mat_relative_tag <1>
+      mat_bool_list_icons <yes>
+    man_start_sibling <trigger, "Open">
+      mat_bool_default <yes>
+      act_replace_select_action
+          <
+          uni_start_stream <00x>
+          sm_do_list_action <1>
+          >
+      man_end_object
+    uni_end_stream <00x>

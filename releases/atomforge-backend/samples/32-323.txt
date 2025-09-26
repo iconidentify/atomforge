@@ -1,0 +1,208 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Computing & Software">
+    mat_object_id <32-323>
+    sm_set_plus_group <4ex, 81x>
+    mat_orientation <vff>
+    mat_position <center_center>
+    man_start_object <org_group, "">
+      mat_orientation <hlf>
+      man_start_object <ornament, "">
+        mat_art_id <1-0-1297>
+        mat_bool_disabled <yes>
+      man_start_sibling <ornament, "  Computing & Software">
+        mat_size <20, 1, 20>
+        mat_font_id <times_roman>
+        mat_font_size <14>
+        mat_font_style <bold>
+        man_append_data <"\x7f">
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <org_group, "">
+        mat_orientation <vft>
+        man_start_object <dss_list, "">
+          mat_orientation <vff>
+          mat_size <28, 15>
+          man_start_object <trigger, "Tonight in Computing & Software">
+            mat_art_id <1-0-1479>
+            act_replace_select_action
+                <
+                uni_start_stream_wait_on <00x>
+                sm_send_k1 <8-3233>
+                >
+            man_start_sibling <trigger, "Check for Live Discussions">
+              mat_art_id <1-0-1477>
+              act_replace_select_action
+                  <
+                  uni_start_stream_wait_on <00x>
+                  sm_m_send_token_arg <"LF", 0>
+                  >
+              man_start_sibling <trigger, "Applications">
+                mat_art_id <1-0-1479>
+                act_replace_select_action
+                    <
+                    uni_start_stream_wait_on <00x>
+                    sm_send_f1 <32-417>
+                    >
+                man_start_sibling <trigger, "Development">
+                  mat_art_id <1-0-1479>
+                  act_replace_select_action
+                      <
+                      uni_start_stream_wait_on <00x>
+                      sm_send_f1 <32-324>
+                      >
+                  man_start_sibling <trigger, "DOS">
+                    mat_art_id <1-0-1479>
+                    act_replace_select_action
+                        <
+                        uni_start_stream_wait_on <00x>
+                        sm_send_f1 <32-330>
+                        >
+                    man_start_sibling <trigger, "Games">
+                      mat_art_id <1-0-1479>
+                      act_replace_select_action
+                          <
+                          uni_start_stream_wait_on <00x>
+                          sm_send_f1 <32-325>
+                          >
+                      man_start_sibling <trigger, "Graphics and Animation">
+                        mat_art_id <1-0-1479>
+                        act_replace_select_action
+                            <
+                            uni_start_stream_wait_on <00x>
+                            sm_send_f1 <32-419>
+                            >
+                        man_start_sibling <trigger, "Hardware">
+                          mat_art_id <1-0-1479>
+                          act_replace_select_action
+                              <
+                              uni_start_stream_wait_on <00x>
+                              sm_send_f1 <32-420>
+                              >
+                          man_start_sibling <trigger, "Multimedia">
+                            mat_art_id <1-0-1479>
+                            act_replace_select_action
+                                <
+                                uni_start_stream_wait_on <00x>
+                                sm_send_f1 <40-1132>
+                                >
+                            man_start_sibling <trigger, "Music and Sound">
+                              mat_art_id <1-0-1479>
+                              act_replace_select_action
+                                  <
+                                  uni_start_stream_wait_on <00x>
+                                  sm_send_f1 <32-421>
+                                  >
+                              man_start_sibling <trigger, "OS/2">
+                                mat_art_id <1-0-1479>
+                                act_replace_select_action
+                                    <
+                                    uni_start_stream_wait_on <00x>
+                                    sm_send_f1 <32-781>
+                                    >
+                                man_start_sibling <trigger, "Personal Digital Assistants">
+                                  mat_art_id <1-0-1479>
+                                  act_replace_select_action
+                                      <
+                                      uni_start_stream_wait_on <00x>
+                                      sm_send_f1 <40-1337>
+                                      >
+                                  man_start_sibling <trigger, "Telecom and Networking">
+                                    mat_art_id <1-0-1479>
+                                    act_replace_select_action
+                                        <
+                                        uni_start_stream_wait_on <00x>
+                                        sm_send_f1 <32-422>
+                                        >
+                                    man_start_sibling <trigger, "Windows">
+                                      mat_art_id <1-0-1479>
+                                      act_replace_select_action
+                                          <
+                                          uni_start_stream_wait_on <00x>
+                                          sm_send_f1 <32-306>
+                                          >
+                                      man_start_sibling <trigger, "User Groups">
+                                        mat_art_id <1-0-1479>
+                                        act_replace_select_action
+                                            <
+                                            uni_start_stream_wait_on <00x>
+                                            sm_send_f1 <40-1605>
+                                            >
+                                        man_start_sibling <trigger, "Apple Computing Forums">
+                                          mat_art_id <1-0-1479>
+                                          act_replace_select_action
+                                              <
+                                              uni_start_stream_wait_on <00x>
+                                              sm_send_k1 <8-57135>
+                                              >
+                                          man_start_sibling <trigger, "Suggestion Box">
+                                            mat_art_id <1-0-1479>
+                                            act_replace_select_action
+                                                <
+                                                uni_start_stream_wait_on <00x>
+                                                sm_send_k1 <8-54695>
+                                                >
+                                            man_end_object
+                                          man_start_sibling <ornament, "">
+                                            mat_size <17, 1, 17>
+                                            mat_font_id <times_roman>
+                                            mat_font_size <9>
+                                            man_append_data <"Keyword: Computing">
+                                          man_end_object
+                                        man_start_sibling <org_group, "">
+                                          mat_orientation <hce>
+                                          man_start_object <org_group, "">
+                                            mat_orientation <vcf>
+                                            man_start_object <trigger, "PC World\rOnline">
+                                              mat_art_id <1-0-1430>
+                                              act_replace_select_action
+                                                  <
+                                                  uni_start_stream_wait_on <00x>
+                                                  sm_send_f1 <32-1994>
+                                                  >
+                                              man_start_sibling <trigger, "Software\rCenter">
+                                                mat_title_width <11>
+                                                mat_art_id <1-0-1310>
+                                                act_replace_select_action
+                                                    <
+                                                    uni_start_stream_wait_on <00x>
+                                                    sm_send_f1 <32-698>
+                                                    >
+                                                man_start_sibling <trigger, "News &\rReference">
+                                                  mat_art_id <1-0-1304>
+                                                  act_replace_select_action
+                                                      <
+                                                      uni_start_stream_wait_on <00x>
+                                                      sm_send_k1 <32-775>
+                                                      >
+                                                  man_end_object
+                                                man_start_sibling <org_group, "">
+                                                  mat_orientation <vcf>
+                                                  man_start_object <trigger, "Downloading\rHall of Fame">
+                                                    mat_art_id <1-0-1292>
+                                                    act_replace_select_action
+                                                        <
+                                                        uni_start_stream_wait_on <00x>
+                                                        sm_send_f1 <40-1116>
+                                                        >
+                                                    man_start_sibling <trigger, "Industry\rConnection">
+                                                      mat_art_id <1-0-1489>
+                                                      act_replace_select_action
+                                                          <
+                                                          uni_start_stream_wait_on <00x>
+                                                          sm_send_f1 <40-2338>
+                                                          >
+                                                      man_start_sibling <trigger, "Windows\rShareware 500">
+                                                        mat_art_id <1-0-1341>
+                                                        act_replace_select_action
+                                                            <
+                                                            uni_start_stream_wait_on <00x>
+                                                            sm_send_f1 <32-1950>
+                                                            >
+                                                        man_end_object
+                                                      man_end_object
+                                                    man_end_object
+                                                  man_end_object
+                                                  man_update_display
+                                                  uni_wait_off
+                                                uni_end_stream <00x>

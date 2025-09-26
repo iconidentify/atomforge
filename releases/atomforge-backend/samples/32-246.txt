@@ -1,0 +1,25 @@
+uni_start_stream
+  man_start_object <ind_group, "">
+    mat_object_id <32-246>
+    mat_title <"File Extraction">
+    mat_bool_modal <yes>
+    mat_position <top_left>
+    mat_orientation <vcf>
+    man_start_object <ornament, "">
+      mat_relative_tag <1>
+      mat_width <35>
+      mat_height <1>
+    man_end_object
+    man_start_object <range, "">
+      mat_relative_tag <2>
+      mat_width <35>
+      mat_object_color <144, 255, 255, 255, 0, 0, 128>
+    man_end_object
+    man_start_object <ornament, "">
+      mat_relative_tag <4>
+      mat_width <35>
+      mat_height <1>
+    man_end_object
+    man_update_display
+  man_end_object
+uni_end_stream

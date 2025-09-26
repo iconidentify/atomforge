@@ -1,0 +1,19 @@
+uni_start_stream
+  var_number_set <A, 0>
+  man_item_get <3>
+  if_last_return_true_then <1>
+  fm_start
+  man_logging_command <3>
+  man_logging_command <7>
+  fm_end
+  var_numa_increment
+  uni_sync_skip <1>
+  man_item_get <2>
+  if_last_return_true_then <1>
+  fm_start
+  man_logging_command <4>
+  man_logging_command <7>
+  fm_end
+  var_numa_increment
+  uni_sync_skip <1>
+uni_end_stream

@@ -1,0 +1,170 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Outgoing Mail">
+    mat_object_id <32-4645>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_style_id <32-44>
+    act_set_criterion <close>
+    act_replace_action
+        <
+        uni_start_stream
+          morg_obj_destroy_children <"%outmail">
+        uni_end_stream
+        >
+      man_start_object <view, "">
+        mat_size <63, 10>
+        mat_relative_tag <1>
+        mat_bool_writeable <yes>
+        mat_size <63, 10>
+        mat_managed_by <70>
+        mat_font_sis <arial, 9, normal>
+        morg_view_path <"%outmail">
+        uni_sync_skip <101>
+        morg_view_highlight_full_line <yes>
+        uni_sync_skip <101>
+        morg_view_allow_delete_key <no>
+        act_set_criterion <128>
+        act_replace_action
+            <
+            uni_start_stream
+              man_set_context_relative <1>
+              morg_view_has_mult_selections
+              var_number_set_from_atom <B>
+              morg_obj_count_children
+              uni_save_result
+              man_end_context
+              uni_get_result
+              if_last_return_false_then <10, 20>
+              man_set_context_relative <17>
+              mat_bool_disabled <yes>
+              man_change_context_relative <2>
+              mat_bool_disabled <yes>
+              man_change_context_relative <6>
+              mat_bool_disabled <yes>
+              man_change_context_relative <8>
+              mat_bool_disabled <yes>
+              man_end_context
+              uni_sync_skip <10>
+              man_set_context_relative <17>
+              mat_bool_disabled <no>
+              man_end_context
+              if_numb_false_then <171, 177>
+              man_set_context_relative <2>
+              mat_bool_disabled <no>
+              man_change_context_relative <6>
+              mat_bool_disabled <no>
+              man_change_context_relative <8>
+              mat_bool_disabled <no>
+              man_end_context
+              uni_sync_skip <171>
+              man_set_context_relative <2>
+              mat_bool_disabled <yes>
+              man_change_context_relative <6>
+              mat_bool_disabled <yes>
+              man_change_context_relative <8>
+              mat_bool_disabled <yes>
+              man_end_context
+              uni_sync_skip <177>
+              uni_sync_skip <20>
+              man_update_display
+            uni_end_stream
+            >
+          act_set_criterion <130>
+          act_replace_action
+              <
+              uni_start_stream
+                man_set_context_relative <1>
+                act_do_action <128>
+                man_end_context
+              uni_end_stream
+              >
+            act_set_criterion <22>
+            act_replace_action
+                <
+                uni_start_stream
+                  man_set_context_relative <1>
+                  buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                  buf_set_token <"m2">
+                  lm_get_first_selection
+                  uni_save_result
+                  uni_start_loop
+                  uni_get_result
+                  if_last_return_true_then <1>
+                  uni_get_result
+                  uni_use_last_atom_value <lm_delete_item_id>
+                  buf_set_data_atom <mip_preset_message_id>
+                  uni_get_result
+                  uni_use_last_atom_value <buf_add_atom_data>
+                  buf_set_data_atom <mip_change_message_status>
+                  buf_add_atom_data <6>
+                  lm_get_next_selection
+                  uni_save_result
+                  uni_end_loop
+                  uni_sync_skip <1>
+                  buf_close_buffer
+                  man_end_context
+                uni_end_stream
+                >
+            man_start_sibling <org_group, "">
+              mat_orientation <hcf>
+              man_start_object <trigger, "Read">
+                mat_relative_tag <2>
+                mat_bool_default <yes>
+                act_replace_select_action
+                    <
+                    uni_start_stream
+                      man_set_context_relative <1>
+                      morg_view_select_object
+                      man_end_context
+                    uni_end_stream
+                    >
+                man_start_sibling <trigger, "Show Status">
+                  mat_relative_tag <6>
+                  act_replace_select_action
+                      <
+                      uni_start_stream_wait_on
+                        man_set_context_relative <1>
+                        lm_get_selected_item_id
+                        uni_save_result
+                        man_end_context
+                        buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                        buf_set_token <"oS">
+                        uni_get_result
+                        uni_use_last_atom_value <buf_add_atom_data>
+                        buf_close_buffer
+                      uni_end_stream
+                      >
+                  man_start_sibling <trigger, "Unsend">
+                    mat_relative_tag <8>
+                    act_replace_select_action
+                        <
+                        uni_start_stream_wait_on
+                          man_set_context_relative <1>
+                          lm_get_selected_item_id
+                          uni_save_result
+                          man_end_context
+                          buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                          buf_set_token <"oR">
+                          uni_get_result
+                          uni_use_last_atom_value <buf_add_atom_data>
+                          buf_close_buffer
+                        uni_end_stream
+                        >
+                    man_start_sibling <trigger, "Delete">
+                      mat_relative_tag <17>
+                      act_replace_select_action
+                          <
+                          uni_start_stream
+                            man_set_context_relative <1>
+                            act_do_action <22>
+                            man_end_context
+                          uni_end_stream
+                          >
+                        mat_command_key <91x, 00x>
+                      man_end_object
+                    man_end_object
+                    man_update_display
+                    man_set_context_relative <1>
+                    act_do_action <128>
+                    man_end_context
+                  uni_end_stream <00x>

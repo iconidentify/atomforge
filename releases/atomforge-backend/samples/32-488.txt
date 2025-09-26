@@ -1,0 +1,38 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Manage Tools">
+    mat_object_id <32-488>
+    mat_orientation <vff>
+    man_start_object <dss_list, "TID\tModule Name\tVersion\tType">
+      mat_orientation <vff>
+      mat_size <70>
+      mat_relative_tag <200>
+      mat_ruler <8, 50, 60>
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "Load Tool">
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              mt_load_tool
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Bounce Tool">
+          act_replace_select_action
+              <
+              uni_start_stream
+                mt_bounce_tool
+              uni_end_stream
+              >
+          man_start_sibling <trigger, "Kill Tool">
+            act_replace_select_action
+                <
+                uni_start_stream
+                  mt_kill_tool
+                uni_end_stream
+                >
+            man_end_object
+          man_end_object
+          man_update_display
+          uni_wait_off
+        uni_end_stream <00x>

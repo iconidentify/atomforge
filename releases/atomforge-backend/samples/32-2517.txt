@@ -1,0 +1,137 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "FlashSessions Walk-Through">
+    mat_object_id <32-2517>
+    mat_orientation <vft>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <org_group, "">
+      mat_orientation <hff>
+      man_start_object <ornament, "">
+        mat_art_id <1-0-1288>
+        mat_bool_disabled <yes>
+      man_start_sibling <ornament, "Day of the Week">
+        mat_size <19, 1>
+        mat_font_id <times_roman>
+        mat_font_size <14>
+      man_end_object
+    man_start_sibling <ornament, "">
+      mat_art_id <1-0-1369>
+      mat_bool_disabled <yes>
+    man_start_sibling <ornament, "">
+      man_append_data <"You can schedule FlashSessions to take place every day of the week or on a specific set of days.  In the list below, check each day on which you would like a FlashSession to occur:">
+      mat_precise_width <400>
+      mat_precise_height <60>
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <sms_list, "">
+        mat_orientation <vft>
+        man_start_object <trigger, "Sunday">
+          mat_relative_tag <1>
+        man_start_sibling <trigger, "Monday">
+          mat_relative_tag <2>
+        man_start_sibling <trigger, "Tuesday">
+          mat_relative_tag <3>
+        man_start_sibling <trigger, "Wednesday">
+          mat_relative_tag <4>
+          mat_vertical_spacing <5>
+        man_end_object
+      man_start_sibling <sms_list, "">
+        mat_orientation <vft>
+        man_start_object <trigger, "Thursday">
+          mat_relative_tag <5>
+        man_start_sibling <trigger, "Friday">
+          mat_relative_tag <6>
+        man_start_sibling <trigger, "Saturday">
+          mat_relative_tag <7>
+        man_end_object
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "Continue">
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              de_start_extraction <0>
+              idb_set_context <20-0-54>
+              idb_atr_offset <0>
+              man_set_context_relative <1>
+              de_get_data_value
+              mip_flip_it
+              uni_use_last_atom_value <idb_append_data>
+              man_change_context_relative <2>
+              de_get_data_value
+              mip_flip_it
+              uni_use_last_atom_value <idb_append_data>
+              man_change_context_relative <3>
+              de_get_data_value
+              mip_flip_it
+              uni_use_last_atom_value <idb_append_data>
+              man_change_context_relative <4>
+              de_get_data_value
+              mip_flip_it
+              uni_use_last_atom_value <idb_append_data>
+              man_change_context_relative <5>
+              de_get_data_value
+              mip_flip_it
+              uni_use_last_atom_value <idb_append_data>
+              man_change_context_relative <6>
+              de_get_data_value
+              mip_flip_it
+              uni_use_last_atom_value <idb_append_data>
+              man_change_context_relative <7>
+              de_get_data_value
+              mip_flip_it
+              uni_use_last_atom_value <idb_append_data>
+              man_end_context
+              idb_end_context
+              de_end_extraction
+              man_close_update
+              uni_invoke_no_context <32-2518>
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Cancel">
+          act_replace_select_action
+              <
+              uni_start_stream <00x>
+                man_close_update
+              uni_end_stream <00x>
+              >
+          man_end_object
+        man_end_object
+        man_update_display
+        idb_set_context <20-0-54>
+        man_set_context_relative <1>
+        idb_atr_offset <0>
+        idb_get_value
+        uni_use_last_atom_value <mat_value>
+        man_change_context_relative <2>
+        idb_atr_offset <4>
+        idb_get_value
+        uni_use_last_atom_value <mat_value>
+        man_change_context_relative <3>
+        idb_atr_offset <8>
+        idb_get_value
+        uni_use_last_atom_value <mat_value>
+        man_change_context_relative <4>
+        idb_atr_offset <12>
+        idb_get_value
+        uni_use_last_atom_value <mat_value>
+        man_change_context_relative <5>
+        idb_atr_offset <16>
+        idb_get_value
+        uni_use_last_atom_value <mat_value>
+        man_change_context_relative <6>
+        idb_atr_offset <20>
+        idb_get_value
+        uni_use_last_atom_value <mat_value>
+        man_change_context_relative <7>
+        idb_atr_offset <24>
+        idb_get_value
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        idb_end_context
+        man_update_display
+        man_end_context
+        uni_wait_off
+      uni_end_stream <00x>

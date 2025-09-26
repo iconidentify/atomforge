@@ -428,18 +428,20 @@ async def decompile_fdo(request: DecompileRequest):
 async def get_examples():
     """Get available FDO examples from golden tests"""
     try:
-        # Look for golden tests in the FDO Tools release
+        # Prefer vendor-provided samples under the selected backend drop
         release_info = fdo_tools_manager.get_release_info()
-        golden_tests_dir = os.path.join(release_info["path"], "examples")
+        samples_dir = os.path.join(release_info["path"], "samples")
 
-        # Fallback to legacy location
-        if not os.path.exists(golden_tests_dir):
-            golden_tests_dir = "bin/fdo_compiler_decompiler/golden_tests_immutable"
+        # Backward-compatible fallbacks
+        if not os.path.exists(samples_dir):
+            legacy_examples = os.path.join(release_info["path"], "examples")
+            samples_dir = legacy_examples if os.path.exists(legacy_examples) else "bin/fdo_compiler_decompiler/golden_tests_immutable"
 
         examples = []
 
-        if os.path.exists(golden_tests_dir):
-            for file_path in Path(golden_tests_dir).glob("*.txt"):
+        if os.path.exists(samples_dir):
+            txt_paths = sorted(Path(samples_dir).glob("*.txt"), key=lambda p: p.name.lower())
+            for file_path in txt_paths:
                 try:
                     with open(file_path, 'r', encoding='utf-8') as f:
                         content = f.read()
@@ -460,7 +462,7 @@ async def get_examples():
                 size=120
             ))
 
-        logger.info(f"Loaded {len(examples)} FDO examples")
+        logger.info(f"Loaded {len(examples)} FDO examples from {samples_dir}")
         return examples
 
     except Exception as e:

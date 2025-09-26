@@ -1,0 +1,81 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "">
+    mat_orientation <hff>
+    mat_position <center_center>
+    var_number_set <A, 1>
+    var_number_save <A, 101>
+    mat_style_id <32-226>
+    man_start_object <org_group, "">
+      mat_orientation <vct>
+      man_start_object <trigger, "Send">
+        mat_art_id <1-0-1293>
+        act_replace_select_action
+            <
+            uni_start_stream_wait_on
+              de_start_extraction
+              buf_set_token <"e9">
+              man_set_context_relative <3>
+              de_get_data
+              man_change_context_relative <5>
+              de_get_data
+              man_change_context_relative <8>
+              de_get_data
+              man_end_context
+              de_end_extraction
+              buf_close_buffer
+            uni_end_stream
+            >
+          mat_command_key <0dx>
+        man_start_sibling <trigger, "Address\rBook">
+          mat_art_id <1-0-1287>
+          act_replace_select_action
+              <
+              uni_start_stream
+                de_start_extraction <0>
+                de_set_data_type <global_id>
+                de_get_data_value <current_object>
+                uni_save_result
+                de_end_extraction
+                buf_close_buffer
+                lm_open_window <32-425>
+                uni_get_result
+                uni_use_last_atom_value <ad_set_caller>
+                man_update_display
+              uni_end_stream
+              >
+          man_end_object
+        man_start_sibling <org_group, "">
+          mat_orientation <vff>
+          man_start_object <org_group, "">
+            mat_orientation <hff>
+            man_start_object <edit_view, "To:">
+              mat_size <20, 2, 256>
+              mat_relative_tag <3>
+              mat_title_pos <left | top_or_left>
+              mat_validation <128>
+              man_make_focus
+            man_start_sibling <edit_view, "CC:">
+              mat_size <20, 2, 256>
+              mat_relative_tag <5>
+              mat_title_pos <left | top_or_left>
+            man_end_object
+          man_start_sibling <edit_view, "Subject:">
+            mat_size <40, 1, 32>
+            mat_relative_tag <8>
+            mat_title_pos <left | center>
+            mat_bool_vertical_scroll <no>
+            mat_bool_writeable <yes>
+            mat_validation <128>
+          man_start_sibling <edit_view, "">
+            mat_size <47, 8, 28000>
+            mat_relative_tag <12>
+            mat_bool_writeable <yes>
+          man_end_object
+        man_start_sibling <ornament, "">
+          mat_size <16, 1, 16>
+          mat_relative_tag <1>
+          mat_bool_invisible <yes>
+        man_end_object
+        man_update_display
+        uni_wait_off
+      uni_end_stream <00x>

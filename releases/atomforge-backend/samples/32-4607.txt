@@ -1,0 +1,91 @@
+uni_start_stream <00x>
+  man_preset_gid <59>
+  if_last_return_false_then <1>
+  man_set_context_globalid <1>
+  man_start_object <org_group, "">
+    uni_sync_skip <1>
+    man_use_default_title
+    man_start_object <ind_group, "">
+      mat_style_id <32-4607>
+      mat_orientation <hfb>
+      mat_context_help <"Drag me to any folder in your\x7fPersonal Filing Cabinet.">
+      mat_style_id <32-4607>
+      mat_art_id <1-0-7564>
+      mat_position <center_center>
+      mat_bool_background_tile <yes>
+      man_start_object <org_group, "">
+        mat_orientation <vcf>
+        man_start_object <view, "">
+          mat_size <62, 14>
+          mat_relative_tag <1>
+          mat_frame_style <single_line_pop_in>
+          mat_ruler <7>
+          mat_bool_writeable <yes>
+        man_start_sibling <org_group, "">
+          mat_orientation <hec>
+          man_start_object <trigger, "">
+            mat_relative_tag <10>
+            mat_trigger_style <place>
+            mat_bool_disabled <yes>
+            mat_command_key <98x, 00x>
+            mat_art_id <1-0-1281>
+            mat_bool_disabled <yes>
+            mat_font_size <10>
+            mat_font_style <bold>
+            act_replace_select_action
+                <
+                uni_start_stream
+                  mip_action_command <13x>
+                uni_end_stream
+                >
+            man_start_sibling <trigger, "Reply to Group">
+              mat_trigger_style <place>
+              mat_font_size <10>
+              mat_font_style <bold>
+              act_replace_select_action
+                  <
+                  uni_start_stream
+                    mip_action_command <22x>
+                  uni_end_stream
+                  >
+              man_start_sibling <trigger, "Reply to Author">
+                mat_trigger_style <place>
+                mat_font_size <10>
+                mat_font_style <bold>
+                act_replace_select_action
+                    <
+                    uni_start_stream
+                      mip_action_command <23x>
+                    uni_end_stream
+                    >
+                man_start_sibling <trigger, "New Message">
+                  mat_trigger_style <place>
+                  mat_font_size <10>
+                  mat_font_style <bold>
+                  act_replace_select_action
+                      <
+                      uni_start_stream
+                        mip_action_command <24x>
+                      uni_end_stream
+                      >
+                  man_start_sibling <trigger, "">
+                    mat_relative_tag <11>
+                    mat_trigger_style <place>
+                    mat_bool_disabled <yes>
+                    mat_command_key <99x, 00x>
+                    mat_art_id <1-0-1280>
+                    mat_bool_disabled <yes>
+                    mat_bool_default <yes>
+                    mat_font_size <10>
+                    mat_font_style <bold>
+                    act_replace_select_action
+                        <
+                        uni_start_stream
+                          mip_action_command <12x>
+                        uni_end_stream
+                        >
+                    man_end_object
+                  man_end_object
+                man_end_object
+                man_update_display
+              uni_end_stream <00x>

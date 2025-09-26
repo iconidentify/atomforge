@@ -1,0 +1,122 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "">
+    mat_orientation <vff>
+    mat_title <"Database Preferences">
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <org_group, "">
+      mat_orientation <hff>
+      man_start_object <sms_list, "">
+        mat_orientation <hff>
+        man_start_object <trigger, "Purge my database using the settings below.">
+          mat_relative_tag <1>
+        man_end_object
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <view, "Database cannot exceed">
+        mat_size <1, 1>
+        mat_title_pos <left | center>
+        mat_bool_writeable <yes>
+      man_start_sibling <select_range, "">
+        mat_increment <1>
+        mat_width <5>
+        mat_minimum <1>
+        mat_maximum <1000>
+        mat_relative_tag <3>
+      man_start_sibling <view, "Megabytes">
+        mat_size <1, 1>
+        mat_title_pos <left | center>
+        mat_bool_writeable <yes>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <view, "Database minimum size">
+        mat_size <1, 1>
+        mat_title_pos <left | center>
+        mat_bool_writeable <yes>
+      man_start_sibling <select_range, "">
+        mat_increment <1>
+        mat_width <5>
+        mat_minimum <1>
+        mat_maximum <1000>
+        mat_relative_tag <2>
+      man_start_sibling <view, "Megabytes">
+        mat_size <1, 1>
+        mat_title_pos <left | center>
+        mat_bool_writeable <yes>
+      man_end_object
+    man_start_sibling <view, "">
+      mat_size <1, 1>
+      mat_bool_vertical_scroll <no>
+      mat_bool_resize_vertical <no>
+      mat_bool_resize_horizontal <no>
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "OK">
+        act_replace_select_action
+            <
+            uni_start_stream
+              uni_wait_on
+              de_start_extraction
+              man_set_context_relative <1>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-104>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_relative <3>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-106>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_relative <2>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-105>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              de_end_extraction
+              man_close_update
+              uni_wait_off
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Cancel">
+          act_replace_select_action
+              <
+              uni_start_stream <00x>
+                man_close_update
+              uni_end_stream
+              >
+          man_end_object
+          man_set_context_relative <1>
+          act_get_db_value <14x, 00x, 00x, 68x>
+          uni_save_result
+          uni_use_last_atom_value <mat_value>
+          man_end_context
+          man_set_context_relative <2>
+          act_get_db_value <14x, 00x, 00x, 69x>
+          uni_save_result
+          uni_use_last_atom_value <mat_value>
+          uni_get_result
+          if_last_return_false_then <31>
+          mat_value <1>
+          uni_sync_skip <31>
+          man_end_context
+          man_set_context_relative <3>
+          act_get_db_value <14x, 00x, 00x, 6ax>
+          uni_save_result
+          uni_use_last_atom_value <mat_value>
+          uni_get_result
+          if_last_return_false_then <31>
+          mat_value <5>
+          uni_sync_skip <31>
+          man_end_context
+        man_end_object
+        man_update_display
+        uni_wait_off
+      uni_end_stream

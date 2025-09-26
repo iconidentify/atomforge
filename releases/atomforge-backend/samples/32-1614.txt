@@ -1,0 +1,114 @@
+uni_start_stream
+  man_set_context_globalid <52>
+  man_start_object <ind_group, "">
+    mat_bool_modal <yes>
+    mat_object_id <32-220>
+    var_number_set <A, 0>
+    var_number_save <A, 64>
+    act_set_criterion <130>
+    act_append_action
+      <
+      uni_start_stream
+        var_number_get <A>
+        if_numa_false_then <10>
+        man_set_context_relative <1>
+        mat_bool_invert <yes>
+        man_update_display
+        man_end_context
+        uni_sync_skip <10>
+        if_numa_eq_one_then <20>
+        man_set_context_relative <2>
+        mat_bool_invert <yes>
+        man_update_display
+        man_end_context
+        uni_sync_skip <20>
+        if_numa_gt_one_then <30>
+        man_set_context_relative <3>
+        mat_bool_invert <yes>
+        man_update_display
+        man_end_context
+        uni_sync_skip <30>
+        var_number_increment <A>
+        var_number_save <A, 64>
+      uni_end_stream
+      >
+    act_set_criterion <129>
+    act_append_action
+      <
+      uni_start_stream
+        man_set_context_relative <1>
+        mat_bool_invert <no>
+        man_end_context
+        man_set_context_relative <2>
+        mat_bool_invert <no>
+        man_end_context
+        man_set_context_relative <3>
+        mat_bool_invert <no>
+        man_end_context
+        man_update_display
+        var_number_set <A, 0>
+        var_number_save <A, 64>
+      uni_end_stream
+      >
+    man_start_object <org_group, "">
+      mat_orientation <vcc>
+      man_start_object <org_group, "">
+        mat_orientation <hcc>
+        man_start_object <ornament, "">
+          mat_art_id <1-0-1367>
+        man_end_object
+        man_start_object <ornament, "">
+          mat_title <"and">
+        man_end_object
+        man_start_object <ornament, "">
+          mat_art_id <1-0-1602>
+        man_end_object
+      man_end_object
+      man_start_object <org_group, "">
+        mat_orientation <hcc>
+        man_start_object <ornament, "">
+          mat_art_id <1-0-1359>
+          mat_relative_tag <1>
+        man_end_object
+        man_start_object <ornament, "">
+          mat_art_id <1-0-1360>
+          mat_relative_tag <2>
+        man_end_object
+        man_start_object <ornament, "">
+          mat_art_id <1-0-1361>
+          mat_relative_tag <3>
+        man_end_object
+      man_end_object
+      man_start_object <ornament, "">
+        mat_relative_tag <4>
+        mat_height <1>
+        mat_width <20>
+        mat_orientation <hcc>
+        mat_title <" ">
+      man_end_object
+      man_start_object <ornament, "">
+        mat_art_id <1-0-1363>
+      man_end_object
+      man_start_object <trigger, "">
+        mat_title <"Cancel">
+        act_set_criterion <select>
+        act_append_action
+          <
+          uni_start_stream
+            man_close <32-220>
+            uni_invoke_no_context <32-221>
+            man_set_context_globalid <32-221>
+            mat_bool_invisible <no>
+            man_update_display <32-221>
+            man_end_context
+            ccl_hang_up
+            man_update_display <32-220>
+          uni_end_stream
+          >
+      man_end_object
+    man_end_object
+    man_update_display
+  man_end_object
+  ccl_dial
+  man_end_context
+uni_end_stream

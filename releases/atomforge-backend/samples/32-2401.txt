@@ -1,0 +1,82 @@
+uni_start_stream <00x>
+  man_use_default_title
+  man_start_object <ind_group, "">
+    mat_object_id <32-2401>
+    mat_orientation <vcf>
+    mat_position <center_center>
+    mat_bool_background_tile <yes>
+    mat_art_id <1-0-2383>
+    mat_bool_resize_vertical <no>
+    man_start_object <view, "">
+      mat_relative_tag <1>
+      mat_bool_vertical_scroll <no>
+      mat_bool_writeable <yes>
+      mat_managed_by <60>
+      mmi_atr_rid_play <2>
+      mmi_atr_rid_pause <3>
+      mmi_atr_rid_stop <4>
+      mmi_atr_rid_rewind <5>
+      mmi_atr_toolbar <no>
+      mat_frame_style <single_line_pop_out>
+      man_set_context_globalid <1>
+      var_lookup_by_id <A, 255>
+      var_string_get <A>
+      uni_save_result
+      man_end_context
+      uni_get_result
+      uni_use_last_atom_string <mmi_open_file>
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "">
+        mat_relative_tag <2>
+        mat_art_id <1-0-3938>
+        act_replace_select_action
+            <
+            uni_start_stream <00x>
+              man_set_context_relative <1>
+              mmi_play
+              man_end_context
+            uni_end_stream
+            >
+          mat_color_face <128, 160, 176>
+        man_start_sibling <trigger, "">
+          mat_relative_tag <3>
+          mat_art_id <1-0-3937>
+          act_replace_select_action
+              <
+              uni_start_stream <00x>
+                man_set_context_relative <1>
+                mmi_pause
+                man_end_context
+              uni_end_stream
+              >
+            mat_color_face <128, 160, 176>
+          man_start_sibling <trigger, "">
+            mat_relative_tag <4>
+            mat_art_id <1-0-3940>
+            act_replace_select_action
+                <
+                uni_start_stream <00x>
+                  man_set_context_relative <1>
+                  mmi_stop
+                  man_end_context
+                uni_end_stream
+                >
+              mat_color_face <128, 160, 176>
+            man_start_sibling <trigger, "">
+              mat_relative_tag <5>
+              mat_art_id <1-0-3931>
+              act_replace_select_action
+                  <
+                  uni_start_stream <00x>
+                    man_set_context_relative <1>
+                    mmi_rewind
+                    man_end_context
+                  uni_end_stream
+                  >
+                mat_color_face <128, 160, 176>
+              man_end_object
+            man_end_object
+            man_update_display
+            uni_wait_off
+          uni_end_stream <00x>

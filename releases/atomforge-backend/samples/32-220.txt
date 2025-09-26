@@ -1,0 +1,4 @@
+uni_start_stream
+  var_number_set <A, 335544581>
+  uni_invoke_local <32-1626>
+uni_end_stream

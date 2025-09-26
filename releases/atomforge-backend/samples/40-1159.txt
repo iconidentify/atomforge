@@ -1,0 +1,264 @@
+uni_start_stream <00x>
+  man_set_response_id <2622599>
+  var_number_set <A, 0>
+  var_number_save <A, 100>
+  man_set_context_globalid <1>
+  man_start_object <ind_group, "">
+    mat_object_id <40-1159>
+    mat_orientation <vcc>
+    mat_position <center_center>
+    mat_bool_invisible <yes>
+    mat_position <top_left>
+    mat_bool_palette <yes>
+    var_number_set <A, 0>
+    var_number_save <A, 64>
+    man_start_object <org_group, "">
+      mat_orientation <hcf>
+      man_start_object <trigger, "">
+        mat_relative_tag <1>
+        mat_art_id <1-0-1634>
+        mat_horizontal_spacing <0>
+        mat_vertical_spacing <0>
+        act_replace_select_action
+            <
+            uni_start_stream
+              uni_wait_on
+              man_set_context_globalid <1>
+              var_lookup_by_id <A, 100>
+              uni_use_last_atom_value <man_set_context_globalid>
+              man_set_context_relative <1>
+              var_number_set <B, 270>
+              image_get_attr <16x, 01x>
+              var_number_set_from_atom <A>
+              if_numa_gte_numb_then <1, 2>
+              var_number_set <A, 0>
+              uni_sync_skip <1>
+              var_number_add <90>
+              uni_sync_skip <2>
+              var_number_get <A>
+              uni_use_last_atom_value <image_attr_rotate>
+              man_end_context
+            uni_wait_off_end_stream
+            >
+        man_start_sibling <trigger, "">
+          mat_relative_tag <2>
+          mat_art_id <1-0-1633>
+          mat_horizontal_spacing <0>
+          mat_vertical_spacing <0>
+          act_replace_select_action
+              <
+              uni_start_stream
+                man_set_context_globalid <1>
+                var_lookup_by_id <A, 100>
+                uni_use_last_atom_value <man_set_context_globalid>
+                async_alert <yes_no, "Are you sure you would like to revert to the last saved copy of this image?">
+                async_get_alert_result
+                var_number_set_from_atom <A>
+                var_number_set <B, 1>
+                if_numa_neq_numb_then <1>
+              uni_abort_stream
+              uni_sync_skip <1>
+              uni_wait_on
+              man_set_context_relative <1>
+              image_revert
+              man_end_context
+            uni_wait_off_end_stream
+            >
+        man_end_object
+      man_start_sibling <org_group, "">
+        mat_orientation <hcf>
+        man_start_object <trigger, "">
+          mat_relative_tag <3>
+          mat_art_id <1-0-1629>
+          mat_horizontal_spacing <0>
+          mat_vertical_spacing <0>
+          act_replace_select_action
+              <
+              uni_start_stream
+                man_set_context_globalid <1>
+                var_lookup_by_id <A, 100>
+                uni_use_last_atom_value <man_set_context_globalid>
+                uni_wait_on
+                man_set_context_relative <1>
+                image_flip_horizontal
+                man_end_context
+              uni_wait_off_end_stream
+              >
+          man_start_sibling <trigger, "">
+            mat_relative_tag <4>
+            mat_art_id <1-0-1630>
+            mat_horizontal_spacing <0>
+            mat_vertical_spacing <0>
+            act_replace_select_action
+                <
+                uni_start_stream
+                  man_set_context_globalid <1>
+                  var_lookup_by_id <A, 100>
+                  uni_use_last_atom_value <man_set_context_globalid>
+                  uni_wait_on
+                  man_set_context_relative <1>
+                  image_flip_vertical
+                  man_end_context
+                uni_wait_off_end_stream
+                >
+            man_end_object
+          man_start_sibling <org_group, "">
+            mat_orientation <hcf>
+            man_start_object <trigger, "">
+              mat_relative_tag <5>
+              mat_art_id <1-0-1625>
+              mat_horizontal_spacing <0>
+              mat_vertical_spacing <0>
+              act_replace_select_action
+                  <
+                  uni_start_stream
+                    man_set_context_globalid <1>
+                    var_lookup_by_id <A, 100>
+                    uni_use_last_atom_value <man_set_context_globalid>
+                    uni_wait_on
+                    man_set_context_relative <1>
+                    var_number_set <B, 128>
+                    image_get_attr <16x, 06x>
+                    var_number_set_from_atom <A>
+                    if_numa_gte_numb_then <1, 2>
+                    var_number_set <A, 128>
+                    uni_sync_skip <1>
+                    var_number_add <5>
+                    uni_sync_skip <2>
+                    var_number_get <A>
+                    uni_use_last_atom_value <image_attr_brightness>
+                    man_end_context
+                  uni_wait_off_end_stream
+                  >
+              man_start_sibling <trigger, "">
+                mat_relative_tag <6>
+                mat_art_id <1-0-1628>
+                mat_horizontal_spacing <0>
+                mat_vertical_spacing <0>
+                act_replace_select_action
+                    <
+                    uni_start_stream
+                      man_set_context_globalid <1>
+                      var_lookup_by_id <A, 100>
+                      uni_use_last_atom_value <man_set_context_globalid>
+                      uni_wait_on
+                      man_set_context_relative <1>
+                      var_number_set <B, 2147483647>
+                      image_get_attr <16x, 06x>
+                      var_number_set_from_atom <A>
+                      if_numa_lte_numb_then <1, 2>
+                      var_number_set <A, 2147483647>
+                      uni_sync_skip <1>
+                      var_number_sub <5>
+                      uni_sync_skip <2>
+                      var_number_get <A>
+                      uni_use_last_atom_value <image_attr_brightness>
+                      man_end_context
+                    uni_wait_off_end_stream
+                    >
+                man_end_object
+              man_start_sibling <org_group, "">
+                mat_orientation <hcf>
+                man_start_object <trigger, "">
+                  mat_relative_tag <7>
+                  mat_art_id <1-0-1626>
+                  mat_horizontal_spacing <0>
+                  mat_vertical_spacing <0>
+                  act_replace_select_action
+                      <
+                      uni_start_stream
+                        man_set_context_globalid <1>
+                        var_lookup_by_id <A, 100>
+                        uni_use_last_atom_value <man_set_context_globalid>
+                        uni_wait_on
+                        man_set_context_relative <1>
+                        var_number_set <B, 128>
+                        image_get_attr <16x, 07x>
+                        var_number_set_from_atom <A>
+                        if_numa_gte_numb_then <1, 2>
+                        var_number_set <A, 128>
+                        uni_sync_skip <1>
+                        var_number_add <5>
+                        uni_sync_skip <2>
+                        var_number_get <A>
+                        uni_use_last_atom_value <image_attr_contrast>
+                        man_end_context
+                      uni_wait_off_end_stream
+                      >
+                  man_start_sibling <trigger, "">
+                    mat_relative_tag <8>
+                    mat_art_id <1-0-1627>
+                    mat_horizontal_spacing <0>
+                    mat_vertical_spacing <0>
+                    act_replace_select_action
+                        <
+                        uni_start_stream
+                          man_set_context_globalid <1>
+                          var_lookup_by_id <A, 100>
+                          uni_use_last_atom_value <man_set_context_globalid>
+                          uni_wait_on
+                          man_set_context_relative <1>
+                          var_number_set <B, 2147483647>
+                          image_get_attr <16x, 07x>
+                          var_number_set_from_atom <A>
+                          if_numa_lte_numb_then <1, 2>
+                          var_number_set <A, 2147483647>
+                          uni_sync_skip <1>
+                          var_number_sub <5>
+                          uni_sync_skip <2>
+                          var_number_get <A>
+                          uni_use_last_atom_value <image_attr_contrast>
+                          man_end_context
+                        uni_wait_off_end_stream
+                        >
+                    man_end_object
+                  man_start_sibling <org_group, "">
+                    mat_orientation <hcf>
+                    man_start_object <trigger, "">
+                      mat_relative_tag <9>
+                      mat_art_id <1-0-1631>
+                      mat_horizontal_spacing <0>
+                      mat_vertical_spacing <0>
+                      act_replace_select_action
+                          <
+                          uni_start_stream
+                            man_set_context_globalid <1>
+                            var_lookup_by_id <A, 100>
+                            uni_use_last_atom_value <man_set_context_globalid>
+                            async_alert <yes_no, "Remove color information?">
+                            async_get_alert_result
+                            var_number_set_from_atom <A>
+                            var_number_set <B, 1>
+                            if_numa_neq_numb_then <1>
+                          uni_abort_stream
+                          uni_sync_skip <1>
+                          uni_wait_on
+                          man_set_context_relative <1>
+                          image_make_gray_scale
+                          uni_wait_off
+                          man_update_display
+                          man_end_context
+                        uni_end_stream
+                        >
+                    man_start_sibling <trigger, "">
+                      mat_relative_tag <10>
+                      mat_art_id <1-0-1632>
+                      mat_horizontal_spacing <0>
+                      mat_vertical_spacing <0>
+                      act_replace_select_action
+                          <
+                          uni_start_stream
+                            man_set_context_globalid <1>
+                            var_lookup_by_id <A, 100>
+                            uni_use_last_atom_value <man_set_context_globalid>
+                            uni_wait_on
+                            man_set_context_relative <1>
+                            image_invert
+                            man_end_context
+                          uni_wait_off_end_stream
+                          >
+                      man_end_object
+                    man_end_object
+                    man_update_display
+                    uni_wait_off
+                  uni_end_stream <00x>

@@ -1,0 +1,33 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Network Setup">
+    mat_object_id <40-9424>
+    mat_style_id <40-9424>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <ornament, "">
+      mat_size <44, 7>
+      man_append_data <"America Online does not support connection speeds above 2400 bps to the Tymnet Network. We have lowered your connection speed to 2400 bps. If this is acceptable please select the button labeled \"CONTINUE\" . If , however, you would like more information on connecting at higher speeds , please select the button labeled \"HELP\" below.">
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "Continue">
+        act_replace_select_action
+            <
+            uni_start_stream
+              man_close_update
+              man_end_context
+              man_update_display
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Help">
+          act_replace_select_action
+              <
+              uni_start_stream
+                async_exec_context_help <6ex, 65x, 77x, 20x, 6cx, 6fx, 63x, 61x, 6cx, 20x, 61x, 63x, 63x, 65x, 73x, 73x, 20x, 6ex, 75x, 6dx, 62x, 65x, 72x>
+              uni_end_stream
+              >
+          man_end_object
+        man_end_object
+        man_update_display
+        uni_wait_off
+      uni_end_stream <00x>

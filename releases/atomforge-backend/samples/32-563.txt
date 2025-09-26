@@ -1,0 +1,52 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "New Location">
+    mat_object_id <32-563>
+    mat_orientation <vff>
+    mat_bool_modal <yes>
+    man_start_object <ornament, "">
+      mat_size <30, 3>
+      man_append_data <"Select a name for the new location.\x7fYour phone number and network settings\x7fwill be saved under this name.">
+    man_start_sibling <edit_view, "">
+      mat_size <30, 1, 20>
+      mat_relative_tag <1>
+      mat_bool_vertical_scroll <no>
+      mat_bool_resize_horizontal <no>
+      mat_bool_writeable <yes>
+      mat_validation <128>
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "OK">
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              man_set_context_relative <1>
+              de_start_extraction <0>
+              de_validate <display_msg | terminate>
+              de_get_data_pointer
+              uni_use_last_atom_string <ccl_new_location>
+              de_end_extraction
+              man_end_context
+              man_close_update
+              man_set_context_globalid <32-239>
+              man_set_context_relative <16>
+              act_get_db_value <14x, 00x, 00x, 2ex>
+              uni_use_last_atom_value <mat_value>
+              man_end_context
+              man_end_context
+              uni_invoke_local <32-577>
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Cancel">
+          act_replace_select_action
+              <
+              uni_start_stream
+                var_string_null <A>
+                man_close_update
+              uni_end_stream
+              >
+          man_end_object
+        man_end_object
+        man_update_display
+        uni_wait_off
+      uni_end_stream <00x>

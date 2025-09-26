@@ -1,0 +1,144 @@
+uni_start_stream
+  man_set_context_globalid <32-239>
+  de_start_extraction <0>
+  man_set_context_relative <1>
+  de_get_data_value
+  var_number_set_from_atom <A>
+  man_end_context
+  idb_start_obj <"b">
+  idb_atr_globalid <20-0-22>
+  var_number_get <A>
+  if_numa_eq_one_then <1, 2>
+  idb_append_data <01x>
+  uni_sync_skip <1>
+  idb_append_data <00x>
+  uni_sync_skip <2>
+  idb_end_obj
+  idb_start_obj <"b">
+  idb_atr_globalid <20-0-21>
+  buf_clear_buffer
+  man_set_context_relative <2>
+  de_get_data_value
+  uni_use_last_atom_value <idb_append_data>
+  man_end_context
+  idb_end_obj
+  idb_start_obj <"b">
+  idb_atr_globalid <20-0-23>
+  buf_clear_buffer
+  de_set_extraction_type <default>
+  de_set_data_type <default>
+  man_set_context_relative <11>
+  de_get_data_value
+  var_number_set_from_atom <A>
+  var_number_get <A>
+  uni_use_last_atom_value <idb_append_data>
+  man_end_context
+  idb_end_obj
+  idb_start_obj <"b">
+  idb_atr_globalid <20-0-24>
+  buf_clear_buffer
+  man_set_context_relative <13>
+  de_get_data_value
+  var_number_set_from_atom <B>
+  var_number_get <B>
+  uni_use_last_atom_value <idb_append_data>
+  man_end_context
+  idb_end_obj
+  if_numa_true_then <1>
+  idb_start_obj <"t">
+  idb_atr_globalid <20-2-0>
+  man_set_context_relative <12>
+  de_set_data_type <default>
+  de_get_data_pointer
+  uni_use_last_atom_string <idb_append_data>
+  buf_clear_buffer
+  man_end_context
+  idb_end_obj
+  uni_sync_skip <1>
+  if_numb_true_then <1>
+  idb_start_obj <"t">
+  idb_atr_globalid <20-2-4>
+  man_set_context_relative <14>
+  de_set_data_type <default>
+  de_get_data_pointer
+  uni_use_last_atom_string <idb_append_data>
+  buf_clear_buffer
+  man_end_context
+  idb_end_obj
+  uni_sync_skip <1>
+  idb_start_obj <"t">
+  idb_atr_globalid <20-0-10>
+  man_set_context_relative <3>
+  de_set_data_type <default>
+  de_get_data_pointer
+  var_string_set_from_atom <B>
+  uni_use_last_atom_string <idb_append_data>
+  buf_clear_buffer
+  man_end_context
+  idb_end_obj
+  idb_start_obj <"b">
+  idb_atr_globalid <20-0-17>
+  man_set_context_relative <4>
+  de_set_data_type <index>
+  de_get_data_value
+  var_number_set_from_atom <C>
+  uni_use_last_atom_value <idb_append_data>
+  buf_clear_buffer
+  man_end_context
+  idb_end_obj
+  idb_start_obj <"b">
+  idb_atr_globalid <20-0-19>
+  man_set_context_relative <5>
+  de_get_data_value
+  var_number_set_from_atom <D>
+  uni_use_last_atom_value <idb_append_data>
+  buf_clear_buffer
+  man_end_context
+  idb_end_obj
+  idb_start_obj <"t">
+  idb_atr_globalid <20-0-11>
+  man_set_context_relative <6>
+  de_set_data_type <default>
+  de_get_data_pointer
+  var_string_set_from_atom <A>
+  if_stra_eq_null_then <1, 2>
+  var_number_set <B, 1>
+  var_string_get <B>
+  uni_sync_skip <1>
+  var_string_get <A>
+  uni_sync_skip <2>
+  uni_use_last_atom_string <idb_append_data>
+  buf_clear_buffer
+  man_end_context
+  idb_end_obj
+  idb_start_obj <"b">
+  idb_atr_globalid <20-0-18>
+  man_set_context_relative <7>
+  de_set_data_type <index>
+  de_get_data_value
+  var_number_set_from_atom <A>
+  if_numb_true_then <1, 2>
+  var_number_get <C>
+  uni_sync_skip <1>
+  var_number_get <A>
+  uni_sync_skip <2>
+  uni_use_last_atom_value <idb_append_data>
+  buf_clear_buffer
+  man_end_context
+  idb_end_obj
+  idb_start_obj <"b">
+  idb_atr_globalid <20-0-20>
+  man_set_context_relative <8>
+  de_get_data_value
+  var_number_set_from_atom <A>
+  if_numb_true_then <1, 2>
+  var_number_get <D>
+  uni_sync_skip <1>
+  var_number_get <A>
+  uni_sync_skip <2>
+  uni_use_last_atom_value <idb_append_data>
+  man_end_context
+  idb_end_obj
+  de_end_extraction
+  buf_close_buffer
+uni_end_stream

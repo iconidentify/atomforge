@@ -1,0 +1,23 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Search Results">
+    mat_orientation <vcf>
+    man_start_object <ornament, "">
+      mat_size <35, 1, 60>
+      mat_relative_tag <1>
+    man_start_sibling <dss_list, "">
+      mat_orientation <vcf>
+      mat_size <60>
+      mat_relative_tag <2>
+    man_start_sibling <org_group, "">
+      mat_orientation <hcf>
+      man_start_object <trigger, "Open Article">
+        mat_relative_tag <3>
+        mat_bool_default <yes>
+      man_start_sibling <trigger, "More">
+        mat_relative_tag <4>
+      man_start_sibling <trigger, "Help">
+        mat_relative_tag <5>
+      man_end_object
+    man_end_object
+    man_update_display
+  uni_end_stream <00x>

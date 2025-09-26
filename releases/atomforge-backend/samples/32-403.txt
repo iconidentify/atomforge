@@ -1,0 +1,6 @@
+uni_start_stream
+  act_get_db_value <14x, 00x, 00x, 29x>
+  if_last_return_true_then <1>
+  man_response_pop
+  uni_sync_skip <1>
+uni_end_stream

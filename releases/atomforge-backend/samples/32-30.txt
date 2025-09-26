@@ -1,0 +1,107 @@
+uni_start_stream <00x>
+  man_set_context_globalid <1>
+  var_number_set <A, 0>
+  var_number_save <A, 161>
+  man_end_context
+  man_set_context_globalid <53>
+  man_start_object <ind_group, "">
+    mat_object_id <32-30>
+    mat_orientation <hff>
+    mat_position <center_center>
+    mat_bool_non_closeable <yes>
+    man_start_object <org_group, "">
+      mat_orientation <vcf>
+      man_start_object <org_group, "">
+        mat_orientation <vcc>
+        man_start_object <ornament, "">
+          mat_art_id <1-0-1366>
+        man_start_sibling <ornament, "">
+          mat_art_id <1-0-1367>
+        man_end_object
+      man_start_sibling <ornament, "">
+        mat_size <26, 1, 50>
+        mat_relative_tag <3>
+      man_start_sibling <org_group, "">
+        mat_orientation <hec>
+        man_start_object <trigger, "New Services">
+          mat_relative_tag <21>
+          mat_art_id <1-0-1307>
+          act_replace_select_action
+              <
+              uni_start_stream_wait_on <00x>
+              sm_send_f1 <32-377>
+              >
+          man_start_sibling <trigger, "No Mail">
+            mat_relative_tag <22>
+            mat_art_id <1-0-1312>
+            mat_bool_disabled <yes>
+            act_replace_select_action
+                <
+                uni_start_stream_wait_on <00x>
+                sm_send_token_arg <"eL">
+                >
+              mat_title_width <15>
+            man_end_object
+          man_start_sibling <trigger, "Browse the Service">
+            mat_bool_default <yes>
+            act_replace_select_action
+                <
+                uni_start_stream_wait_on
+                  man_do_magic_response_id <8414>
+                  uni_invoke_no_context <32-222>
+                uni_wait_off_end_stream
+                >
+            man_end_object
+          man_start_sibling <ornament, "">
+            mat_art_id <1-0-1435>
+            mat_horizontal_spacing <0>
+          man_start_sibling <org_group, "">
+            mat_orientation <vff>
+            man_start_object <org_group, "">
+              mat_orientation <hff>
+              man_start_object <ornament, "">
+                mat_art_id <1-0-1434>
+              man_start_sibling <ornament, "">
+                mat_size <28, 4>
+                mat_relative_tag <10>
+              man_start_sibling <trigger, "Click Here">
+                mat_relative_tag <17>
+                mat_art_id <1-0-1307>
+              man_end_object
+            man_start_sibling <org_group, "">
+              mat_orientation <hff>
+              man_start_object <ornament, "">
+                mat_art_id <1-0-1434>
+              man_start_sibling <ornament, "">
+                mat_size <28, 4>
+                mat_relative_tag <12>
+              man_start_sibling <trigger, "Click Here">
+                mat_relative_tag <18>
+                mat_art_id <1-0-1307>
+              man_end_object
+            man_start_sibling <org_group, "">
+              mat_orientation <hff>
+              man_start_object <ornament, "">
+                mat_art_id <1-0-1434>
+              man_start_sibling <ornament, "">
+                mat_size <28, 4>
+                mat_relative_tag <14>
+              man_start_sibling <trigger, "Click Here">
+                mat_relative_tag <19>
+                mat_art_id <1-0-1307>
+              man_end_object
+            man_start_sibling <org_group, "">
+              mat_orientation <hff>
+              man_start_object <ornament, "">
+                mat_art_id <1-0-1434>
+              man_start_sibling <ornament, "">
+                mat_size <28, 4>
+                mat_relative_tag <16>
+              man_start_sibling <trigger, "Click Here">
+                mat_relative_tag <20>
+                mat_art_id <1-0-1307>
+              man_end_object
+            man_end_object
+          man_end_object
+          mat_title_width <15>
+        uni_end_stream <00x>

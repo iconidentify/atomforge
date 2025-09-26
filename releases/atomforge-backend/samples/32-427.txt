@@ -1,0 +1,64 @@
+uni_start_stream <00x>
+  man_preset_gid <32-427>
+  if_last_return_true_then <1>
+  man_make_focus
+  man_update_display
+uni_abort_stream
+uni_sync_skip <1>
+man_start_object <ind_group, "Address Group">
+  mat_object_id <32-427>
+  mat_style_id <32-427>
+  mat_orientation <vff>
+  mat_position <center_center>
+  mat_bool_resize_vertical <no>
+  mat_bool_modal <yes>
+  man_start_object <org_group, "">
+    mat_orientation <vff>
+    man_start_object <org_group, "">
+      mat_orientation <vff>
+      man_start_object <ornament, "Group Name  (e.g. \"Associates\")">
+        mat_size <35, 1, 35>
+        mat_font_id <system>
+      man_start_sibling <edit_view, "">
+        mat_size <32, 1, 31>
+        mat_relative_tag <1>
+        mat_capacity <31>
+        mat_title_pos <left | center>
+        mat_validation <128>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <vff>
+      man_start_object <ornament, "Screen Names  (e.g. \"Jenny C\")">
+        mat_size <30, 1, 40>
+        mat_font_id <system>
+      man_start_sibling <edit_view, "">
+        mat_size <50, 3, 256>
+        mat_relative_tag <2>
+        mat_bool_writeable <yes>
+        mat_validation <128>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "OK">
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              de_validate <display_msg | terminate>
+              ad_store
+              man_close_update
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Cancel">
+          act_replace_select_action
+              <
+              uni_start_stream
+                man_close_update
+              uni_end_stream
+              >
+          man_end_object
+        man_end_object
+      man_end_object
+      man_update_display
+      uni_wait_off
+    uni_end_stream <00x>

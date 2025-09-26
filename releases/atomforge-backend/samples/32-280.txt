@@ -1,0 +1,136 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Download Preferences">
+    mat_object_id <32-280>
+    mat_orientation <vff>
+    mat_bool_modal <yes>
+    man_start_object <sms_list, "">
+      mat_orientation <vff>
+      man_start_object <trigger, "">
+        mat_title <"Display image files on Download">
+        mat_relative_tag <1>
+        mat_bool_default <yes>
+      man_start_sibling <trigger, "">
+        mat_title <"Automatically decompress files at sign-off">
+        mat_relative_tag <2>
+        mat_bool_default <yes>
+      man_start_sibling <trigger, "">
+        mat_title <"Delete ZIP files after decompression">
+        mat_relative_tag <3>
+      man_start_sibling <trigger, "">
+        mat_title <"Confirm additions to my download list">
+        mat_relative_tag <6>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hlc>
+      man_start_object <sms_list, "">
+        mat_orientation <vff>
+        man_start_object <trigger, "">
+          mat_title <"Retain information about my last">
+          mat_relative_tag <4>
+        man_end_object
+      man_start_sibling <select_range, "">
+        mat_relative_tag <5>
+        mat_width <5>
+        mat_minimum <1>
+        mat_maximum <1000>
+      man_start_sibling <ornament, "downloads">
+        mat_size <10, 1, 10>
+        mat_font_id <system>
+        mat_font_size <12>
+      man_end_object
+    man_start_sibling <org_group, "">
+      man_start_object <ornament, "  ">
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hcf>
+      man_start_object <trigger, "OK">
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              de_start_extraction
+              man_set_context_relative <1>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-267>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_relative <2>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-30>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_relative <3>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-31>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_relative <6>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-34>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_relative <4>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-32>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_relative <5>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-33>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              de_end_extraction
+              xfer_refresh_prefs
+              man_close
+              man_update_display
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Cancel">
+          act_replace_select_action
+              <
+              uni_start_stream <00x>
+                man_close_update
+              uni_end_stream
+              >
+          man_end_object
+        man_end_object
+        man_update_display
+        man_set_context_relative <1>
+        act_get_db_value <14x, 00x, 01x, 0bx>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <2>
+        act_get_db_value <14x, 00x, 00x, 1ex>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <3>
+        act_get_db_value <14x, 00x, 00x, 1fx>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <5>
+        act_get_db_value <14x, 00x, 00x, 21x>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <6>
+        act_get_db_value <14x, 00x, 00x, 22x>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <4>
+        act_get_db_value <14x, 00x, 00x, 20x>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_update_display
+        uni_wait_off
+      uni_end_stream

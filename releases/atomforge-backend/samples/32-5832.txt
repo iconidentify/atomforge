@@ -1,0 +1,6 @@
+uni_start_stream
+  man_set_context_globalid <32-5831>
+  man_close_children
+  man_end_context
+  man_close_update <32-5831>
+uni_end_stream

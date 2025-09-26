@@ -1,0 +1,80 @@
+uni_start_stream
+  if_offline_then <1>
+  var_number_set <A, 0>
+uni_abort_stream
+uni_sync_skip <1>
+man_set_context_globalid <1>
+var_lookup_by_id <A, 192>
+if_numa_false_then <1>
+var_number_set <A, 0>
+uni_abort_stream
+uni_sync_skip <1>
+man_end_context
+async_alert <yes_no, "You are exiting an AOL Unlimited Use area.\x7f\x7fIf you are a trial member, you will resume use of your trial hours.\x7fIf not, you will resume use of AOL according to your preferred usage plan.\x7f\x7fFor information, see Keyword: Billing.\x7fAre you ready?\x7f">
+var_number_set_from_atom <A>
+var_number_set <B, 1>
+if_numa_neq_numb_then <1>
+var_number_set <A, 1>
+uni_abort_stream
+uni_sync_skip <1>
+xfer_finish_later
+uni_wait_on
+man_get_first_window
+uni_save_result
+uni_start_loop
+uni_get_result
+if_last_return_true_then <1>
+uni_get_result
+uni_use_last_atom_value <man_set_context_globalid>
+act_do_action <67108872>
+man_end_context
+uni_get_result
+uni_use_last_atom_value <man_update_display>
+man_get_next_window
+uni_save_result
+uni_end_loop
+uni_sync_skip <1>
+buf_start_buffer <token_header | host_bound>
+buf_set_token <"Kg">
+man_set_context_globalid <1>
+var_lookup_by_id <A, 193>
+uni_use_last_atom_value <buf_add_data>
+man_end_context
+man_get_top_window
+uni_save_result
+uni_get_result
+if_last_return_false_then <1, 2>
+man_set_context_globalid <1>
+var_number_set <A, 16321>
+var_number_save <A, 193>
+man_end_context
+uni_sync_skip <1>
+uni_get_result
+uni_use_last_atom_value <man_set_context_globalid>
+var_lookup_by_id <A, 193>
+uni_save_result
+man_end_context
+uni_get_result
+if_last_return_false_then <1, 2>
+man_set_context_globalid <1>
+var_number_set <A, 16321>
+var_number_save <A, 193>
+man_end_context
+uni_sync_skip <1>
+man_set_context_globalid <1>
+var_number_save <A, 193>
+man_end_context
+uni_sync_skip <2>
+man_set_context_globalid <1>
+var_lookup_by_id <A, 193>
+uni_use_last_atom_value <buf_add_data>
+buf_close_buffer
+man_end_context
+uni_invoke_no_context <32-482>
+uni_invoke_no_context <32-484>
+man_set_context_globalid <1>
+var_number_set <A, 0>
+var_number_save <A, 192>
+man_end_context
+var_number_set <A, 0>
+uni_end_stream

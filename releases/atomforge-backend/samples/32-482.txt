@@ -1,0 +1,8 @@
+uni_start_stream
+  man_set_context_globalid <20-0-41>
+  man_set_context_relative <9>
+  mat_bool_disabled <yes>
+  man_end_context
+  man_update_display
+  man_end_context
+uni_end_stream

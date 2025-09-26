@@ -1,0 +1,114 @@
+uni_start_stream
+  man_set_response_id <2097466>
+  man_set_context_globalid <18-0-0>
+  man_start_object <ind_group, "">
+    mat_orientation <vff>
+    man_start_object <org_group, "">
+      mat_orientation <hlf>
+      man_start_object <ornament, "">
+        mat_art_id <1-0-1301>
+        mat_width <8>
+        mat_height <1>
+        mat_bool_disabled <yes>
+      man_end_object
+      man_start_object <ornament, "">
+        mat_title <"Information about">
+        mat_height <1>
+      man_end_object
+      man_start_object <ornament, "">
+        mat_relative_tag <1>
+        mat_width <10>
+        mat_height <1>
+        mat_bool_default_send <yes>
+        man_use_default_title
+        uni_use_last_atom_string <mat_title>
+      man_end_object
+    man_end_object
+    man_start_object <org_group, "">
+      mat_orientation <hee>
+      man_start_object <ornament, "">
+        mat_title <"Special handling:">
+        mat_width <16>
+        mat_height <1>
+      man_end_object
+      man_start_object <sss_list, "">
+        mat_orientation <hee>
+        mat_relative_tag <12>
+        act_set_criterion <select>
+        act_append_action
+          <
+          uni_start_stream
+            man_set_context_relative <12>
+            de_start_extraction <0>
+            de_get_data_value
+            var_number_set_from_atom <A>
+            de_end_extraction
+            buf_close_buffer
+            var_number_sub <1>
+            man_end_context
+            var_lookup_by_id <B, 3>
+            var_number_save <B, 4>
+            var_number_save <A, 3>
+            if_numa_neq_numb_then <1>
+            var_lookup_by_id <A, 3>
+            var_lookup_by_id <C, 3>
+            var_lookup_by_id <B, 2>
+            var_lookup_by_id <A, 1>
+            uni_use_last_atom_value <man_set_context_globalid>
+            var_number_get <B>
+            uni_use_last_atom_value <man_set_context_relative>
+            var_number_save <C, 65536>
+            man_end_context
+            man_end_context
+            uni_sync_skip <1>
+          uni_end_stream
+          >
+        man_start_object <trigger, "">
+          mat_title <"None">
+          act_set_inheritance <02x>
+        man_end_object
+        man_start_object <trigger, "">
+          mat_title <"Highlight">
+          act_set_inheritance <02x>
+        man_end_object
+      man_end_object
+    man_end_object
+    man_start_object <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "">
+        mat_title <"Info">
+        act_set_criterion <select>
+        act_append_action
+          <
+          uni_start_stream
+            de_start_extraction
+            buf_set_token <"id">
+            man_set_context_relative <1>
+            de_get_data
+            de_end_extraction
+            buf_close_buffer
+          uni_end_stream
+          >
+      man_end_object
+    man_end_object
+    man_update_display
+    var_number_save <A, 1>
+    var_number_save <B, 2>
+    var_number_get <A>
+    uni_use_last_atom_value <man_set_context_globalid>
+    var_lookup_by_id <C, 65537>
+    var_number_get <B>
+    uni_use_last_atom_value <man_set_context_relative>
+    var_numa_zero
+    var_lookup_by_id <A, 65536>
+    man_end_context
+    man_end_context
+    var_number_save <A, 3>
+    var_number_save <C, 5>
+    man_set_context_relative <12>
+    var_number_get <A>
+    var_number_add <1>
+    uni_use_last_atom_value <mat_value>
+    man_end_context
+    man_update_display
+  uni_end_stream

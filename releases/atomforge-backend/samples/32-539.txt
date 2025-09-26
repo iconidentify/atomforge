@@ -1,0 +1,636 @@
+uni_start_stream
+  man_insert_object_before <31>
+  mat_title <"File">
+  mat_shortcut_key <"F">
+  man_start_object <trigger, "">
+    mat_title <"New">
+    mat_shortcut_key <"N">
+    mat_command_key <4ex>
+    act_set_criterion <select>
+    act_append_action
+      <
+      uni_start_stream
+        fm_start
+        fm_broadcast <05x>
+        fm_broadcast <06x>
+        fm_end
+      uni_end_stream
+      >
+  man_end_object
+  man_start_object <trigger, "">
+    mat_title <"Open...">
+    mat_shortcut_key <"O">
+    mat_command_key <4fx>
+    act_set_criterion <select>
+    act_append_action
+      <
+      uni_start_stream
+        fm_start
+        fm_dialog_get_file <"Open a file">
+        fm_handle_error <display_msg | terminate>
+        fm_broadcast <01x>
+        fm_end
+      uni_end_stream
+      >
+  man_end_object
+  man_start_object <trigger, "">
+    mat_title <"Save">
+    mat_shortcut_key <"S">
+    mat_command_key <53x>
+    act_set_criterion <select>
+    act_append_action
+      <
+      uni_start_stream
+        fm_start
+        fm_broadcast <04x>
+        fm_item_get <broadcast_return_value>
+        var_number_set_from_atom <A>
+        if_numa_false_then <37>
+        fm_broadcast <02x>
+        fm_handle_error <display_msg | terminate>
+        fm_dialog_put_file
+        fm_handle_error <display_msg | terminate>
+        fm_broadcast <03x>
+        uni_sync_skip <9480>
+        fm_end
+      uni_end_stream
+      >
+  man_end_object
+  man_start_object <trigger, "">
+    mat_title <"Save As...">
+    mat_shortcut_key <"A">
+    act_set_criterion <select>
+    act_append_action
+      <
+      uni_start_stream
+        fm_start
+        fm_broadcast <02x>
+        fm_handle_error <display_msg | terminate>
+        fm_dialog_put_file
+        fm_handle_error <display_msg | terminate>
+        fm_broadcast <03x>
+        fm_end
+      uni_end_stream
+      >
+  man_end_object
+  man_start_object <ornament, "">
+  man_end_object
+  man_start_object <trigger, "">
+    mat_title <"Print...">
+    mat_shortcut_key <"P">
+    mat_command_key <50x>
+    act_set_criterion <select>
+    act_append_action
+      <
+      uni_start_stream
+        fm_start
+        fm_broadcast <08x>
+        fm_handle_error <display_msg | terminate>
+        fm_dialog_print
+        fm_handle_error <display_msg | terminate>
+        fm_broadcast <09x>
+        fm_end
+      uni_end_stream
+      >
+  man_end_object
+  man_start_object <trigger, "">
+    mat_title <"Print Setup...">
+    act_set_criterion <select>
+    act_append_action
+      <
+      uni_start_stream
+        fm_start
+        fm_dialog_print <01x>
+        fm_end
+      uni_end_stream
+      >
+  man_end_object
+  man_start_object <trigger, "">
+    mat_title <"Download Manager...">
+    act_set_criterion <select>
+    act_append_action
+      <
+      uni_start_stream
+        sm_enter_paid
+        lm_open_window <32-234>
+      uni_end_stream
+      >
+  man_end_object
+  man_start_object <trigger, "">
+    mat_title <"Logging...">
+    mat_shortcut_key <"L">
+    act_set_criterion <select>
+    act_append_action
+      <
+      uni_start_stream
+        man_do_magic_response_id <8430>
+        uni_invoke_no_context <32-238>
+      uni_end_stream
+      >
+  man_end_object
+  man_start_object <ornament, "">
+  man_end_object
+  man_start_object <trigger, "">
+    mat_title <"Stop Incoming Text">
+    mat_command_key <58x>
+    act_set_criterion <select>
+    act_append_action
+      <
+      uni_start_stream
+        uni_cancel_action
+      uni_end_stream
+      >
+  man_end_object
+  man_start_object <trigger, "">
+    mat_title <"Exit">
+    mat_shortcut_key <"X">
+    mat_command_key <82x, 00x>
+    act_set_criterion <select>
+    act_append_action
+      <
+      uni_start_stream
+        async_exit
+      uni_end_stream
+      >
+  man_end_object
+man_end_object
+man_insert_object_before <31>
+mat_title <"Edit">
+mat_shortcut_key <"E">
+mat_object_id <57>
+act_set_criterion <select>
+act_append_action
+  <
+  uni_start_stream
+    man_do_edit_menu <0>
+  uni_end_stream
+  >
+man_start_object <trigger, "">
+  mat_title <"Undo">
+  mat_shortcut_key <"U">
+  mat_relative_tag <5>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      man_do_edit_menu <5>
+    uni_end_stream
+    >
+man_end_object
+man_start_object <ornament, "">
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"Cut">
+  mat_shortcut_key <"T">
+  mat_command_key <91x, 02x>
+  mat_relative_tag <1>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      man_do_edit_menu <1>
+    uni_end_stream
+    >
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"Copy">
+  mat_shortcut_key <"C">
+  mat_command_key <90x>
+  mat_relative_tag <2>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      man_do_edit_menu <2>
+    uni_end_stream
+    >
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"Paste">
+  mat_shortcut_key <"P">
+  mat_command_key <90x, 02x>
+  mat_relative_tag <3>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      man_do_edit_menu <3>
+    uni_end_stream
+    >
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"Delete">
+  mat_shortcut_key <"D">
+  mat_relative_tag <6>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      man_do_edit_menu <6>
+    uni_end_stream
+    >
+man_end_object
+man_start_object <ornament, "">
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"Select All">
+  mat_shortcut_key <"S">
+  mat_relative_tag <4>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      man_do_edit_menu <4>
+    uni_end_stream
+    >
+man_end_object
+man_end_object
+man_insert_object_before <31>
+mat_title <"Go To">
+mat_shortcut_key <"G">
+mat_object_id <20-0-41>
+man_start_object <trigger, "">
+  mat_title <"Set Up & Sign On">
+  mat_relative_tag <1>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      lm_open_window <32-221>
+    uni_end_stream
+    >
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"Departments">
+  mat_bool_disabled <yes>
+  mat_relative_tag <2>
+  mat_command_key <44x>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      sm_enter_paid
+      man_do_magic_response_id <8414>
+      uni_invoke_no_context <32-222>
+    uni_end_stream
+    >
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"Keyword...">
+  mat_bool_disabled <yes>
+  mat_relative_tag <3>
+  mat_command_key <4bx>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      man_do_magic_response_id <8422>
+      uni_invoke_no_context <32-230>
+    uni_end_stream
+    >
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"Directory of Services">
+  mat_relative_tag <4>
+  mat_bool_disabled <yes>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      man_do_magic_token_arg <"f1", 32-322>
+      if_last_return_false_then <1>
+      uni_wait_on
+      buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+      buf_set_token <"f1">
+      buf_add_atom_data <2097474>
+      buf_close_buffer
+      uni_sync_skip <1>
+    uni_end_stream
+    >
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"Lobby">
+  mat_bool_disabled <yes>
+  mat_relative_tag <5>
+  mat_command_key <4cx>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      sm_enter_paid
+      uni_wait_on
+      buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+      buf_set_token <"CJ">
+      buf_close_buffer
+    uni_end_stream
+    >
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"Members' Online Support">
+  mat_bool_disabled <yes>
+  mat_relative_tag <6>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      sm_enter_free
+      man_do_magic_token_arg <"f1", 32-331>
+      if_last_return_false_then <1>
+      uni_wait_on
+      buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+      buf_set_token <"f1">
+      buf_add_atom_data <2097483>
+      buf_close_buffer
+      uni_sync_skip <1>
+    uni_end_stream
+    >
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"Network News">
+  mat_relative_tag <7>
+  act_replace_select_action
+      <
+      uni_start_stream
+        lm_open_window <32-292>
+      uni_end_stream
+      >
+  man_end_object
+  man_start_object <ornament, "">
+  man_end_object
+  man_start_object <trigger, "">
+    mat_title <"Edit Goto Menu">
+    act_set_criterion <select>
+    act_append_action
+      <
+      uni_start_stream
+        uni_invoke_no_context <32-529>
+      uni_end_stream
+      >
+  man_end_object
+  man_start_object <ornament, "">
+  man_end_object
+  uni_invoke_local <32-538>
+man_end_object
+man_insert_object_before <31>
+mat_title <"Mail">
+mat_object_id <20-0-42>
+mat_shortcut_key <"M">
+man_start_object <trigger, "">
+  mat_title <"Compose Mail">
+  mat_relative_tag <1>
+  mat_command_key <4dx>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      sm_enter_paid
+      uni_invoke_no_context <32-226>
+    uni_end_stream
+    >
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"Read New Mail">
+  mat_bool_disabled <yes>
+  mat_relative_tag <2>
+  mat_command_key <52x>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      sm_enter_paid
+      man_do_magic_token_arg <"eL">
+      if_last_return_false_then <1>
+      uni_wait_on
+      buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+      buf_set_token <"eL">
+      buf_close_buffer
+      uni_sync_skip <1>
+    uni_end_stream
+    >
+man_end_object
+man_start_object <ornament, "">
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"Check Mail You've Read">
+  mat_bool_disabled <yes>
+  mat_relative_tag <3>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      sm_enter_paid
+      man_do_magic_token_arg <"eO">
+      if_last_return_false_then <1>
+      uni_wait_on
+      buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+      buf_set_token <"eO">
+      buf_close_buffer
+      uni_sync_skip <1>
+    uni_end_stream
+    >
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"Check Mail You've Sent">
+  mat_bool_disabled <yes>
+  mat_relative_tag <4>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      sm_enter_paid
+      man_do_magic_token_arg <"oL">
+      if_last_return_false_then <1>
+      uni_wait_on
+      buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+      buf_set_token <"oL">
+      buf_close_buffer
+      uni_sync_skip <1>
+    uni_end_stream
+    >
+man_end_object
+man_start_object <ornament, "">
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"Fax/Paper Mail">
+  mat_bool_disabled <yes>
+  act_replace_select_action
+      <
+      uni_start_stream
+        sm_enter_paid
+        man_do_magic_token_arg <"K1", 2-43263>
+        if_last_return_false_then <1>
+        uni_wait_on
+        buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+        buf_set_token <"K1">
+        buf_add_atom_data <174335>
+        buf_close_buffer
+        uni_sync_skip <1>
+      uni_end_stream
+      >
+    mat_relative_tag <5>
+  man_end_object
+  man_start_object <ornament, "">
+  man_end_object
+  man_start_object <trigger, "">
+    mat_title <"Address Book...">
+    mat_relative_tag <6>
+    act_set_criterion <select>
+    act_append_action
+      <
+      uni_start_stream
+        sm_enter_paid
+        lm_open_window <32-425>
+        ad_set_caller <00x, 00x, 00x, 00x>
+        man_update_display
+      uni_end_stream
+      >
+  man_end_object
+man_end_object
+man_insert_object_before <31>
+mat_title <"Members">
+mat_object_id <20-0-43>
+mat_shortcut_key <"B">
+man_start_object <trigger, "">
+  mat_title <"Send an Instant Message">
+  mat_bool_disabled <yes>
+  mat_relative_tag <1>
+  mat_command_key <49x>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      sm_enter_paid
+      man_do_magic_response_id <8417>
+      uni_invoke_no_context <32-225>
+    uni_end_stream
+    >
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"Get a Member's Profile">
+  mat_bool_disabled <yes>
+  mat_relative_tag <2>
+  mat_command_key <47x>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      sm_enter_paid
+      uni_invoke_no_context <32-486>
+    uni_end_stream
+    >
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"Locate Member Online">
+  mat_bool_disabled <yes>
+  mat_relative_tag <3>
+  mat_command_key <46x>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      sm_enter_paid
+      man_do_magic_response_id <8416>
+      uni_invoke_no_context <32-224>
+    uni_end_stream
+    >
+man_end_object
+man_start_object <ornament, "">
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"Search Member Directory">
+  mat_bool_disabled <yes>
+  mat_relative_tag <4>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      sm_enter_paid
+      man_do_magic_token_arg <"K1", 8-17767>
+      if_last_return_false_then <1>
+      uni_wait_on
+      buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+      buf_set_token <"K1">
+      buf_add_atom_data <542055>
+      buf_close_buffer
+      uni_sync_skip <1>
+    uni_end_stream
+    >
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"Edit Your Online Profile">
+  mat_bool_disabled <yes>
+  mat_relative_tag <5>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      sm_enter_paid
+      man_do_magic_token_arg <"jr">
+      if_last_return_false_then <1>
+      uni_wait_on
+      buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+      buf_set_token <"jr">
+      buf_close_buffer
+      uni_sync_skip <1>
+    uni_end_stream
+    >
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"Edit Screen Names">
+  mat_bool_disabled <yes>
+  mat_relative_tag <6>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      man_do_magic_token_arg <"f1", 32-384>
+      if_last_return_false_then <1>
+      uni_wait_on
+      buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+      buf_set_token <"f1">
+      buf_add_atom_data <2097536>
+      buf_close_buffer
+      uni_sync_skip <1>
+    uni_end_stream
+    >
+man_end_object
+man_start_object <ornament, "">
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"Preferences">
+  mat_relative_tag <7>
+  mat_command_key <3dx>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      man_do_magic_response_id <8436>
+      uni_invoke_no_context <32-278>
+    uni_end_stream
+    >
+man_end_object
+man_end_object
+man_insert_object_after <31>
+mat_object_type <dss_list, "">
+mat_title <"Help">
+mat_shortcut_key <"H">
+man_start_object <trigger, "">
+  mat_title <"Get Help">
+  mat_shortcut_key <"G">
+  mat_bool_disabled <yes>
+man_end_object
+man_start_object <trigger, "">
+  mat_title <"About America Online">
+  mat_shortcut_key <"A">
+  mat_bool_disabled <no>
+  act_set_criterion <select>
+  act_append_action
+    <
+    uni_start_stream
+      uni_invoke_no_context <32-327>
+    uni_end_stream
+    >
+man_end_object
+man_end_object
+man_update_display <2>
+uni_end_stream

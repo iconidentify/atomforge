@@ -1,0 +1,119 @@
+uni_start_stream
+  man_set_context_globalid <52>
+  man_start_object <ind_group, "">
+    mat_bool_modal <yes>
+    mat_object_id <32-220>
+    mat_bool_background_tile <yes>
+    mat_art_id <1-0-21743>
+    var_number_set <A, 0>
+    var_number_save <A, 64>
+    act_set_criterion <130>
+    act_append_action
+      <
+      uni_start_stream
+        var_number_get <A>
+        if_numa_false_then <10>
+        man_set_context_relative <1>
+        mat_art_id <1-0-21181>
+        man_update_display
+        man_end_context
+        uni_sync_skip <10>
+        if_numa_eq_one_then <20>
+        man_set_context_relative <2>
+        mat_art_id <1-0-21193>
+        man_update_display
+        man_end_context
+        uni_sync_skip <20>
+        if_numa_gt_one_then <30>
+        man_set_context_relative <3>
+        mat_art_id <1-0-21180>
+        man_update_display
+        man_end_context
+        uni_sync_skip <30>
+        var_number_increment <A>
+        var_number_save <A, 64>
+      uni_end_stream
+      >
+    act_set_criterion <129>
+    act_append_action
+      <
+      uni_start_stream
+        man_set_context_relative <1>
+        mat_art_frame <0>
+        man_end_context
+        man_set_context_relative <2>
+        mat_art_frame <0>
+        man_end_context
+        man_set_context_relative <3>
+        mat_art_frame <0>
+        man_end_context
+        man_update_display
+        var_number_set <A, 0>
+        var_number_save <A, 64>
+      uni_end_stream
+      >
+    man_start_object <org_group, "">
+      mat_orientation <vcc>
+      man_start_object <ornament, "">
+        mat_art_id <1-0-21185>
+      man_end_object
+      man_start_object <org_group, "">
+        mat_orientation <hcc>
+        man_start_object <ornament, "">
+          mat_frame_style <single_line_pop_out>
+          mat_art_id <1-0-21182>
+          mat_relative_tag <1>
+        man_end_object
+        man_start_object <ornament, "">
+          mat_frame_style <single_line_pop_out>
+          mat_art_id <1-0-21183>
+          mat_relative_tag <2>
+        man_end_object
+        man_start_object <ornament, "">
+          mat_frame_style <single_line_pop_out>
+          mat_art_id <1-0-21194>
+          mat_relative_tag <3>
+        man_end_object
+      man_end_object
+      man_start_object <ornament, "">
+        mat_relative_tag <4>
+        mat_height <1>
+        mat_width <45>
+        mat_orientation <hcc>
+        mat_title <" ">
+      man_end_object
+      man_start_object <ornament, "">
+        mat_art_id <1-0-1363>
+      man_end_object
+      man_start_object <trigger, "">
+        mat_title <"Cancel">
+        mat_title_width <10>
+        mat_font_sis <arial, 10, bold>
+        mat_trigger_style <place>
+        mat_bool_gradual_shadow <yes>
+        mat_color_text <240, 240, 240>
+        mat_color_face <100, 100, 178>
+        mat_color_top_edge <150, 200, 255>
+        mat_color_bottom_edge <1, 1, 1>
+        act_set_criterion <select>
+        act_append_action
+          <
+          uni_start_stream
+            man_close <32-220>
+            uni_invoke_no_context <32-221>
+            man_set_context_globalid <32-221>
+            mat_bool_invisible <no>
+            man_update_display <32-221>
+            man_end_context
+            man_update_display <32-220>
+            ccl_hang_up
+            mip_action_command <0ax>
+          uni_end_stream
+          >
+      man_end_object
+    man_end_object
+    man_update_display
+  man_end_object
+  ccl_dial
+  man_end_context
+uni_end_stream

@@ -1,0 +1,67 @@
+uni_start_stream
+  man_start_object <ind_group, "">
+    mat_bool_modal <yes>
+    mat_orientation <vef>
+    mat_object_id <40-9498>
+    mat_title <"Network Setup">
+    man_start_object <org_group, "">
+      mat_orientation <hcf>
+      man_start_object <ornament, "">
+        mat_size <40, 6>
+        man_append_data <"America Online is now providing additional support for international access to the service. In order to better serve the special needs of international access, we ask that you select the button below labeled \"International Access Help\" this will instruct you on how to obtain a local access number. ">
+      man_end_object
+    man_end_object
+    man_start_object <org_group, "">
+      mat_orientation <hcf>
+      man_start_object <trigger, "International Access Help">
+        mat_vertical_spacing <4>
+        act_replace_select_action
+            <
+            uni_start_stream
+              async_exec_context_help <69x, 6ex, 74x, 65x, 72x, 6ex, 61x, 74x, 69x, 6fx, 6ex, 61x, 6cx>
+            uni_end_stream
+            >
+        man_end_object
+      man_end_object
+      man_start_object <org_group, "">
+        mat_orientation <hcf>
+        man_start_object <ornament, "">
+          mat_orientation <hcf>
+          mat_size <40, 2>
+          mat_vertical_spacing <4>
+          man_append_data <"If you are not using America Online outside of the contigious U.S. please hit  \"Continue.\"  ">
+        man_end_object
+      man_end_object
+      man_start_object <org_group, "">
+        mat_orientation <hef>
+        man_start_object <trigger, "">
+          mat_title <"Continue">
+          act_set_criterion <select>
+          act_append_action
+            <
+            uni_start_stream
+              uni_wait_on
+              man_close_update <40-9498>
+              buf_close_buffer
+              uni_invoke_no_context <32-759>
+              uni_wait_off
+              man_update_display
+            uni_end_stream
+            >
+          mat_bool_default <yes>
+        man_end_object
+        man_start_object <trigger, "">
+          mat_title <"Cancel">
+          act_replace_select_action
+              <
+              uni_start_stream
+                man_close
+                man_update_display
+              uni_end_stream
+              >
+          man_end_object
+        man_end_object
+        man_update_display
+      man_end_object
+      man_update_display
+    uni_end_stream

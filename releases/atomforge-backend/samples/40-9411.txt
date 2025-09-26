@@ -1,0 +1,74 @@
+uni_start_stream
+  uni_wait_on
+  man_start_object <ind_group, "">
+    mat_object_id <40-9411>
+    mat_title <"File Transfer">
+    mat_bool_modal <yes>
+    mat_orientation <vcf>
+    man_start_object <ornament, "">
+      mat_relative_tag <1>
+      mat_width <35>
+      mat_height <1>
+    man_end_object
+    man_start_object <range, "">
+      mat_relative_tag <2>
+      mat_width <35>
+      mat_object_color <144, 255, 255, 255, 128, 0, 0>
+    man_end_object
+    man_start_object <range, "">
+      mat_relative_tag <3>
+      mat_width <35>
+      mat_bool_invisible <yes>
+      mat_object_color <144, 255, 255, 255, 0, 0, 128>
+    man_end_object
+    man_start_object <ornament, "">
+      mat_relative_tag <4>
+      mat_width <35>
+      mat_height <1>
+    man_end_object
+    man_start_object <org_group, "">
+      mat_orientation <vcf>
+      man_start_object <sms_list, "">
+        mat_orientation <vcf>
+        man_start_object <trigger, "">
+          mat_title <"Sign Off After Transfer">
+          mat_relative_tag <5>
+          act_set_criterion <select>
+          act_append_action
+            <
+            uni_start_stream
+              xfer_toggle_signoff
+            uni_end_stream
+            >
+        man_end_object
+      man_end_object
+      man_start_object <org_group, "">
+        mat_orientation <hcf>
+        man_start_object <trigger, "">
+          mat_title <"Finish Later">
+          mat_relative_tag <6>
+          act_set_criterion <select>
+          act_append_action
+            <
+            uni_start_stream
+              xfer_finish_later
+            uni_end_stream
+            >
+        man_end_object
+        man_start_object <trigger, "">
+          mat_title <"Cancel">
+          mat_relative_tag <7>
+          act_set_criterion <select>
+          act_append_action
+            <
+            uni_start_stream
+              xfer_abort
+            uni_end_stream
+            >
+        man_end_object
+      man_end_object
+    man_end_object
+    man_update_display
+  man_end_object
+  uni_wait_off
+uni_end_stream

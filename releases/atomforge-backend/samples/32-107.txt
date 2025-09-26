@@ -1,0 +1,23 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "">
+    mat_orientation <vff>
+    mat_position <center_center>
+    man_start_object <ornament, "">
+      mat_size <30, 2, 30>
+      man_append_data <"Your new folder has been posted.">
+    man_start_sibling <org_group, "">
+      mat_orientation <hcf>
+      man_start_object <trigger, "Cancel">
+        act_replace_select_action
+            <
+            uni_start_stream <00x>
+              man_close_update
+            uni_end_stream <00x>
+            >
+        man_start_sibling <trigger, "Add Message">
+          mat_relative_tag <22>
+          mat_bool_default <yes>
+        man_end_object
+      man_end_object
+      man_update_display
+    uni_end_stream <00x>

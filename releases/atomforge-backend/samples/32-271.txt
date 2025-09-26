@@ -1,0 +1,32 @@
+uni_start_stream
+  man_preset_gid <18-0-0>
+  if_last_return_true_then <1, 2>
+  man_close_children
+  man_update_display
+  man_end_context
+  uni_sync_skip <1>
+  man_start_object <org_group, "">
+  man_end_object
+  uni_sync_skip <2>
+  man_preset_gid <18-0-1>
+  if_last_return_true_then <1>
+  man_close_children
+  man_update_display
+  man_end_context
+  uni_sync_skip <1>
+  man_preset_gid <18-0-3>
+  if_last_return_true_then <1>
+  man_close_children
+  man_update_display
+  man_end_context
+  uni_sync_skip <1>
+  man_preset_gid <18-0-2>
+  if_last_return_true_then <1>
+  man_close_children
+  man_update_display
+  uni_sync_skip <1>
+  man_start_object <org_group, "">
+    uni_sync_skip <2>
+    man_preset_gid <19-0-1>
+    uni_invoke_local <32-158>
+  uni_end_stream

@@ -1,0 +1,81 @@
+uni_start_stream <00x>
+  async_is_known_subaccount
+  if_last_return_false_then <10, 99>
+  async_alert <info, "You cannot use this feature while signed on as a guest.">
+  uni_sync_skip <10>
+  man_start_object <ind_group, "Activate FlashSession Now">
+    mat_object_id <32-2537>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <ornament, "">
+      man_append_data <"Select \"Begin\" below to immediately perform a FlashSession for the screen name you are using now.  The actions">
+      man_append_data <" that you have specified will occur.  If you would like to review or change your instructions, select \"Set Ses">
+      man_append_data <"sion\" instead.\x7f\x7fClick the checkbox below if you wish to sign off after the FlashSession is complete.">
+      mat_precise_width <320>
+      mat_precise_height <150>
+    man_start_sibling <sms_list, "">
+      mat_orientation <hcf>
+      man_start_object <trigger, "Sign off when finished">
+        mat_relative_tag <1>
+        mat_vertical_spacing <5>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "Begin">
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              de_start_extraction <0>
+              man_set_context_relative <1>
+              de_set_data_type <default>
+              de_get_data_value
+              uni_save_result
+              man_end_context
+              man_close_update
+              de_end_extraction
+              uni_get_result
+              if_last_return_true_then <1, 2>
+              if_online_then <3, 4>
+              mip_action_command <0cx>
+              uni_sync_skip <3>
+              mip_action_command <09x>
+              uni_sync_skip <4>
+              if_newuser_then <2>
+              uni_sync_skip <1>
+              if_online_then <5, 6>
+              mip_action_command <0bx>
+              uni_sync_skip <5>
+              mip_action_command <0ex>
+              uni_sync_skip <6>
+              uni_sync_skip <2>
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Set Session">
+          act_replace_select_action
+              <
+              uni_start_stream
+                man_close_update
+                idb_exists <20-0-62>
+                if_last_return_true_then <1, 2>
+                uni_invoke_no_context <32-2506>
+                uni_sync_skip <1>
+                uni_invoke_no_context <32-2507>
+                uni_sync_skip <2>
+              uni_end_stream
+              >
+          man_start_sibling <trigger, "Cancel">
+            act_replace_select_action
+                <
+                uni_start_stream <00x>
+                  man_close_update
+                uni_end_stream <00x>
+                >
+            man_end_object
+          man_end_object
+          uni_wait_off
+          man_update_display
+          man_end_context
+          uni_sync_skip <99>
+        uni_end_stream <00x>

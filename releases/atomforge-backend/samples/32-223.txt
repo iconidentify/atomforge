@@ -1,0 +1,89 @@
+uni_start_stream
+  man_start_object <ind_group, "">
+    mat_orientation <vcf>
+    mat_object_id <223>
+    mat_title <"Instant Message Received">
+    mat_style_id <32-223>
+    man_start_object <org_group, "">
+      mat_orientation <hlf>
+      man_start_object <ornament, "">
+        mat_title <"Instant Message From:">
+      man_end_object
+      man_start_object <ornament, "">
+        mat_height <1>
+        mat_width <15>
+        mat_relative_tag <1>
+        mat_bool_default_send <yes>
+      man_end_object
+    man_end_object
+    man_start_object <view, "">
+      mat_height <4>
+      mat_width <40>
+      mat_relative_tag <3>
+    man_end_object
+    man_start_object <edit_view, "">
+      mat_height <4>
+      mat_width <40>
+      mat_capacity <512>
+      mat_title <"Response:">
+      mat_bool_invisible <yes>
+      mat_relative_tag <2>
+    man_end_object
+    man_start_object <org_group, "">
+      mat_orientation <hcf>
+      man_start_object <trigger, "">
+        mat_title <"Respond">
+        mat_relative_tag <4>
+        mat_bool_default <yes>
+        act_set_criterion <select>
+        act_append_action
+          <
+          uni_start_stream
+            man_set_context_relative <4>
+            mat_bool_invisible <yes>
+            man_end_context
+            man_set_context_relative <2>
+            man_make_focus
+            mat_bool_invisible <no>
+            man_end_context
+            man_set_context_relative <5>
+            mat_bool_invisible <no>
+            man_end_context
+            man_update_display
+          uni_end_stream
+          >
+      man_end_object
+      man_start_object <trigger, "">
+        mat_title <"Send">
+        mat_relative_tag <5>
+        mat_bool_invisible <yes>
+        act_set_criterion <select>
+        act_append_action
+          <
+          uni_start_stream
+            de_start_extraction
+            buf_set_token <"iS">
+            de_get_data
+            man_set_context_relative <2>
+            man_clear_object
+            man_end_context
+            man_end_context
+            de_end_extraction
+            buf_close_buffer
+          uni_end_stream
+          >
+      man_end_object
+      man_start_object <trigger, "">
+        mat_title <"Cancel">
+        act_set_criterion <select>
+        act_append_action
+          <
+          uni_start_stream
+            man_close
+            man_update_display
+          uni_end_stream
+          >
+      man_end_object
+    man_end_object
+    man_update_display
+  uni_end_stream

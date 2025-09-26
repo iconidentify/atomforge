@@ -1,0 +1,194 @@
+uni_start_stream <00x>
+  man_preset_gid <32-6123>
+  uni_start_stream
+    man_set_default_title <"View Buddies">
+    man_preset_url <"aol://1722:buddyview">
+  uni_end_stream
+  man_start_object <ind_group, "Buddy List Window">
+    mat_style_id <32-9821>
+    mat_orientation <vlt>
+    mat_color_face <0, 100, 0>
+    mat_object_id <32-6123>
+    mat_style_id <32-6123>
+    mat_position <top_right>
+    mat_bool_background_tile <yes>
+    mat_art_id <1-0-27256>
+    mat_unfocused <yes>
+    act_set_criterion <close>
+    act_replace_action
+        <
+        uni_start_stream
+          buf_use_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+          buf_clear_buffer
+          buf_set_token <"3Z">
+          buf_add_atom_pointer <00x, 00x, 00x, 05x>
+          buf_close_buffer
+        uni_end_stream
+        >
+      act_set_criterion <18>
+      act_replace_action
+          <
+          uni_start_stream
+            man_close_update
+          uni_end_stream
+          >
+        mat_horizontal_spacing <0>
+        mat_vertical_spacing <0>
+        mat_position <top_right>
+        man_start_object <ornament, "">
+          mat_size <12, 1>
+          mat_horizontal_spacing <0>
+          mat_vertical_spacing <0>
+          mat_font_id <arial>
+          mat_font_size <10>
+          mat_font_style <bold>
+          man_append_data <"Buddies Online">
+        man_start_sibling <dss_list, "">
+          mat_orientation <vff>
+          mat_size <16, 8>
+          mat_relative_tag <1>
+          mat_color_frame_hilight <255, 235, 200>
+          mat_color_frame_shadow <255, 235, 200>
+          mat_frame_style <pop_in>
+          mat_frame_style <pop_in>
+          mat_color_frame_hilight <150, 200, 255>
+          mat_color_frame_shadow <150, 200, 255>
+          mat_horizontal_spacing <0>
+          mat_vertical_spacing <0>
+          act_replace_select_action
+              <
+              uni_start_stream
+              de_ez_send_form <"3Y", 12>
+              >
+          man_start_sibling <org_group, "">
+            mat_orientation <het>
+            mat_horizontal_spacing <0>
+            mat_vertical_spacing <0>
+            man_start_object <trigger, "">
+              mat_relative_tag <2>
+              mat_trigger_style <plain_picture>
+              mat_trigger_style <plain_picture>
+              mat_color_text <240, 240, 240>
+              mat_color_text_shadow <1, 1, 1>
+              mat_color_face <100, 100, 178>
+              mat_color_top_edge <150, 200, 255>
+              mat_color_bottom_edge <1, 1, 1>
+              mat_context_help <"Determine which chat room your buddy is in">
+              mat_bool_small_icon <yes>
+              mat_art_id <1-0-33479>
+              mat_horizontal_spacing <0>
+              mat_vertical_spacing <0>
+              mat_font_id <arial>
+              mat_font_size <10>
+              mat_font_style <bold>
+              act_replace_select_action
+                  <
+                  uni_start_stream
+                  de_ez_send_form <"3Y", 10>
+                  >
+              man_start_sibling <trigger, "">
+                mat_relative_tag <3>
+                mat_trigger_style <plain_picture>
+                mat_context_help <"Send an Instant Message">
+                mat_trigger_style <plain_picture>
+                mat_bool_small_icon <yes>
+                mat_color_text <240, 240, 240>
+                mat_color_text_shadow <1, 1, 1>
+                mat_color_face <100, 100, 178>
+                mat_color_top_edge <150, 200, 255>
+                mat_color_bottom_edge <1, 1, 1>
+                mat_art_id <1-0-33478>
+                mat_horizontal_spacing <0>
+                mat_vertical_spacing <0>
+                mat_font_id <arial>
+                mat_font_size <10>
+                mat_font_style <bold>
+                act_replace_select_action
+                    <
+                    uni_start_stream
+                    de_ez_send_form <"3Y", 11>
+                    >
+                man_start_sibling <trigger, "">
+                  mat_relative_tag <6>
+                  mat_trigger_style <plain_picture>
+                  mat_trigger_style <plain_picture>
+                  mat_bool_small_icon <yes>
+                  mat_color_text <240, 240, 240>
+                  mat_color_text_shadow <1, 1, 1>
+                  mat_color_face <100, 100, 178>
+                  mat_color_top_edge <150, 200, 255>
+                  mat_color_bottom_edge <1, 1, 1>
+                  mat_context_help <"Edit Buddy Lists or set Buddy List preferences">
+                  mat_art_id <1-0-33477>
+                  mat_horizontal_spacing <0>
+                  mat_vertical_spacing <0>
+                  mat_font_id <arial>
+                  mat_font_size <10>
+                  mat_font_style <bold>
+                  act_replace_select_action
+                      <
+                      uni_start_stream_wait_on <00x>
+                      sm_m_send_token_arg <"3X", 1>
+                      >
+                  man_start_sibling <trigger, "">
+                    mat_relative_tag <7>
+                    mat_trigger_style <plain_picture>
+                    mat_trigger_style <plain_picture>
+                    mat_bool_small_icon <yes>
+                    mat_color_text <240, 240, 240>
+                    mat_color_text_shadow <1, 1, 1>
+                    mat_color_face <100, 100, 178>
+                    mat_color_top_edge <150, 200, 255>
+                    mat_color_bottom_edge <1, 1, 1>
+                    mat_context_help <"Invite Others to a Private Chat or Favorite Place">
+                    mat_art_id <1-0-54412>
+                    mat_horizontal_spacing <0>
+                    mat_vertical_spacing <0>
+                    mat_bool_invisible <yes>
+                    mat_font_id <arial>
+                    mat_font_size <10>
+                    mat_font_style <bold>
+                    mat_command_key <01x, 00x>
+                    act_replace_select_action
+                        <
+                        uni_start_stream
+                        sm_send_token_raw <"CJ">
+                        >
+                    man_start_sibling <trigger, "">
+                      mat_relative_tag <5>
+                      mat_trigger_style <plain_picture>
+                      mat_trigger_style <plain_picture>
+                      mat_bool_small_icon <yes>
+                      mat_color_text <240, 240, 240>
+                      mat_color_text_shadow <1, 1, 1>
+                      mat_color_face <100, 100, 178>
+                      mat_color_top_edge <150, 200, 255>
+                      mat_color_bottom_edge <1, 1, 1>
+                      mat_context_help <"Help with Buddy Lists">
+                      mat_art_id <1-0-33476>
+                      mat_horizontal_spacing <0>
+                      mat_vertical_spacing <0>
+                      mat_bool_invisible <yes>
+                      mat_font_id <arial>
+                      mat_font_size <10>
+                      mat_font_style <bold>
+                      mat_command_key <01x, 00x>
+                      act_replace_select_action
+                          <
+                          uni_start_stream_wait_on <00x>
+                          sm_m_send_token_arg <"t1", 5-3575>
+                          >
+                      man_end_object
+                    man_start_sibling <ornament, "">
+                      mat_size <16, 1>
+                      mat_precise_x <105>
+                      mat_precise_y <233>
+                      mat_horizontal_spacing <0>
+                      mat_vertical_spacing <0>
+                      mat_font_id <arial>
+                      mat_font_size <9>
+                      mat_font_style <bold>
+                      man_append_data <"Keyword: BuddyView">
+                    man_end_object
+                    man_update_display
+                  uni_end_stream <00x>

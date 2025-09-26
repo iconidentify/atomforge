@@ -1,0 +1,17 @@
+uni_start_stream
+  man_set_context_globalid <1>
+  man_use_default_title
+  man_start_object <ind_group, "">
+    mat_position <top_left>
+    mat_object_id <32-241>
+    mat_orientation <vef>
+    man_start_object <view, "">
+      mat_width <50>
+      mat_height <3>
+      mat_relative_tag <1>
+      mat_capacity <17000>
+      mat_scroll_threshold <16000>
+      mat_bool_force_scroll <yes>
+    man_end_object
+  man_update_end_object
+uni_end_stream

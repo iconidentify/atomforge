@@ -1,0 +1,88 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Welcome to America Online!">
+    mat_object_id <32-759>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <ornament, "">
+      mat_size <40, 2>
+      man_append_data <"Before getting started, be sure to have these items handy:">
+    man_start_sibling <ornament, "">
+      mat_size <40, 1>
+      man_append_data <"New members:\x7f\x7f\x7f">
+      mat_font_style <bold>
+    man_start_sibling <ornament, "">
+      mat_size <40, 3>
+      idb_exists <20-0-70>
+      if_last_return_false_then <1>
+      man_append_data <"- Your America Online registration number & password\x7f">
+      uni_sync_skip <1>
+      man_append_data <"- Your credit card or checking account information">
+    man_start_sibling <ornament, "">
+      mat_size <40, 1>
+      man_append_data <"Existing members (for upgrading only):\x7f\x7f">
+      mat_font_style <bold>
+    man_start_sibling <ornament, "">
+      mat_size <40, 5>
+      man_append_data <"- Your screen name\x7f- Your password for that screen name\x7f\x7fPress \"OK\" to continue.">
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "OK">
+        mat_title_width <6>
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream <00x>
+              man_close_update
+              act_get_db_value <14x, 00x, 00x, 0ax>
+              var_string_set_from_atom <A>
+              if_stra_eq_null_then <10>
+              man_set_context_globalid <1>
+              var_number_set <A, 1>
+              var_number_save <A, 2147483647>
+              var_number_clear_id <A>
+              man_end_context
+              man_set_context_globalid <32-221>
+              man_set_context_relative <1>
+              man_get_index_by_title <"New Local#">
+              uni_use_last_atom_value <mat_value>
+              man_update_display
+              man_end_context
+              act_do_action <gain_focus>
+              man_set_context_relative <3>
+              act_do_action <select>
+              man_end_context
+              man_end_context
+            uni_abort_stream
+            uni_sync_skip <10>
+            man_set_context_globalid <1>
+            var_number_set <A, 1>
+            var_number_save <A, 2147483647>
+            var_number_clear_id <A>
+            man_end_context
+            man_set_context_globalid <32-221>
+            man_set_context_relative <1>
+            man_get_index_by_title <"New User">
+            uni_use_last_atom_value <mat_value>
+            man_update_display
+            man_end_context
+            act_do_action <gain_focus>
+            man_set_context_relative <3>
+            act_do_action <select>
+            man_end_context
+            man_end_context
+          uni_end_stream
+          >
+      man_start_sibling <trigger, "Cancel">
+        mat_title_width <6>
+        act_replace_select_action
+            <
+            uni_start_stream <00x>
+              man_close_update
+            uni_end_stream <00x>
+            >
+        man_end_object
+      man_end_object
+      man_update_display
+      uni_wait_off
+    uni_end_stream <00x>

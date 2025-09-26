@@ -1,0 +1,689 @@
+uni_start_stream <00x>
+  man_set_context_globalid <53>
+  man_start_object <ind_group, "Compose Mail">
+    mat_orientation <hff>
+    mat_dirty_query <yes>
+    mat_form_icon <1-0-6654>
+    var_number_set <A, 1>
+    var_number_save <A, 101>
+    mat_style_id <32-226>
+    mat_dirty_query <yes>
+    act_set_criterion <10>
+    act_replace_action
+        <
+        uni_start_stream
+          man_set_context_relative <16>
+          mat_bool_disabled <no>
+          man_end_context
+          man_is_rendered
+          if_last_return_true_then <1>
+          man_update_display
+          uni_sync_skip <1>
+        uni_end_stream
+        >
+      act_set_criterion <11>
+      act_replace_action
+          <
+          uni_start_stream
+            man_set_context_relative <16>
+            mat_bool_disabled <yes>
+            man_end_context
+            man_is_rendered
+            if_last_return_true_then <1>
+            man_update_display
+            uni_sync_skip <1>
+          uni_end_stream
+          >
+        act_set_criterion <18>
+        act_replace_action
+            <
+            uni_start_stream
+              man_set_context_relative <17>
+              async_is_known_subaccount
+              if_last_return_true_then <1, 2>
+              mat_bool_disabled <no>
+              uni_sync_skip <1>
+              mat_bool_disabled <yes>
+              uni_sync_skip <2>
+              man_update_display
+              man_end_context
+            uni_end_stream
+            >
+          mat_position <center_center>
+          var_number_set <A, 0>
+          var_number_save <A, 64>
+          man_start_object <org_group, "">
+            mat_orientation <vct>
+            man_start_object <trigger, "Send">
+              mat_relative_tag <16>
+              mat_command_key <0dx>
+              mat_art_id <1-0-1289>
+              act_replace_select_action
+                  <
+                  uni_start_stream
+                    de_validate <display_msg | terminate>
+                    sm_enter_paid
+                    mip_action_command <18x>
+                  uni_end_stream
+                  >
+              man_start_sibling <trigger, "Send\rLater">
+                mat_relative_tag <17>
+                async_is_known_subaccount
+                if_last_return_true_then <1, 2>
+                mat_bool_disabled <no>
+                uni_sync_skip <1>
+                mat_bool_disabled <yes>
+                uni_sync_skip <2>
+                mat_art_id <1-0-1288>
+                act_replace_select_action
+                    <
+                    uni_start_stream
+                      de_validate <display_msg | terminate>
+                      mip_action_command <06x>
+                    uni_end_stream
+                    >
+                man_start_sibling <trigger, "Attach">
+                  mat_title_width <8>
+                  mat_relative_tag <11>
+                  mat_drop_data_type <1>
+                  act_set_criterion <20>
+                  act_replace_action
+                      <
+                      uni_start_stream
+                        fm_start
+                        man_set_context_relative <11>
+                        var_lookup_by_id <A, 303>
+                        uni_save_result
+                        man_change_context_relative <10>
+                        uni_get_result
+                        uni_use_last_atom_string <man_replace_data>
+                        man_end_context
+                        man_set_context_relative <11>
+                        mat_art_id <1-0-1295>
+                        mat_title <"Detach">
+                        man_end_context
+                        man_update_display
+                        var_number_set <A, 1>
+                        var_number_save <A, 64>
+                        fm_end
+                      uni_end_stream
+                      >
+                    mat_art_id <1-0-1294>
+                    act_replace_select_action
+                        <
+                        uni_start_stream
+                          var_lookup_by_id <A, 64>
+                          if_last_return_false_then <10, 11>
+                          fm_start
+                          fm_item_type <persistent_path>
+                          fm_item_set <14x, 00x, 01x, 1bx>
+                          fm_dialog_get_file <"Attach File">
+                          fm_handle_error <display_msg | terminate>
+                          fm_item_get <filespec>
+                          uni_save_result
+                          man_set_context_relative <10>
+                          uni_get_result
+                          uni_use_last_atom_string <man_replace_data>
+                          man_end_context
+                          man_set_context_relative <11>
+                          mat_art_id <1-0-1295>
+                          mat_title <"Detach">
+                          man_end_context
+                          man_update_display
+                          var_number_set <A, 1>
+                          var_number_save <A, 64>
+                          fm_end
+                          uni_sync_skip <10>
+                          man_set_context_relative <11>
+                          mat_art_id <1-0-1294>
+                          mat_title <"Attach">
+                          man_end_context
+                          man_set_context_relative <10>
+                          mat_title <" ">
+                          man_end_context
+                          man_update_display
+                          var_number_set <A, 0>
+                          var_number_save <A, 64>
+                          uni_sync_skip <11>
+                        uni_end_stream
+                        >
+                    man_start_sibling <trigger, "Address\rBook">
+                      mat_art_id <1-0-1287>
+                      act_replace_select_action
+                          <
+                          uni_start_stream
+                            de_start_extraction <0>
+                            de_set_data_type <global_id>
+                            de_get_data_value <current_object>
+                            uni_save_result
+                            de_end_extraction
+                            buf_close_buffer
+                            lm_open_window <32-425>
+                            uni_get_result
+                            uni_use_last_atom_value <ad_set_caller>
+                            man_update_display
+                          uni_end_stream
+                          >
+                      man_end_object
+                    man_start_sibling <org_group, "">
+                      mat_orientation <vff>
+                      man_start_object <org_group, "">
+                        mat_orientation <hff>
+                        man_start_object <edit_view, "To:">
+                          mat_size <25, 2, 14000>
+                          mat_relative_tag <3>
+                          man_make_focus
+                          mat_size <25, 2>
+                          mat_capacity <14000>
+                          mat_title_pos <left | top_or_left>
+                          mat_validation <128>
+                        man_start_sibling <edit_view, "CC:">
+                          mat_size <25, 2, 14000>
+                          mat_relative_tag <5>
+                          mat_size <25, 2>
+                          mat_capacity <14000>
+                          mat_title_pos <left | top_or_left>
+                        man_end_object
+                      man_start_sibling <edit_view, "Subject:">
+                        mat_size <50, 1, 80>
+                        mat_relative_tag <8>
+                        mat_bool_expand_to_fit <yes>
+                        mat_size <50, 1>
+                        mat_capacity <80>
+                        mat_title_pos <left | center>
+                        mat_bool_vertical_scroll <no>
+                        mat_validation <128>
+                      man_start_sibling <org_group, "">
+                        mat_orientation <hlf>
+                        man_start_object <ornament, "">
+                          mat_size <6, 1, 6>
+                          mat_font_id <system>
+                          man_append_data <"File:">
+                        man_start_sibling <ornament, "">
+                          mat_size <42, 1, 256>
+                          mat_relative_tag <10>
+                          mat_drop_data_type <4>
+                          act_set_criterion <20>
+                          act_replace_action
+                              <
+                              uni_start_stream
+                                fm_start
+                                man_set_context_relative <10>
+                                var_lookup_by_id <A, 303>
+                                uni_use_last_atom_string <man_replace_data>
+                                man_end_context
+                                man_set_context_relative <11>
+                                mat_art_id <1-0-1295>
+                                mat_title <"Detach">
+                                man_end_context
+                                man_update_display
+                                var_number_set <A, 1>
+                                var_number_save <A, 64>
+                                fm_end
+                              uni_end_stream
+                              >
+                          man_end_object
+                        man_end_object
+                        uni_start_stream
+                          act_set_criterion <210>
+                          act_replace_action
+                              <
+                              uni_start_stream
+                                act_do_action <200>
+                                act_do_action <201>
+                                act_do_action <202>
+                                act_do_action <203>
+                                act_do_action <204>
+                              uni_end_stream
+                              >
+                            act_set_criterion <204>
+                            act_replace_action
+                                <
+                                uni_start_stream
+                                  man_set_context_relative <1>
+                                  doc_get_text_alignment
+                                  var_number_set_from_atom <A>
+                                  man_end_context
+                                  man_set_context_relative <20>
+                                  man_get_attribute <mat_value>
+                                  var_number_set_from_atom <B>
+                                  var_number_increment <A>
+                                  var_number_get <A>
+                                  if_numa_neq_numb_then <1>
+                                  var_number_get <A>
+                                  uni_use_last_atom_value <mat_value>
+                                  man_end_context
+                                  man_update_display
+                                  uni_sync_skip <1>
+                                uni_end_stream
+                                >
+                              act_set_criterion <203>
+                              act_replace_action
+                                  <
+                                  uni_start_stream
+                                    man_set_context_relative <1>
+                                    doc_get_font_style
+                                    var_number_set_from_atom <A>
+                                    man_end_context
+                                    man_set_context_relative <12>
+                                    var_number_get <A>
+                                    var_number_set <B, 1>
+                                    if_numa_and_numb_then <1, 2>
+                                    mat_value <1>
+                                    uni_sync_skip <1>
+                                    mat_value <0>
+                                    uni_sync_skip <2>
+                                    man_change_context_relative <13>
+                                    var_number_get <A>
+                                    var_number_set <B, 2>
+                                    if_numa_and_numb_then <1, 2>
+                                    mat_value <1>
+                                    uni_sync_skip <1>
+                                    mat_value <0>
+                                    uni_sync_skip <2>
+                                    man_change_context_relative <14>
+                                    var_number_get <A>
+                                    var_number_set <B, 4>
+                                    if_numa_and_numb_then <1, 2>
+                                    mat_value <1>
+                                    uni_sync_skip <1>
+                                    mat_value <0>
+                                    uni_sync_skip <2>
+                                    man_end_context
+                                    man_update_display
+                                  uni_end_stream
+                                  >
+                                act_set_criterion <202>
+                                act_replace_action
+                                    <
+                                    uni_start_stream
+                                      man_set_context_relative <1>
+                                      doc_get_font_size
+                                      var_number_set_from_atom <A>
+                                      man_end_context
+                                      man_set_context_relative <11>
+                                      var_number_get <A>
+                                      uni_convert_last_atom_data
+                                      uni_use_last_atom_string <man_get_index_by_title>
+                                      uni_use_last_atom_value <mat_value>
+                                      man_end_context
+                                      man_update_display
+                                    uni_end_stream
+                                    >
+                                  act_set_criterion <200>
+                                  act_replace_action
+                                      <
+                                      uni_start_stream
+                                        man_set_context_globalid <57>
+                                        man_set_context_relative <15>
+                                        man_get_attribute <mat_value>
+                                        var_number_set_from_atom <A>
+                                        man_end_context
+                                        man_end_context
+                                        man_set_context_relative <19>
+                                        var_number_get <A>
+                                        uni_use_last_atom_value <mat_value>
+                                        man_end_context
+                                        man_update_display
+                                      uni_end_stream
+                                      >
+                                    act_set_criterion <201>
+                                    act_replace_action
+                                        <
+                                        uni_start_stream
+                                          man_set_context_relative <1>
+                                          doc_get_font_name
+                                          var_string_set_from_atom <A>
+                                          man_end_context
+                                          man_set_context_relative <10>
+                                          var_string_get <A>
+                                          uni_use_last_atom_string <man_get_index_by_title>
+                                          uni_use_last_atom_value <mat_value>
+                                          man_end_context
+                                          man_update_display
+                                        uni_end_stream
+                                        >
+                                      man_start_object <org_group, "">
+                                        mat_orientation <hlt>
+                                        mat_bool_tool_group <yes>
+                                        mat_bool_resize_horizontal <yes>
+                                        mat_bool_resize_vertical <yes>
+                                        man_start_object <org_group, "">
+                                          mat_orientation <hft>
+                                          man_start_object <dss_list, "">
+                                            mat_context_help <"Text Color">
+                                            mat_sort_order <alphabetical>
+                                            mat_height <1>
+                                            mat_width <8>
+                                            man_start_object <trigger, "Black">
+                                              act_replace_select_action
+                                                  <
+                                                  uni_start_stream
+                                                    rich_text_color <00x, 00x, 00x>
+                                                  uni_end_stream
+                                                  >
+                                              man_end_object
+                                              man_start_object <trigger, "Red">
+                                                act_replace_select_action
+                                                    <
+                                                    uni_start_stream
+                                                      rich_text_color <ffx, 00x, 00x>
+                                                    uni_end_stream
+                                                    >
+                                                man_end_object
+                                                man_start_object <trigger, "Blue">
+                                                  act_replace_select_action
+                                                      <
+                                                      uni_start_stream
+                                                        rich_text_color <00x, 00x, ffx>
+                                                      uni_end_stream
+                                                      >
+                                                  man_end_object
+                                                  man_start_object <trigger, "Green">
+                                                    act_replace_select_action
+                                                        <
+                                                        uni_start_stream
+                                                          rich_text_color <00x, ffx, 00x>
+                                                        uni_end_stream
+                                                        >
+                                                    man_end_object
+                                                    man_start_object <trigger, "Yellow">
+                                                      act_replace_select_action
+                                                          <
+                                                          uni_start_stream
+                                                            rich_text_color <ffx, ffx, 00x>
+                                                          uni_end_stream
+                                                          >
+                                                      man_end_object
+                                                      man_start_object <trigger, "Purple">
+                                                        act_replace_select_action
+                                                            <
+                                                            uni_start_stream
+                                                              rich_text_color <ffx, 00x, ffx>
+                                                            uni_end_stream
+                                                            >
+                                                        man_end_object
+                                                        man_start_object <trigger, "Gray">
+                                                          act_replace_select_action
+                                                              <
+                                                              uni_start_stream
+                                                                rich_text_color <a0x, a0x, a4x>
+                                                              uni_end_stream
+                                                              >
+                                                          man_end_object
+                                                          man_start_object <trigger, "Dark Gray">
+                                                            act_replace_select_action
+                                                                <
+                                                                uni_start_stream
+                                                                  rich_text_color <80x, 80x, 80x>
+                                                                uni_end_stream
+                                                                >
+                                                            man_end_object
+                                                            man_start_object <trigger, "Orange">
+                                                              act_replace_select_action
+                                                                  <
+                                                                  uni_start_stream
+                                                                    rich_text_color <ffx, 91x, 00x>
+                                                                  uni_end_stream
+                                                                  >
+                                                              man_end_object
+                                                            man_end_object
+                                                          man_end_object
+                                                          man_start_object <dss_list, "">
+                                                            mat_context_help <"Background Color">
+                                                            mat_sort_order <alphabetical>
+                                                            mat_height <1>
+                                                            mat_width <8>
+                                                            man_start_object <trigger, "Black">
+                                                              act_replace_select_action
+                                                                  <
+                                                                  uni_start_stream
+                                                                    rich_text_color <00x, 00x, 00x>
+                                                                  uni_end_stream
+                                                                  >
+                                                              man_end_object
+                                                              man_start_object <trigger, "Red">
+                                                                act_replace_select_action
+                                                                    <
+                                                                    uni_start_stream
+                                                                      rich_text_color <ffx, 00x, 00x>
+                                                                    uni_end_stream
+                                                                    >
+                                                                man_end_object
+                                                                man_start_object <trigger, "Blue">
+                                                                  act_replace_select_action
+                                                                      <
+                                                                      uni_start_stream
+                                                                        rich_text_color <00x, 00x, ffx>
+                                                                      uni_end_stream
+                                                                      >
+                                                                  man_end_object
+                                                                  man_start_object <trigger, "Green">
+                                                                    act_replace_select_action
+                                                                        <
+                                                                        uni_start_stream
+                                                                          rich_text_color <00x, ffx, 00x>
+                                                                        uni_end_stream
+                                                                        >
+                                                                    man_end_object
+                                                                    man_start_object <trigger, "Yellow">
+                                                                      act_replace_select_action
+                                                                          <
+                                                                          uni_start_stream
+                                                                            rich_text_color <ffx, ffx, 00x>
+                                                                          uni_end_stream
+                                                                          >
+                                                                      man_end_object
+                                                                      man_start_object <trigger, "Purple">
+                                                                        act_replace_select_action
+                                                                            <
+                                                                            uni_start_stream
+                                                                              rich_text_color <ffx, 00x, ffx>
+                                                                            uni_end_stream
+                                                                            >
+                                                                        man_end_object
+                                                                        man_start_object <trigger, "Gray">
+                                                                          act_replace_select_action
+                                                                              <
+                                                                              uni_start_stream
+                                                                                rich_text_color <a0x, a0x, a4x>
+                                                                              uni_end_stream
+                                                                              >
+                                                                          man_end_object
+                                                                          man_start_object <trigger, "Dark Gray">
+                                                                            act_replace_select_action
+                                                                                <
+                                                                                uni_start_stream
+                                                                                  rich_text_color <80x, 80x, 80x>
+                                                                                uni_end_stream
+                                                                                >
+                                                                            man_end_object
+                                                                            man_start_object <trigger, "Orange">
+                                                                              act_replace_select_action
+                                                                                  <
+                                                                                  uni_start_stream
+                                                                                    rich_text_color <ffx, 91x, 00x>
+                                                                                  uni_end_stream
+                                                                                  >
+                                                                              man_end_object
+                                                                            man_end_object
+                                                                            man_start_object <dss_list, "">
+                                                                              mat_context_help <"Font Size">
+                                                                              mat_relative_tag <11>
+                                                                              mat_font_id <ms_sans_serif>
+                                                                              mat_font_size <8>
+                                                                              mat_font_style <bold>
+                                                                              mat_height <1>
+                                                                              mat_width <10>
+                                                                              act_replace_select_action
+                                                                                  <
+                                                                                  uni_start_stream
+                                                                                    man_set_context_relative <11>
+                                                                                    de_start_extraction <0>
+                                                                                    de_get_data_pointer
+                                                                                    uni_save_result
+                                                                                    de_end_extraction
+                                                                                    man_end_context
+                                                                                    uni_get_result
+                                                                                    var_string_set_from_atom <A>
+                                                                                    uni_convert_last_atom_string
+                                                                                    uni_use_last_atom_value <rich_font_size>
+                                                                                    man_end_context
+                                                                                  uni_end_stream
+                                                                                  >
+                                                                                man_start_object <trigger, "Normal">
+                                                                                man_start_sibling <trigger, "Big">
+                                                                                man_start_sibling <trigger, "Small">
+                                                                                man_end_object
+                                                                              man_end_object
+                                                                              man_start_object <org_group, "">
+                                                                                mat_orientation <hfc>
+                                                                                man_start_object <sms_list, "">
+                                                                                  mat_bool_list_icons <yes>
+                                                                                  man_start_object <trigger, "">
+                                                                                    mat_context_help <"Bold">
+                                                                                    mat_relative_tag <12>
+                                                                                    mat_horizontal_spacing <0>
+                                                                                    mat_trigger_style <group_state>
+                                                                                    mat_art_id <1-0-19202>
+                                                                                    mat_bool_small_icon <yes>
+                                                                                    act_replace_select_action
+                                                                                        <
+                                                                                        uni_start_stream
+                                                                                          rich_font_attribute <1>
+                                                                                        uni_end_stream
+                                                                                        >
+                                                                                      act_set_criterion <23>
+                                                                                      act_replace_action
+                                                                                          <
+                                                                                          uni_start_stream
+                                                                                            rich_font_attribute <1>
+                                                                                          uni_end_stream
+                                                                                          >
+                                                                                      man_end_object
+                                                                                      man_start_object <trigger, "">
+                                                                                        mat_context_help <"Italics">
+                                                                                        mat_relative_tag <13>
+                                                                                        mat_horizontal_spacing <0>
+                                                                                        mat_trigger_style <group_state>
+                                                                                        mat_art_id <1-0-19203>
+                                                                                        mat_bool_small_icon <yes>
+                                                                                        act_replace_select_action
+                                                                                            <
+                                                                                            uni_start_stream
+                                                                                              rich_font_attribute <2>
+                                                                                            uni_end_stream
+                                                                                            >
+                                                                                          act_set_criterion <23>
+                                                                                          act_replace_action
+                                                                                              <
+                                                                                              uni_start_stream
+                                                                                                rich_font_attribute <2>
+                                                                                              uni_end_stream
+                                                                                              >
+                                                                                          man_end_object
+                                                                                          man_start_object <trigger, "">
+                                                                                            mat_context_help <"Underline">
+                                                                                            mat_relative_tag <14>
+                                                                                            mat_horizontal_spacing <1>
+                                                                                            mat_trigger_style <group_state>
+                                                                                            mat_art_id <1-0-19204>
+                                                                                            mat_bool_small_icon <yes>
+                                                                                            act_replace_select_action
+                                                                                                <
+                                                                                                uni_start_stream
+                                                                                                  rich_font_attribute <4>
+                                                                                                uni_end_stream
+                                                                                                >
+                                                                                              act_set_criterion <23>
+                                                                                              act_replace_action
+                                                                                                  <
+                                                                                                  uni_start_stream
+                                                                                                    rich_font_attribute <4>
+                                                                                                  uni_end_stream
+                                                                                                  >
+                                                                                              man_end_object
+                                                                                            man_end_object
+                                                                                          man_end_object
+                                                                                          man_start_object <sss_list, "">
+                                                                                            mat_relative_tag <20>
+                                                                                            mat_bool_list_icons <yes>
+                                                                                            mat_value <1>
+                                                                                            man_start_object <trigger, "">
+                                                                                              mat_context_help <"Align Left">
+                                                                                              mat_relative_tag <15>
+                                                                                              mat_horizontal_spacing <0>
+                                                                                              mat_trigger_style <group_state>
+                                                                                              mat_art_id <1-0-15466>
+                                                                                              mat_bool_small_icon <yes>
+                                                                                              act_replace_select_action
+                                                                                                  <
+                                                                                                  uni_start_stream
+                                                                                                    rich_font_justify <1>
+                                                                                                  uni_end_stream
+                                                                                                  >
+                                                                                              man_end_object
+                                                                                              man_start_object <trigger, "">
+                                                                                                mat_context_help <"Center">
+                                                                                                mat_relative_tag <16>
+                                                                                                mat_horizontal_spacing <0>
+                                                                                                mat_trigger_style <group_state>
+                                                                                                mat_art_id <1-0-15467>
+                                                                                                mat_bool_small_icon <yes>
+                                                                                                act_replace_select_action
+                                                                                                    <
+                                                                                                    uni_start_stream
+                                                                                                      rich_font_justify <2>
+                                                                                                    uni_end_stream
+                                                                                                    >
+                                                                                                man_end_object
+                                                                                                man_start_object <trigger, "">
+                                                                                                  mat_context_help <"Align Right">
+                                                                                                  mat_relative_tag <17>
+                                                                                                  mat_horizontal_spacing <0>
+                                                                                                  mat_trigger_style <group_state>
+                                                                                                  mat_art_id <1-0-15468>
+                                                                                                  mat_bool_small_icon <yes>
+                                                                                                  act_replace_select_action
+                                                                                                      <
+                                                                                                      uni_start_stream
+                                                                                                        rich_font_justify <4>
+                                                                                                      uni_end_stream
+                                                                                                      >
+                                                                                                  man_end_object
+                                                                                                  man_start_object <trigger, "">
+                                                                                                    mat_context_help <"Justify">
+                                                                                                    mat_relative_tag <18>
+                                                                                                    mat_horizontal_spacing <1>
+                                                                                                    mat_trigger_style <group_state>
+                                                                                                    mat_art_id <1-0-15469>
+                                                                                                    mat_bool_small_icon <yes>
+                                                                                                    act_replace_select_action
+                                                                                                        <
+                                                                                                        uni_start_stream
+                                                                                                          rich_font_justify <8>
+                                                                                                        uni_end_stream
+                                                                                                        >
+                                                                                                    man_end_object
+                                                                                                  man_end_object
+                                                                                                man_end_object
+                                                                                              uni_end_stream
+                                                                                              man_start_object <edit_view, "">
+                                                                                                mat_size <60, 10, 32000>
+                                                                                                mat_relative_tag <12>
+                                                                                                rich_manage
+                                                                                                mat_width <515>
+                                                                                                mat_height <205>
+                                                                                                mat_bool_writeable <yes>
+                                                                                                mat_validation <128>
+                                                                                              man_end_object
+                                                                                            man_end_object
+                                                                                            man_update_display
+                                                                                            var_number_set <A, 0>
+                                                                                            var_number_save <A, 64>
+                                                                                            if_offline_then <10>
+                                                                                            act_do_action <11>
+                                                                                            uni_sync_skip <10>
+                                                                                            man_update_display
+                                                                                            uni_wait_off
+                                                                                          uni_end_stream <00x>

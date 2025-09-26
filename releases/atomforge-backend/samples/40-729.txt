@@ -1,0 +1,24 @@
+uni_start_stream
+  man_set_context_globalid <57>
+  man_set_context_relative <10>
+  man_insert_object_after
+  mat_object_type <trigger, "">
+  mat_title <"Crop Image">
+  mat_relative_tag <1000>
+  mat_bool_disabled <yes>
+  act_replace_select_action
+      <
+      uni_start_stream
+        man_set_context_globalid <1>
+        var_lookup_by_id <A, 100>
+        uni_use_last_atom_value <man_set_context_globalid>
+        man_set_context_relative <1>
+        image_crop_image
+        man_end_context
+        man_end_context
+      uni_end_stream
+      >
+    man_end_context
+    man_update_display
+    man_end_context
+  uni_end_stream

@@ -1,0 +1,14 @@
+uni_start_stream
+  man_close <32-220>
+  uni_invoke_no_context <32-221>
+  man_set_context_globalid <32-221>
+  act_set_index <01x>
+  if_test_index_false_then
+  act_clr_test_index
+  mat_bool_invisible <no>
+  man_update_display
+  man_end_context
+  uni_sync_skip <1>
+  ccl_hang_up
+  man_update_display <32-220>
+uni_end_stream

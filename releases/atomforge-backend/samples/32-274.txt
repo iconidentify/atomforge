@@ -1,0 +1,121 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "">
+    mat_unfocused <yes>
+    mat_orientation <vff>
+    mat_style_id <32-274>
+    act_set_criterion <gain_focus>
+    act_replace_action
+        <
+        uni_start_stream
+          man_place_cursor <2>
+        uni_end_stream
+        >
+      act_set_criterion <7>
+      act_replace_action
+          <
+          uni_start_stream
+          uni_end_stream
+          >
+        act_set_criterion <8>
+        act_replace_action
+            <
+            uni_start_stream
+            uni_end_stream
+            >
+          act_set_criterion <32>
+          act_replace_action
+              <
+              uni_start_stream
+                de_start_extraction <0>
+                de_set_data_type <global_id>
+                de_get_data
+                var_number_set_from_atom <A>
+                man_get_top_window
+                var_number_set_from_atom <B>
+                if_numa_neq_numb_then <3>
+                uni_invoke_local_preserve <32-578>
+                uni_sync_skip <3>
+                de_end_extraction
+                buf_close_buffer
+              uni_end_stream
+              >
+            man_start_object <org_group, "">
+              mat_orientation <hlf>
+              man_start_object <ornament, "">
+                mat_size <19, 1, 19>
+                mat_bool_invisible <yes>
+              man_start_sibling <ornament, "">
+                mat_size <12, 1, 12>
+                mat_relative_tag <1>
+                mat_bool_invisible <yes>
+                mat_bool_default_send <yes>
+              man_end_object
+            man_end_object
+            man_start_object <view, "">
+              mat_size <34, 4>
+              mat_relative_tag <3>
+              mat_ruler <11>
+              mat_bool_writeable <yes>
+              mat_scroll_threshold <4096>
+              mat_bool_force_scroll <yes>
+              mat_log_object <im_log>
+            man_start_sibling <edit_view, "">
+              mat_size <34, 3, 256>
+              mat_relative_tag <2>
+              mat_validation <128>
+              mat_bool_invisible <yes>
+            man_end_object
+            man_start_object <org_group, "">
+              mat_orientation <hce>
+              man_start_object <trigger, "Send">
+                mat_command_key <0dx>
+                mat_bool_invisible <yes>
+                mat_relative_tag <4>
+                act_set_criterion <select>
+                act_append_action
+                  <
+                  uni_start_stream
+                    sm_enter_paid
+                    de_validate <display_msg | terminate>
+                    de_start_extraction
+                    buf_set_token <"is">
+                    de_get_data
+                    man_set_context_relative <2>
+                    man_clear_object
+                    man_make_focus
+                    man_update_display
+                    de_end_extraction
+                    buf_close_buffer
+                    man_end_context
+                  uni_end_stream
+                  >
+              man_end_object
+              man_start_object <trigger, "Respond">
+                mat_relative_tag <5>
+                man_make_focus
+                act_replace_select_action
+                    <
+                    uni_start_stream
+                      man_set_context_relative <2>
+                      mat_bool_invisible <no>
+                      man_make_focus
+                      man_change_context_relative <4>
+                      mat_bool_invisible <no>
+                      man_change_context_relative <5>
+                      mat_bool_invisible <yes>
+                      man_end_context
+                      man_update_display
+                    uni_end_stream
+                    >
+                man_end_object
+                man_start_object <trigger, "Cancel">
+                  act_replace_select_action
+                      <
+                      uni_start_stream
+                        man_close_update
+                      uni_end_stream
+                      >
+                  man_end_object
+                man_end_object
+                man_update_display
+              uni_end_stream

@@ -1,0 +1,16 @@
+uni_start_stream <00x>
+  man_use_default_title
+  man_start_object <ind_group, "">
+    mat_object_id <40-28006>
+    mat_style_id <40-28006>
+    mat_orientation <vff>
+    mat_position <center_center>
+    man_start_object <view, "">
+      mat_relative_tag <1>
+      pictalk_manage
+      mat_width <300>
+      mat_height <400>
+      mat_bool_writeable <yes>
+    man_end_object
+  man_end_object
+uni_wait_off_end_stream

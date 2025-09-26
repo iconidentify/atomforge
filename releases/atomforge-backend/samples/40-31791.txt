@@ -1,0 +1,30 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "">
+    mat_object_id <40-31791>
+    mat_style_id <40-31791>
+    mat_orientation <vff>
+    mat_title <"Performance Warning">
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <org_group, "">
+      mat_orientation <vlf>
+      man_start_object <ornament, "">
+        mat_size <45, 22>
+        man_append_data <"Your Personal Filing Cabinet has reached a size where it will slow down the startup of America Online. To prevent this slowdown you should:\x7f\x7f1) Close this window, select the File menu and then select Personal Filing Cabinet (PFC).\x7f\x7f2) In your PFC, delete any items that you no longer need. Folders you may particularly want to check include Newsgroups, Mail You've Sent, Mail You've Read and Files You've Downloaded.\x7f\x7f3) Once you have finished deleting items, select the Compact button on the PFC window. This will remove empty space from the PFC file.\x7f\x7fYou will not see this warning again until the next time the PFC reaches its current size.\x7f\x7fNote: You can set the size at which this warning appears. To do this , select the menu item Members, then Preferences and then Personal Filing Cabinet.">
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hcf>
+      man_start_object <trigger, "OK">
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              man_close_update
+              morg_pfc_check_fragment
+            uni_end_stream
+            >
+        man_end_object
+      man_end_object
+      man_update_display
+      uni_wait_off
+    uni_end_stream <00x>

@@ -1,0 +1,221 @@
+uni_start_stream <00x>
+  act_get_db_value <14x, 00x, 00x, d1x>
+  if_last_return_true_then <77, 78>
+  www_invoke_options
+  uni_sync_skip <77>
+  man_start_object <ind_group, "WWW Preferences">
+    mat_object_id <32-4652>
+    mat_style_id <32-4652>
+    mat_orientation <vff>
+    mat_bool_resize_horizontal <no>
+    mat_form_icon <1-0-2634>
+    mat_position <center_center>
+    mat_bool_non_closeable <yes>
+    man_start_object <org_group, "">
+      mat_orientation <hff>
+      man_start_object <sss_list, "">
+        mat_orientation <vff>
+        mat_relative_tag <1>
+        man_start_object <trigger, "No Graphics">
+        man_start_sibling <trigger, "Compressed Graphics">
+        man_start_sibling <trigger, "Uncompressed Graphics">
+          mat_vertical_spacing <5>
+        man_end_object
+      man_start_sibling <trigger, "Helper\rApplications">
+        mat_art_id <1-0-1584>
+        act_replace_select_action
+            <
+            uni_start_stream <00x>
+              man_preset_gid <32-4653>
+              if_last_return_true_then <1, 2>
+              man_make_focus
+              man_update_display
+              uni_sync_skip <1>
+              uni_wait_on
+              uni_invoke_no_context <32-4653>
+              uni_sync_skip <2>
+            uni_end_stream <00x>
+            >
+        man_end_object
+      man_start_sibling <org_group, "">
+        mat_orientation <hef>
+        man_start_object <org_group, "">
+          mat_orientation <vff>
+          man_start_object <sms_list, "">
+            mat_orientation <vff>
+            man_start_object <trigger, "Don't show graphics at 2400 bps">
+              mat_relative_tag <2>
+            man_end_object
+          man_start_sibling <sms_list, "">
+            mat_orientation <vff>
+            man_start_object <trigger, "Show current location">
+              mat_relative_tag <3>
+            man_end_object
+          man_start_sibling <sms_list, "">
+            mat_orientation <vff>
+            man_start_object <trigger, "Show destination of hyperlinks">
+              mat_relative_tag <4>
+            man_end_object
+          man_start_sibling <sms_list, "">
+            mat_orientation <vff>
+            man_start_object <trigger, "Use a gray background in WWW docs">
+              mat_relative_tag <6>
+              mat_vertical_spacing <5>
+            man_end_object
+          man_end_object
+        man_start_sibling <trigger, "Security\rAlerts">
+          mat_art_id <1-0-1307>
+          act_replace_select_action
+              <
+              uni_start_stream <00x>
+                man_preset_gid <40-40454>
+                if_last_return_true_then <1, 2>
+                man_make_focus
+                man_update_display
+                uni_sync_skip <1>
+                uni_wait_on
+                uni_invoke_no_context <40-40454>
+                uni_sync_skip <2>
+              uni_end_stream
+              >
+          man_end_object
+        man_start_sibling <ornament, "">
+          mat_size <20, 1>
+          async_is_known_subaccount
+          if_last_return_false_then <10, 20>
+          mat_bool_invisible <yes>
+          uni_sync_skip <10>
+          async_get_screen_name
+          uni_use_last_atom_string <var_string_trim_spaces_safely>
+          uni_use_last_atom_string <man_replace_data>
+          man_append_data <"'">
+          man_append_data <"s Home Page:">
+          uni_sync_skip <20>
+          mat_font_id <system>
+          mat_font_size <9>
+        man_start_sibling <edit_view, "">
+          mat_size <40, 1>
+          mat_relative_tag <5>
+          async_is_known_subaccount
+          if_last_return_false_then <10, 20>
+          mat_bool_invisible <yes>
+          uni_sync_skip <10>
+          lm_table_use_table <20-0-71>
+          async_get_screen_name
+          uni_use_last_atom_string <lm_table_get_item>
+          uni_save_result
+          if_last_return_true_then <1, 2>
+          uni_get_result
+          uni_use_last_atom_string <man_replace_data>
+          uni_sync_skip <1>
+          idb_set_context <20-0-78>
+          idb_atr_offset <0>
+          idb_get_string
+          uni_use_last_atom_string <man_replace_data>
+          idb_end_context
+          uni_sync_skip <2>
+          uni_sync_skip <20>
+          mat_bool_writeable <yes>
+        man_start_sibling <org_group, "">
+          mat_orientation <hef>
+          man_start_object <trigger, "OK">
+            mat_bool_default <yes>
+            act_replace_select_action
+                <
+                uni_start_stream
+                  de_start_extraction <0>
+                  man_set_context_relative <1>
+                  idb_start_obj <"b">
+                  idb_atr_globalid <20-0-79>
+                  de_get_data_value
+                  uni_use_last_atom_value <idb_append_data>
+                  idb_end_obj
+                  man_end_context
+                  man_set_context_relative <2>
+                  idb_start_obj <"b">
+                  idb_atr_globalid <20-0-80>
+                  de_get_data_value
+                  uni_use_last_atom_value <idb_append_data>
+                  idb_end_obj
+                  man_end_context
+                  man_set_context_relative <3>
+                  idb_start_obj <"b">
+                  idb_atr_globalid <20-0-81>
+                  de_get_data_value
+                  uni_use_last_atom_value <idb_append_data>
+                  idb_end_obj
+                  man_end_context
+                  man_set_context_relative <4>
+                  idb_start_obj <"b">
+                  idb_atr_globalid <20-0-82>
+                  de_get_data_value
+                  uni_use_last_atom_value <idb_append_data>
+                  idb_end_obj
+                  man_end_context
+                  man_set_context_relative <6>
+                  idb_start_obj <"b">
+                  idb_atr_globalid <20-0-95>
+                  de_get_data_value
+                  uni_use_last_atom_value <idb_append_data>
+                  idb_end_obj
+                  man_end_context
+                  lm_table_use_table <20-0-71>
+                  man_set_context_relative <5>
+                  async_get_screen_name
+                  uni_use_last_atom_string <lm_table_use_key>
+                  de_get_data_pointer
+                  uni_use_last_atom_string <lm_table_set_item>
+                  man_end_context
+                  de_end_extraction
+                  man_close_update
+                  www_refresh_prefs
+                uni_end_stream
+                >
+            man_start_sibling <trigger, "Advanced...">
+              act_replace_select_action
+                  <
+                  uni_start_stream <00x>
+                    man_preset_gid <32-4677>
+                    if_last_return_true_then <1, 2>
+                    man_make_focus
+                    man_update_display
+                    uni_sync_skip <1>
+                    uni_wait_on
+                    uni_invoke_no_context <32-4677>
+                    uni_sync_skip <2>
+                  uni_end_stream <00x>
+                  >
+              man_start_sibling <trigger, "Cancel">
+                act_replace_select_action
+                    <
+                    uni_start_stream <00x>
+                      man_close_update
+                    uni_end_stream <00x>
+                    >
+                man_end_object
+              man_end_object
+              man_update_display
+              man_set_context_relative <1>
+              act_get_db_value <14x, 00x, 00x, 4fx>
+              uni_use_last_atom_value <mat_value>
+              man_end_context
+              man_set_context_relative <2>
+              act_get_db_value <14x, 00x, 00x, 50x>
+              uni_use_last_atom_value <mat_value>
+              man_end_context
+              man_set_context_relative <3>
+              act_get_db_value <14x, 00x, 00x, 51x>
+              uni_use_last_atom_value <mat_value>
+              man_end_context
+              man_set_context_relative <4>
+              act_get_db_value <14x, 00x, 00x, 52x>
+              uni_use_last_atom_value <mat_value>
+              man_end_context
+              man_set_context_relative <6>
+              act_get_db_value <14x, 00x, 00x, 5fx>
+              uni_use_last_atom_value <mat_value>
+              man_end_context
+              man_update_display
+              uni_sync_skip <78>
+              uni_wait_off
+            uni_end_stream <00x>

@@ -1,0 +1,94 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Create New Modem">
+    mat_object_id <32-769>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <org_group, "">
+      mat_orientation <vfe>
+      man_start_object <edit_view, "Modem Name:">
+        mat_title_width <12>
+        mat_size <24, 1, 16>
+        mat_relative_tag <1>
+        mat_title_pos <left | center>
+        mat_bool_writeable <yes>
+        mat_validation <128>
+      man_start_sibling <edit_view, "Modem Title:">
+        mat_title_width <12>
+        mat_size <30, 1, 24>
+        mat_relative_tag <2>
+        mat_title_pos <left | center>
+        mat_bool_writeable <yes>
+        mat_validation <128>
+      man_start_sibling <edit_view, "File Name:">
+        mat_title_width <12>
+        mat_size <15, 1, 12>
+        mat_relative_tag <4>
+        mat_title_pos <left | center>
+        mat_bool_writeable <yes>
+        mat_validation <128>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hce>
+      man_start_object <trigger, "OK">
+        mat_relative_tag <3>
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              fm_start
+              fm_item_type <ini_data_type>
+              fm_item_set <"\x00">
+              fm_item_type <ini_group>
+              fm_item_set <"ID">
+              de_start_extraction <0>
+              de_validate <display_msg | terminate>
+              man_set_context_relative <4>
+              fm_set_relative_path <"MPM">
+              fm_item_type <filename>
+              de_get_data_pointer
+              uni_use_last_atom_string <fm_item_set>
+              fm_item_type <ini_file>
+              fm_item_get <filespec>
+              uni_use_last_atom_string <fm_item_set>
+              fm_item_type <ini_key>
+              fm_item_set <"NAME">
+              man_change_context_relative <1>
+              de_get_data_pointer
+              uni_use_last_atom_string <fm_ini_write_data>
+              var_string_set_from_atom <A>
+              fm_item_set <"TITLE">
+              man_change_context_relative <2>
+              de_get_data_pointer
+              uni_save_result
+              uni_use_last_atom_string <fm_ini_write_data>
+              uni_get_result
+              var_string_set_from_atom <B>
+              man_end_context
+              de_end_extraction
+              fm_end
+              man_close_update
+              man_set_context_globalid <32-240>
+              man_set_context_relative <1>
+              var_string_get <B>
+              uni_use_last_atom_string <man_preset_title>
+              man_start_object <trigger, "">
+                var_string_save <A, 10>
+              man_end_object
+              man_end_context
+              man_end_context
+              man_update_display <32-240>
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Cancel">
+          act_replace_select_action
+              <
+              uni_start_stream <00x>
+                man_close_update
+              uni_end_stream <00x>
+              >
+          man_end_object
+        man_end_object
+        man_update_display
+        uni_wait_off
+      uni_end_stream <00x>

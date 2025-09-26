@@ -1,0 +1,195 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "General Preferences">
+    mat_object_id <32-291>
+    mat_style_id <32-291>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <sms_list, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "Display Channels at Sign On">
+        mat_relative_tag <7>
+        mat_value <1>
+      man_end_object
+    man_start_sibling <sms_list, "">
+      mat_orientation <hlf>
+      man_start_object <trigger, "Notify me immediately of Network News">
+        mat_relative_tag <1>
+        mat_shortcut_key <"\x00">
+        mat_value <1>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hlt>
+      man_start_object <ornament, "Where possible, display text as:">
+        mat_size <20, 1>
+        mat_font_id <system>
+        mat_font_size <12>
+      man_start_sibling <sss_list, "">
+        mat_orientation <vlf>
+        mat_relative_tag <2>
+        man_start_object <trigger, "Small">
+          mat_shortcut_key <"\x00">
+        man_start_sibling <trigger, "Medium">
+          mat_shortcut_key <"\x00">
+        man_start_sibling <trigger, "Large">
+          mat_shortcut_key <"\x00">
+        man_end_object
+      man_end_object
+    man_start_sibling <sms_list, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "Save text with line breaks">
+        mat_relative_tag <8>
+        mat_value <1>
+      man_end_object
+    man_start_sibling <sms_list, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "Enable event sounds">
+        mat_relative_tag <4>
+        mat_value <1>
+      man_end_object
+    man_start_sibling <sms_list, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "Enable chat room sounds">
+        mat_relative_tag <5>
+        mat_value <1>
+      man_end_object
+    man_start_sibling <sms_list, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "Automatically scroll documents as they are received">
+        mat_relative_tag <6>
+      man_end_object
+    man_start_sibling <ornament, "">
+      mat_art_id <1-0-1369>
+      mat_bool_disabled <yes>
+    man_start_sibling <org_group, "">
+      mat_orientation <hce>
+      man_start_object <trigger, "OK">
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              de_start_extraction
+              man_set_context_relative <8>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-96>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_relative <7>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-66>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_relative <1>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-35>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_relative <2>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-36>
+              de_get_data_value
+              var_number_set_from_atom <B>
+              man_set_item_type <7>
+              var_number_set <A, 1>
+              if_numa_eq_numb_then <1>
+              man_item_set <08x>
+              var_number_set <C, 8>
+              uni_sync_skip <1>
+              var_numa_increment
+              if_numa_eq_numb_then <2>
+              man_item_set <0ax>
+              var_number_set <C, 10>
+              uni_sync_skip <2>
+              var_numa_increment
+              if_numa_eq_numb_then <3>
+              man_item_set <0cx>
+              var_number_set <C, 12>
+              uni_sync_skip <3>
+              var_number_get <C>
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              idb_start_obj <"b">
+              idb_atr_globalid <20-3-23>
+              var_number_get <B>
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_relative <4>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-43>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_relative <5>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-44>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_relative <6>
+              man_set_item_type <8>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-48>
+              de_get_data_value
+              uni_save_result
+              uni_use_last_atom_value <idb_append_data>
+              uni_get_result
+              uni_use_last_atom_value <man_item_set>
+              idb_end_obj
+              man_end_context
+              de_end_extraction
+              man_close
+              man_update_display
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Cancel">
+          act_replace_select_action
+              <
+              uni_start_stream <00x>
+                man_close_update
+              uni_end_stream <00x>
+              >
+          man_end_object
+        man_end_object
+        man_update_display
+        man_set_context_relative <6>
+        act_get_db_value <14x, 00x, 00x, 30x>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <8>
+        act_get_db_value <14x, 00x, 00x, 60x>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <7>
+        act_get_db_value <14x, 00x, 00x, 42x>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <1>
+        act_get_db_value <14x, 00x, 00x, 23x>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <2>
+        act_get_db_value <14x, 03x, 00x, 17x>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <4>
+        act_get_db_value <14x, 00x, 00x, 2bx>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <5>
+        act_get_db_value <14x, 00x, 00x, 2cx>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_globalid <32-291>
+        man_update_display
+        man_end_context
+        uni_wait_off
+      uni_end_stream <00x>

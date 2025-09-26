@@ -1,0 +1,126 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Mail Preferences">
+    mat_object_id <32-4651>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_resize_vertical <no>
+    mat_bool_modal <yes>
+    man_start_object <sms_list, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "Confirm mail after it has been sent">
+        mat_relative_tag <1>
+      man_end_object
+    man_start_sibling <sms_list, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "Close mail after it has been sent">
+        mat_relative_tag <3>
+        mat_value <1>
+      man_end_object
+    man_start_sibling <sms_list, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "Retain all mail I send in my Personal Filing Cabinet">
+        mat_relative_tag <4>
+        async_is_known_subaccount
+        if_last_return_false_then <1>
+        mat_bool_invisible <yes>
+        uni_sync_skip <1>
+      man_end_object
+    man_start_sibling <sms_list, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "Retain all mail I read in my Personal Filing Cabinet">
+        mat_relative_tag <2>
+        async_is_known_subaccount
+        if_last_return_false_then <1>
+        mat_bool_invisible <yes>
+        uni_sync_skip <1>
+      man_end_object
+    man_start_sibling <sms_list, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "Use AOL style quoting in mail">
+        mat_relative_tag <5>
+      man_end_object
+    man_start_sibling <ornament, "">
+      mat_art_id <1-0-1369>
+      mat_bool_disabled <yes>
+    man_start_sibling <org_group, "">
+      mat_orientation <hce>
+      man_start_object <trigger, "OK">
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              de_start_extraction
+              man_set_context_relative <3>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-41>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_relative <1>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-75>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_relative <2>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-76>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_relative <4>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-77>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_relative <5>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-100>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              de_end_extraction
+              man_close
+              man_update_display
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Cancel">
+          act_replace_select_action
+              <
+              uni_start_stream <00x>
+                man_close_update
+              uni_end_stream <00x>
+              >
+          man_end_object
+        man_end_object
+        man_update_display
+        man_set_context_relative <3>
+        act_get_db_value <14x, 00x, 00x, 29x>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <1>
+        act_get_db_value <14x, 00x, 00x, 4bx>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <2>
+        act_get_db_value <14x, 00x, 00x, 4cx>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <4>
+        act_get_db_value <14x, 00x, 00x, 4dx>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <5>
+        act_get_db_value <14x, 00x, 00x, 64x>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_update_display
+        man_end_context
+        uni_wait_off
+      uni_end_stream <00x>

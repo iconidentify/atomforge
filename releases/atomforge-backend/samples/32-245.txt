@@ -1,0 +1,125 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Chat Preferences">
+    mat_object_id <32-245>
+    mat_orientation <vff>
+    mat_position <cascade>
+    mat_bool_modal <yes>
+    man_start_object <sms_list, "">
+      mat_orientation <vff>
+      man_start_object <trigger, "Notify me when members arrive">
+        mat_relative_tag <1>
+        mat_bool_default <yes>
+      man_start_sibling <trigger, "Notify me when members leave">
+        mat_relative_tag <2>
+      man_start_sibling <trigger, "Double-space incoming messages">
+        mat_relative_tag <3>
+      man_start_sibling <trigger, "Alphabetize the member list">
+        mat_relative_tag <4>
+        mat_bool_default <yes>
+      man_start_sibling <trigger, "Enable chat room sounds">
+        mat_relative_tag <5>
+        mat_bool_default <yes>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hcf>
+      man_start_object <trigger, "OK">
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              de_start_extraction
+              man_set_context_relative <1>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-37>
+              de_get_data_value
+              var_number_set_from_atom <A>
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_globalid <1>
+              var_number_save <A, 67>
+              man_end_context
+              man_set_context_relative <2>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-38>
+              de_get_data_value
+              var_number_set_from_atom <A>
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_globalid <1>
+              var_number_save <A, 68>
+              man_end_context
+              man_set_context_relative <3>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-39>
+              de_get_data_value
+              var_number_set_from_atom <A>
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_globalid <1>
+              var_number_save <A, 71>
+              man_end_context
+              man_set_context_relative <4>
+              act_get_db_value <14x, 00x, 00x, 28x>
+              var_number_set_from_atom <B>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-40>
+              de_get_data_value
+              var_number_set_from_atom <A>
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              man_set_context_globalid <1>
+              var_number_save <A, 70>
+              if_numa_neq_numb_then <1>
+              async_alert <info, "If you are in a chat room, you must re-enter the room or go to another room before your member list order preference will take effect.">
+              uni_sync_skip <1>
+              man_end_context
+              man_set_context_relative <5>
+              idb_start_obj <"b">
+              idb_atr_globalid <20-0-44>
+              de_get_data_value
+              uni_use_last_atom_value <idb_append_data>
+              idb_end_obj
+              man_end_context
+              chat_refresh_pref
+              de_end_extraction
+              man_close
+              man_update_display
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Cancel">
+          act_replace_select_action
+              <
+              uni_start_stream <00x>
+                man_close_update
+              uni_end_stream <00x>
+              >
+          man_end_object
+        man_end_object
+        man_update_display
+        man_set_context_relative <1>
+        act_get_db_value <14x, 00x, 00x, 25x>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <2>
+        act_get_db_value <14x, 00x, 00x, 26x>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <3>
+        act_get_db_value <14x, 00x, 00x, 27x>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <4>
+        act_get_db_value <14x, 00x, 00x, 28x>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_set_context_relative <5>
+        act_get_db_value <14x, 00x, 00x, 2cx>
+        uni_use_last_atom_value <mat_value>
+        man_end_context
+        man_update_display
+        uni_wait_off
+      uni_end_stream <00x>

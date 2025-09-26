@@ -1,0 +1,82 @@
+uni_start_stream
+  man_set_context_globalid <32-239>
+  man_set_context_relative <1>
+  act_get_db_value <14x, 00x, 00x, 16x>
+  if_last_return_true_then <1, 2>
+  mat_title <"Touch Tone">
+  uni_sync_skip <1>
+  mat_title <"Pulse">
+  uni_sync_skip <2>
+  man_end_context
+  man_set_context_relative <2>
+  act_get_db_value <14x, 00x, 00x, 15x>
+  uni_use_last_atom_value <ccl_translate_com_port>
+  uni_use_last_atom_string <mat_title>
+  man_end_context
+  man_set_context_relative <3>
+  act_get_db_record <20-0-10>
+  uni_use_last_atom_string <mat_title>
+  man_end_context
+  man_set_context_relative <4>
+  act_get_db_value <14x, 00x, 00x, 11x>
+  uni_use_last_atom_value <ccl_translate_baud_rate>
+  uni_use_last_atom_string <mat_title>
+  man_end_context
+  man_set_context_relative <5>
+  act_get_db_value <14x, 00x, 00x, 13x>
+  uni_use_last_atom_value <ccl_translate_network>
+  uni_use_last_atom_string <mat_title>
+  man_end_context
+  man_set_context_relative <6>
+  act_get_db_record <20-0-11>
+  uni_use_last_atom_string <mat_title>
+  man_end_context
+  man_set_context_relative <7>
+  act_get_db_value <14x, 00x, 00x, 12x>
+  uni_use_last_atom_value <ccl_translate_baud_rate>
+  uni_use_last_atom_string <mat_title>
+  man_end_context
+  man_set_context_relative <8>
+  act_get_db_value <14x, 00x, 00x, 14x>
+  uni_use_last_atom_value <ccl_translate_network>
+  uni_use_last_atom_string <mat_title>
+  man_end_context
+  man_set_context_relative <11>
+  act_get_db_value <14x, 00x, 00x, 17x>
+  if_last_return_false_then <1, 2>
+  mat_bool_hidden <yes>
+  uni_sync_skip <1>
+  mat_bool_hidden <no>
+  uni_sync_skip <2>
+  man_end_context
+  man_set_context_relative <12>
+  act_get_db_record <20-2-0>
+  uni_use_last_atom_string <mat_title>
+  act_get_db_value <14x, 00x, 00x, 17x>
+  if_last_return_false_then <1, 2>
+  mat_bool_hidden <yes>
+  uni_sync_skip <1>
+  mat_bool_hidden <no>
+  uni_sync_skip <2>
+  man_end_context
+  man_set_context_relative <13>
+  act_get_db_value <14x, 00x, 00x, 18x>
+  if_last_return_false_then <1, 2>
+  mat_bool_hidden <yes>
+  uni_sync_skip <1>
+  mat_bool_hidden <no>
+  uni_sync_skip <2>
+  man_end_context
+  man_set_context_relative <14>
+  act_get_db_record <20-2-4>
+  uni_use_last_atom_string <mat_title>
+  act_get_db_value <14x, 00x, 00x, 18x>
+  if_last_return_false_then <1, 2>
+  mat_bool_hidden <yes>
+  uni_sync_skip <1>
+  mat_bool_hidden <no>
+  uni_sync_skip <2>
+  man_end_context
+  man_update_display
+  man_end_context
+uni_end_stream

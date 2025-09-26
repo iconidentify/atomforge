@@ -1,0 +1,502 @@
+uni_start_stream
+  man_set_context_globalid <20-0-41>
+  var_number_set <A, 128>
+  var_number_set <B, 139>
+  uni_start_loop
+  var_number_get <A>
+  uni_use_last_atom_value <man_check_and_set_context_rid>
+  if_last_return_true_then <1>
+  man_close
+  man_end_context
+  uni_sync_skip <1>
+  var_numa_increment
+  if_numa_lt_numb_then <2>
+  uni_end_loop
+  uni_sync_skip <2>
+  man_update_display
+  man_end_context
+  var_number_set <A, 1>
+  if_online_then <1>
+  var_number_set <A, 0>
+  uni_sync_skip <1>
+  fm_start
+  fm_item_type <ini_data_type>
+  fm_item_set <"\x00">
+  fm_item_type <ini_group>
+  fm_item_set <"WAOLGOTO">
+  fm_item_type <ini_file>
+  fm_item_set <"GOTO.INI">
+  de_start_extraction <0>
+  man_set_context_globalid <32-529>
+  man_change_context_relative <1>
+  fm_item_type <ini_key>
+  fm_item_set <"GOTO1">
+  de_get_data_pointer
+  var_string_set_from_atom <A>
+  var_string_get <A>
+  uni_use_last_atom_string <fm_ini_write_data>
+  man_change_context_relative <2>
+  fm_item_type <ini_key>
+  fm_item_set <"KEYWORD1">
+  de_get_data_pointer
+  var_string_set_from_atom <B>
+  var_string_get <B>
+  uni_use_last_atom_string <fm_ini_write_data>
+  man_end_context
+  man_end_context
+  de_end_extraction
+  buf_close_buffer
+  man_set_context_globalid <20-0-41>
+  if_stra_neq_null_then <16>
+  if_strb_neq_null_then <16>
+  man_start_object <trigger, "">
+    mat_relative_tag <128>
+    var_string_get <A>
+    uni_use_last_atom_string <mat_title>
+    var_number_get <A>
+    uni_use_last_atom_value <mat_bool_disabled>
+    mat_command_key <31x>
+    var_string_copy_strb_to_stra
+    var_string_save <A, 1>
+    act_replace_select_action
+        <
+        uni_start_stream
+          uni_wait_on
+          buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+          buf_set_token <"Kk">
+          var_lookup_by_id <A, 50331649>
+          uni_use_last_atom_string <buf_add_atom_pointer>
+          buf_close_buffer
+        uni_end_stream
+        >
+      man_end_context
+      man_update_display
+      uni_sync_skip <16>
+      man_end_context
+      de_start_extraction <0>
+      man_set_context_globalid <32-529>
+      man_change_context_relative <3>
+      fm_item_type <ini_key>
+      fm_item_set <"GOTO2">
+      de_get_data_pointer
+      var_string_set_from_atom <A>
+      var_string_get <A>
+      uni_use_last_atom_string <fm_ini_write_data>
+      man_change_context_relative <4>
+      fm_item_type <ini_key>
+      fm_item_set <"KEYWORD2">
+      de_get_data_pointer
+      var_string_set_from_atom <B>
+      var_string_get <B>
+      uni_use_last_atom_string <fm_ini_write_data>
+      man_end_context
+      man_end_context
+      de_end_extraction
+      buf_close_buffer
+      man_set_context_globalid <20-0-41>
+      if_stra_neq_null_then <16>
+      if_strb_neq_null_then <16>
+      man_start_object <trigger, "">
+        mat_relative_tag <129>
+        var_string_get <A>
+        uni_use_last_atom_string <mat_title>
+        var_number_get <A>
+        uni_use_last_atom_value <mat_bool_disabled>
+        mat_command_key <32x>
+        var_string_copy_strb_to_stra
+        var_string_save <A, 1>
+        act_replace_select_action
+            <
+            uni_start_stream
+              uni_wait_on
+              buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+              buf_set_token <"Kk">
+              var_lookup_by_id <A, 50331649>
+              uni_use_last_atom_string <buf_add_atom_pointer>
+              buf_close_buffer
+            uni_end_stream
+            >
+          man_end_context
+          man_update_display
+          uni_sync_skip <16>
+          man_end_context
+          de_start_extraction <0>
+          man_set_context_globalid <32-529>
+          man_change_context_relative <5>
+          fm_item_type <ini_key>
+          fm_item_set <"GOTO3">
+          de_get_data_pointer
+          var_string_set_from_atom <A>
+          var_string_get <A>
+          uni_use_last_atom_string <fm_ini_write_data>
+          man_change_context_relative <6>
+          fm_item_type <ini_key>
+          fm_item_set <"KEYWORD3">
+          de_get_data_pointer
+          var_string_set_from_atom <B>
+          var_string_get <B>
+          uni_use_last_atom_string <fm_ini_write_data>
+          man_end_context
+          man_end_context
+          de_end_extraction
+          buf_close_buffer
+          man_set_context_globalid <20-0-41>
+          if_stra_neq_null_then <16>
+          if_strb_neq_null_then <16>
+          man_start_object <trigger, "">
+            mat_relative_tag <130>
+            var_string_get <A>
+            uni_use_last_atom_string <mat_title>
+            var_number_get <A>
+            uni_use_last_atom_value <mat_bool_disabled>
+            mat_command_key <33x>
+            var_string_copy_strb_to_stra
+            var_string_save <A, 1>
+            act_replace_select_action
+                <
+                uni_start_stream
+                  uni_wait_on
+                  buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                  buf_set_token <"Kk">
+                  var_lookup_by_id <A, 50331649>
+                  uni_use_last_atom_string <buf_add_atom_pointer>
+                  buf_close_buffer
+                uni_end_stream
+                >
+              man_end_context
+              man_update_display
+              uni_sync_skip <16>
+              man_end_context
+              de_start_extraction <0>
+              man_set_context_globalid <32-529>
+              man_change_context_relative <7>
+              fm_item_type <ini_key>
+              fm_item_set <"GOTO4">
+              de_get_data_pointer
+              var_string_set_from_atom <A>
+              var_string_get <A>
+              uni_use_last_atom_string <fm_ini_write_data>
+              man_change_context_relative <8>
+              fm_item_type <ini_key>
+              fm_item_set <"KEYWORD4">
+              de_get_data_pointer
+              var_string_set_from_atom <B>
+              var_string_get <B>
+              uni_use_last_atom_string <fm_ini_write_data>
+              man_end_context
+              man_end_context
+              de_end_extraction
+              buf_close_buffer
+              man_set_context_globalid <20-0-41>
+              if_stra_neq_null_then <16>
+              if_strb_neq_null_then <16>
+              man_start_object <trigger, "">
+                mat_relative_tag <131>
+                var_string_get <A>
+                uni_use_last_atom_string <mat_title>
+                var_number_get <A>
+                uni_use_last_atom_value <mat_bool_disabled>
+                mat_command_key <34x>
+                var_string_copy_strb_to_stra
+                var_string_save <A, 1>
+                act_replace_select_action
+                    <
+                    uni_start_stream
+                      uni_wait_on
+                      buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                      buf_set_token <"Kk">
+                      var_lookup_by_id <A, 50331649>
+                      uni_use_last_atom_string <buf_add_atom_pointer>
+                      buf_close_buffer
+                    uni_end_stream
+                    >
+                  man_end_context
+                  man_update_display
+                  uni_sync_skip <16>
+                  man_end_context
+                  de_start_extraction <0>
+                  man_set_context_globalid <32-529>
+                  man_change_context_relative <9>
+                  fm_item_type <ini_key>
+                  fm_item_set <"GOTO5">
+                  de_get_data_pointer
+                  var_string_set_from_atom <A>
+                  var_string_get <A>
+                  uni_use_last_atom_string <fm_ini_write_data>
+                  man_change_context_relative <10>
+                  fm_item_type <ini_key>
+                  fm_item_set <"KEYWORD5">
+                  de_get_data_pointer
+                  var_string_set_from_atom <B>
+                  var_string_get <B>
+                  uni_use_last_atom_string <fm_ini_write_data>
+                  man_end_context
+                  man_end_context
+                  de_end_extraction
+                  buf_close_buffer
+                  man_set_context_globalid <20-0-41>
+                  if_stra_neq_null_then <16>
+                  if_strb_neq_null_then <16>
+                  man_start_object <trigger, "">
+                    mat_relative_tag <132>
+                    var_string_get <A>
+                    uni_use_last_atom_string <mat_title>
+                    var_number_get <A>
+                    uni_use_last_atom_value <mat_bool_disabled>
+                    mat_command_key <35x>
+                    var_string_copy_strb_to_stra
+                    var_string_save <A, 1>
+                    act_replace_select_action
+                        <
+                        uni_start_stream
+                          uni_wait_on
+                          buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                          buf_set_token <"Kk">
+                          var_lookup_by_id <A, 50331649>
+                          uni_use_last_atom_string <buf_add_atom_pointer>
+                          buf_close_buffer
+                        uni_end_stream
+                        >
+                      man_end_context
+                      man_update_display
+                      uni_sync_skip <16>
+                      man_end_context
+                      de_start_extraction <0>
+                      man_set_context_globalid <32-529>
+                      man_change_context_relative <11>
+                      fm_item_type <ini_key>
+                      fm_item_set <"GOTO6">
+                      de_get_data_pointer
+                      var_string_set_from_atom <A>
+                      var_string_get <A>
+                      uni_use_last_atom_string <fm_ini_write_data>
+                      man_change_context_relative <12>
+                      fm_item_type <ini_key>
+                      fm_item_set <"KEYWORD6">
+                      de_get_data_pointer
+                      var_string_set_from_atom <B>
+                      var_string_get <B>
+                      uni_use_last_atom_string <fm_ini_write_data>
+                      man_end_context
+                      man_end_context
+                      de_end_extraction
+                      buf_close_buffer
+                      man_set_context_globalid <20-0-41>
+                      if_stra_neq_null_then <16>
+                      if_strb_neq_null_then <16>
+                      man_start_object <trigger, "">
+                        mat_relative_tag <133>
+                        var_string_get <A>
+                        uni_use_last_atom_string <mat_title>
+                        var_number_get <A>
+                        uni_use_last_atom_value <mat_bool_disabled>
+                        mat_command_key <36x>
+                        var_string_copy_strb_to_stra
+                        var_string_save <A, 1>
+                        act_replace_select_action
+                            <
+                            uni_start_stream
+                              uni_wait_on
+                              buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                              buf_set_token <"Kk">
+                              var_lookup_by_id <A, 50331649>
+                              uni_use_last_atom_string <buf_add_atom_pointer>
+                              buf_close_buffer
+                            uni_end_stream
+                            >
+                          man_end_context
+                          man_update_display
+                          uni_sync_skip <16>
+                          man_end_context
+                          de_start_extraction <0>
+                          man_set_context_globalid <32-529>
+                          man_change_context_relative <13>
+                          fm_item_type <ini_key>
+                          fm_item_set <"GOTO7">
+                          de_get_data_pointer
+                          var_string_set_from_atom <A>
+                          var_string_get <A>
+                          uni_use_last_atom_string <fm_ini_write_data>
+                          man_change_context_relative <14>
+                          fm_item_type <ini_key>
+                          fm_item_set <"KEYWORD7">
+                          de_get_data_pointer
+                          var_string_set_from_atom <B>
+                          var_string_get <B>
+                          uni_use_last_atom_string <fm_ini_write_data>
+                          man_end_context
+                          man_end_context
+                          de_end_extraction
+                          buf_close_buffer
+                          man_set_context_globalid <20-0-41>
+                          if_stra_neq_null_then <16>
+                          if_strb_neq_null_then <16>
+                          man_start_object <trigger, "">
+                            mat_relative_tag <134>
+                            var_string_get <A>
+                            uni_use_last_atom_string <mat_title>
+                            var_number_get <A>
+                            uni_use_last_atom_value <mat_bool_disabled>
+                            mat_command_key <37x>
+                            var_string_copy_strb_to_stra
+                            var_string_save <A, 1>
+                            act_replace_select_action
+                                <
+                                uni_start_stream
+                                  uni_wait_on
+                                  buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                                  buf_set_token <"Kk">
+                                  var_lookup_by_id <A, 50331649>
+                                  uni_use_last_atom_string <buf_add_atom_pointer>
+                                  buf_close_buffer
+                                uni_end_stream
+                                >
+                              man_end_context
+                              man_update_display
+                              uni_sync_skip <16>
+                              man_end_context
+                              de_start_extraction <0>
+                              man_set_context_globalid <32-529>
+                              man_change_context_relative <15>
+                              fm_item_type <ini_key>
+                              fm_item_set <"GOTO8">
+                              de_get_data_pointer
+                              var_string_set_from_atom <A>
+                              var_string_get <A>
+                              uni_use_last_atom_string <fm_ini_write_data>
+                              man_change_context_relative <16>
+                              fm_item_type <ini_key>
+                              fm_item_set <"KEYWORD8">
+                              de_get_data_pointer
+                              var_string_set_from_atom <B>
+                              var_string_get <B>
+                              uni_use_last_atom_string <fm_ini_write_data>
+                              man_end_context
+                              man_end_context
+                              de_end_extraction
+                              buf_close_buffer
+                              man_set_context_globalid <20-0-41>
+                              if_stra_neq_null_then <16>
+                              if_strb_neq_null_then <16>
+                              man_start_object <trigger, "">
+                                mat_relative_tag <135>
+                                var_string_get <A>
+                                uni_use_last_atom_string <mat_title>
+                                var_number_get <A>
+                                uni_use_last_atom_value <mat_bool_disabled>
+                                mat_command_key <38x>
+                                var_string_copy_strb_to_stra
+                                var_string_save <A, 1>
+                                act_replace_select_action
+                                    <
+                                    uni_start_stream
+                                      uni_wait_on
+                                      buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                                      buf_set_token <"Kk">
+                                      var_lookup_by_id <A, 50331649>
+                                      uni_use_last_atom_string <buf_add_atom_pointer>
+                                      buf_close_buffer
+                                    uni_end_stream
+                                    >
+                                  man_end_context
+                                  man_update_display
+                                  uni_sync_skip <16>
+                                  man_end_context
+                                  de_start_extraction <0>
+                                  man_set_context_globalid <32-529>
+                                  man_change_context_relative <17>
+                                  fm_item_type <ini_key>
+                                  fm_item_set <"GOTO9">
+                                  de_get_data_pointer
+                                  var_string_set_from_atom <A>
+                                  var_string_get <A>
+                                  uni_use_last_atom_string <fm_ini_write_data>
+                                  man_change_context_relative <18>
+                                  fm_item_type <ini_key>
+                                  fm_item_set <"KEYWORD9">
+                                  de_get_data_pointer
+                                  var_string_set_from_atom <B>
+                                  var_string_get <B>
+                                  uni_use_last_atom_string <fm_ini_write_data>
+                                  man_end_context
+                                  man_end_context
+                                  de_end_extraction
+                                  buf_close_buffer
+                                  man_set_context_globalid <20-0-41>
+                                  if_stra_neq_null_then <16>
+                                  if_strb_neq_null_then <16>
+                                  man_start_object <trigger, "">
+                                    mat_relative_tag <136>
+                                    var_string_get <A>
+                                    uni_use_last_atom_string <mat_title>
+                                    var_number_get <A>
+                                    uni_use_last_atom_value <mat_bool_disabled>
+                                    mat_command_key <39x>
+                                    var_string_copy_strb_to_stra
+                                    var_string_save <A, 1>
+                                    act_replace_select_action
+                                        <
+                                        uni_start_stream
+                                          uni_wait_on
+                                          buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                                          buf_set_token <"Kk">
+                                          var_lookup_by_id <A, 50331649>
+                                          uni_use_last_atom_string <buf_add_atom_pointer>
+                                          buf_close_buffer
+                                        uni_end_stream
+                                        >
+                                      man_end_context
+                                      man_update_display
+                                      uni_sync_skip <16>
+                                      man_end_context
+                                      de_start_extraction <0>
+                                      man_set_context_globalid <32-529>
+                                      man_change_context_relative <19>
+                                      fm_item_type <ini_key>
+                                      fm_item_set <"GOTO10">
+                                      de_get_data_pointer
+                                      var_string_set_from_atom <A>
+                                      var_string_get <A>
+                                      uni_use_last_atom_string <fm_ini_write_data>
+                                      man_change_context_relative <20>
+                                      fm_item_type <ini_key>
+                                      fm_item_set <"KEYWORD10">
+                                      de_get_data_pointer
+                                      var_string_set_from_atom <B>
+                                      var_string_get <B>
+                                      uni_use_last_atom_string <fm_ini_write_data>
+                                      man_end_context
+                                      man_end_context
+                                      de_end_extraction
+                                      buf_close_buffer
+                                      man_set_context_globalid <20-0-41>
+                                      if_stra_neq_null_then <16>
+                                      if_strb_neq_null_then <16>
+                                      man_start_object <trigger, "">
+                                        mat_relative_tag <138>
+                                        var_string_get <A>
+                                        uni_use_last_atom_string <mat_title>
+                                        var_number_get <A>
+                                        uni_use_last_atom_value <mat_bool_disabled>
+                                        mat_command_key <30x>
+                                        var_string_copy_strb_to_stra
+                                        var_string_save <A, 1>
+                                        act_replace_select_action
+                                            <
+                                            uni_start_stream
+                                              uni_wait_on
+                                              buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                                              buf_set_token <"Kk">
+                                              var_lookup_by_id <A, 50331649>
+                                              uni_use_last_atom_string <buf_add_atom_pointer>
+                                              buf_close_buffer
+                                            uni_end_stream
+                                            >
+                                          man_end_context
+                                          man_update_display
+                                          uni_sync_skip <16>
+                                          man_end_context
+                                          fm_end
+                                          man_set_context_globalid <32-529>
+                                          man_close_update
+                                        uni_end_stream

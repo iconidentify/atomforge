@@ -1,0 +1,34 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Network News">
+    mat_object_id <32-292>
+    mat_orientation <vff>
+    man_start_object <dss_list, "Received\tPromotion">
+      mat_orientation <vee>
+      mat_size <60>
+      mat_relative_tag <1>
+      mat_ruler <12>
+    man_start_sibling <org_group, "">
+      mat_orientation <hef>
+      man_start_object <trigger, "View">
+        mat_relative_tag <2>
+        mat_art_id <1-0-1307>
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              async_display_netnews
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Delete">
+          mat_relative_tag <5>
+          mat_art_id <1-0-1307>
+          act_replace_select_action
+              <
+              uni_start_stream
+                lm_user_delete_item <2097444>
+              uni_end_stream
+              >
+          man_end_object
+        man_end_object
+        man_update_display
+      uni_end_stream <00x>

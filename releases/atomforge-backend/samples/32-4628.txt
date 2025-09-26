@@ -1,0 +1,859 @@
+uni_start_stream
+  man_insert_object_before <31>
+  mat_title <"File">
+  mat_shortcut_key <"F">
+  mat_object_id <20-0-49>
+  man_start_object <trigger, "New">
+    mat_relative_tag <1>
+    mat_shortcut_key <"N">
+    mat_command_key <4ex>
+    act_replace_select_action
+        <
+        uni_start_stream
+          fm_start
+          fm_broadcast <05x>
+          fm_broadcast <06x>
+          fm_end
+        uni_end_stream
+        >
+    man_end_object
+    man_start_object <trigger, "Open...">
+      mat_shortcut_key <"O">
+      mat_command_key <4fx>
+      mat_relative_tag <2>
+      act_replace_select_action
+          <
+          uni_start_stream
+            fm_start
+            fm_item_type <persistent_path>
+            fm_item_set <14x, 00x, 01x, 1bx>
+            fm_item_type <xor_mask>
+            fm_item_set <"ÿÿ">
+            fm_add_file_type_mask
+            fm_dialog_get_file <"Open a file">
+            fm_handle_error <display_msg | terminate>
+            fm_broadcast <01x>
+            fm_end
+          uni_end_stream
+          >
+      man_end_object
+      man_start_object <trigger, "Save">
+        mat_shortcut_key <"S">
+        mat_command_key <53x>
+        mat_relative_tag <3>
+        act_replace_select_action
+            <
+            uni_start_stream
+              fm_start
+              fm_broadcast <04x>
+              fm_handle_error <display_msg | terminate>
+              fm_end
+            uni_end_stream
+            >
+        man_end_object
+        man_start_object <trigger, "Save As...">
+          mat_shortcut_key <"A">
+          mat_relative_tag <4>
+          act_replace_select_action
+              <
+              uni_start_stream
+                fm_start
+                fm_broadcast <03x>
+                fm_handle_error <display_msg | terminate>
+                fm_end
+              uni_end_stream
+              >
+          man_end_object
+          man_start_object <ornament, "">
+            mat_relative_tag <5>
+          man_end_object
+          man_start_object <trigger, "Print...">
+            mat_shortcut_key <"P">
+            mat_command_key <50x>
+            mat_relative_tag <6>
+            act_replace_select_action
+                <
+                uni_start_stream
+                  fm_start
+                  fm_broadcast <09x>
+                  fm_handle_error <display_msg | terminate>
+                  fm_end
+                uni_end_stream
+                >
+            man_end_object
+            man_start_object <trigger, "Print Setup...">
+              mat_relative_tag <7>
+              act_replace_select_action
+                  <
+                  uni_start_stream
+                    fm_start
+                    fm_dialog_print <01x>
+                    fm_end
+                  uni_end_stream
+                  >
+              man_end_object
+              man_start_object <ornament, "">
+                mat_relative_tag <13>
+              man_end_object
+              man_start_object <trigger, "Personal Filing Cabinet">
+                mat_shortcut_key <"E">
+                mat_relative_tag <14>
+                act_replace_select_action
+                    <
+                    uni_start_stream_wait_on
+                      sm_enter_paid
+                      uni_invoke_no_context <32-4621>
+                    uni_end_stream
+                    >
+                man_end_object
+                man_start_object <trigger, "Download Manager">
+                  mat_relative_tag <8>
+                  act_replace_select_action
+                      <
+                      uni_start_stream_wait_on
+                        sm_enter_paid
+                        xfer_invoke_dl_manager
+                      uni_wait_off_end_stream
+                      >
+                  man_end_object
+                  man_start_object <trigger, "Log Manager">
+                    mat_shortcut_key <"L">
+                    mat_relative_tag <9>
+                    act_replace_select_action
+                        <
+                        uni_start_stream_wait_on
+                          man_do_magic_response_id <8430>
+                          uni_invoke_no_context <32-238>
+                        uni_wait_off_end_stream
+                        >
+                    man_end_object
+                    man_start_object <ornament, "">
+                      mat_relative_tag <10>
+                    man_end_object
+                    man_start_object <trigger, "Stop Incoming Text">
+                      mat_command_key <1bx, 00x>
+                      mat_relative_tag <11>
+                      act_replace_select_action
+                          <
+                          uni_start_stream
+                            uni_cancel_action
+                          uni_end_stream
+                          >
+                      man_end_object
+                      man_start_object <trigger, "Exit">
+                        mat_shortcut_key <"X">
+                        mat_relative_tag <12>
+                        act_replace_select_action
+                            <
+                            uni_start_stream_wait_on
+                              async_exit
+                            uni_end_stream
+                            >
+                        man_end_object
+                        act_set_criterion <18>
+                        act_replace_action
+                            <
+                            uni_start_stream
+                              async_is_known_subaccount
+                              if_last_return_true_then <1, 2>
+                              man_set_context_relative <14>
+                              mat_bool_disabled <no>
+                              man_end_context
+                              uni_sync_skip <1>
+                              man_set_context_relative <14>
+                              mat_bool_disabled <yes>
+                              man_end_context
+                              uni_sync_skip <2>
+                              man_update_display
+                            uni_end_stream
+                            >
+                        man_end_object
+                        man_insert_object_before <31>
+                        mat_title <"Edit">
+                        mat_shortcut_key <"E">
+                        mat_object_id <57>
+                        act_replace_select_action
+                            <
+                            uni_start_stream
+                              man_do_edit_menu <0>
+                            uni_end_stream
+                            >
+                          man_start_object <trigger, "Undo">
+                            mat_shortcut_key <"U">
+                            mat_command_key <5ax>
+                            mat_relative_tag <5>
+                            act_replace_select_action
+                                <
+                                uni_start_stream
+                                  man_do_edit_menu <5>
+                                uni_end_stream
+                                >
+                            man_end_object
+                            man_start_object <ornament, "">
+                              mat_relative_tag <6>
+                            man_end_object
+                            man_start_object <trigger, "Cut">
+                              mat_shortcut_key <"T">
+                              mat_command_key <58x>
+                              mat_relative_tag <1>
+                              act_replace_select_action
+                                  <
+                                  uni_start_stream
+                                    man_do_edit_menu <1>
+                                  uni_end_stream
+                                  >
+                              man_end_object
+                              man_start_object <trigger, "Copy">
+                                mat_shortcut_key <"C">
+                                mat_command_key <43x>
+                                mat_relative_tag <2>
+                                act_replace_select_action
+                                    <
+                                    uni_start_stream
+                                      man_do_edit_menu <2>
+                                    uni_end_stream
+                                    >
+                                man_end_object
+                                man_start_object <trigger, "Paste">
+                                  mat_shortcut_key <"P">
+                                  mat_command_key <56x>
+                                  mat_relative_tag <3>
+                                  act_replace_select_action
+                                      <
+                                      uni_start_stream
+                                        man_do_edit_menu <3>
+                                      uni_end_stream
+                                      >
+                                  man_end_object
+                                  man_start_object <trigger, "Select All">
+                                    mat_shortcut_key <"S">
+                                    mat_command_key <41x>
+                                    mat_relative_tag <4>
+                                    act_replace_select_action
+                                        <
+                                        uni_start_stream
+                                          man_do_edit_menu <4>
+                                        uni_end_stream
+                                        >
+                                    man_end_object
+                                    man_start_object <ornament, "">
+                                      mat_relative_tag <7>
+                                    man_end_object
+                                    man_start_object <trigger, "Find in Top Window...">
+                                      mat_shortcut_key <"F">
+                                      mat_relative_tag <20>
+                                      act_replace_select_action
+                                          <
+                                          uni_start_stream
+                                            man_do_edit_menu <9>
+                                          uni_end_stream
+                                          >
+                                      man_end_object
+                                      man_start_object <ornament, "">
+                                        mat_relative_tag <10>
+                                      man_end_object
+                                      man_start_object <trigger, "Fit Image to View">
+                                        mat_shortcut_key <"F">
+                                        mat_relative_tag <12>
+                                        mat_bool_disabled <yes>
+                                        act_replace_select_action
+                                            <
+                                            uni_start_stream
+                                              man_set_context_globalid <1>
+                                              var_lookup_by_id <A, 100>
+                                              uni_use_last_atom_value <man_set_context_globalid>
+                                              man_set_context_relative <1>
+                                              image_get_attr <16x, 1ex>
+                                              if_last_return_false_then <3, 4>
+                                              image_attr_fit_to_view <yes>
+                                              man_end_context
+                                              man_end_context
+                                              man_set_context_globalid <57>
+                                              man_set_context_relative <12>
+                                              mat_title <"Show Image in Original Size">
+                                              mat_shortcut_key <"O">
+                                              uni_sync_skip <3>
+                                              image_attr_fit_to_view <no>
+                                              man_end_context
+                                              man_end_context
+                                              man_set_context_globalid <57>
+                                              man_set_context_relative <12>
+                                              mat_title <"Fit Image to View">
+                                              mat_shortcut_key <"F">
+                                              uni_sync_skip <4>
+                                              man_end_context
+                                              man_end_context
+                                            uni_end_stream
+                                            >
+                                        man_end_object
+                                        man_start_object <trigger, "Show Image Tools">
+                                          mat_shortcut_key <"S">
+                                          mat_relative_tag <11>
+                                          mat_bool_disabled <yes>
+                                          act_replace_select_action
+                                              <
+                                              uni_start_stream
+                                                man_set_context_globalid <40-1159>
+                                                man_get_attribute <mat_bool_invisible>
+                                                if_last_return_true_then <1, 2>
+                                                var_number_set <A, 1>
+                                                var_number_save <A, 64>
+                                                mat_bool_invisible <no>
+                                                man_update_display
+                                                man_end_context
+                                                man_set_context_globalid <57>
+                                                man_set_context_relative <11>
+                                                mat_title <"Hide Image Tools">
+                                                mat_shortcut_key <"H">
+                                                uni_sync_skip <1>
+                                                var_number_set <A, 0>
+                                                var_number_save <A, 64>
+                                                mat_bool_invisible <yes>
+                                                man_update_display
+                                                man_end_context
+                                                man_set_context_globalid <57>
+                                                man_set_context_relative <11>
+                                                mat_title <"Show Tools">
+                                                mat_shortcut_key <"S">
+                                                uni_sync_skip <2>
+                                                man_update_display
+                                                man_end_context
+                                              uni_end_stream
+                                              >
+                                          man_end_object
+                                        man_end_object
+                                        man_insert_object_before <31>
+                                        mat_title <"Go To">
+                                        mat_shortcut_key <"G">
+                                        mat_object_id <20-0-41>
+                                        man_start_object <trigger, "Set Up & Sign On">
+                                          mat_relative_tag <1>
+                                          act_replace_select_action
+                                              <
+                                              uni_start_stream_wait_on
+                                                man_do_magic_response_id <8413>
+                                                uni_invoke_no_context <32-221>
+                                              uni_wait_off_end_stream
+                                              >
+                                          man_end_object
+                                          man_start_object <trigger, "Exit Unlimited Use area">
+                                            mat_command_key <45x>
+                                            mat_bool_disabled <yes>
+                                            mat_relative_tag <9>
+                                            act_replace_select_action
+                                                <
+                                                uni_start_stream_wait_on
+                                                  sm_enter_paid
+                                                uni_wait_off_end_stream
+                                                >
+                                            man_end_object
+                                            man_start_object <ornament, "">
+                                              mat_relative_tag <4>
+                                            man_end_object
+                                            man_start_object <trigger, "Channels">
+                                              mat_bool_disabled <yes>
+                                              mat_relative_tag <2>
+                                              act_replace_select_action
+                                                  <
+                                                  uni_start_stream_wait_on
+                                                    sm_enter_paid
+                                                    man_preset_gid <32-5483>
+                                                    if_last_return_true_then <1, 2>
+                                                    man_make_focus
+                                                    man_update_display
+                                                    uni_sync_skip <1>
+                                                    uni_wait_on
+                                                    uni_invoke_no_context <32-5483>
+                                                    uni_sync_skip <2>
+                                                  uni_wait_off_end_stream
+                                                  >
+                                              man_end_object
+                                              man_start_object <trigger, "Welcome Menu">
+                                                mat_bool_disabled <yes>
+                                                mat_relative_tag <6>
+                                                act_replace_select_action
+                                                    <
+                                                    uni_start_stream
+                                                      sm_enter_paid
+                                                      man_set_context_globalid <32-30>
+                                                      man_make_focus
+                                                      man_update_display
+                                                      man_end_context
+                                                    uni_wait_off_end_stream
+                                                    >
+                                                man_end_object
+                                                man_start_object <trigger, "Keyword...">
+                                                  mat_bool_disabled <yes>
+                                                  mat_relative_tag <3>
+                                                  mat_command_key <4bx>
+                                                  act_replace_select_action
+                                                      <
+                                                      uni_start_stream_wait_on <00x>
+                                                        man_do_magic_response_id <8422>
+                                                        uni_invoke_no_context <40-5792>
+                                                      uni_end_stream
+                                                      >
+                                                  man_end_object
+                                                  man_start_object <trigger, "Find...">
+                                                    mat_bool_disabled <yes>
+                                                    mat_relative_tag <5>
+                                                    mat_command_key <46x>
+                                                    act_replace_select_action
+                                                        <
+                                                        uni_start_stream_wait_on
+                                                          sm_enter_paid
+                                                        sm_send_k1 <17-35044>
+                                                        >
+                                                    man_end_object
+                                                    man_start_object <ornament, "">
+                                                      mat_relative_tag <12>
+                                                    man_end_object
+                                                    man_start_object <trigger, "Online Clock">
+                                                      mat_bool_disabled <yes>
+                                                      mat_relative_tag <51>
+                                                      act_replace_select_action
+                                                          <
+                                                          uni_start_stream_wait_on
+                                                            buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                                                            buf_set_token <"K1">
+                                                            buf_add_atom_data <540323>
+                                                            buf_close_buffer
+                                                          uni_end_stream
+                                                          >
+                                                      man_end_object
+                                                      man_start_object <trigger, "Favorite Places">
+                                                        mat_relative_tag <7>
+                                                        act_replace_select_action
+                                                            <
+                                                            uni_start_stream
+                                                              uni_invoke_no_context <32-4619>
+                                                            uni_end_stream
+                                                            >
+                                                        man_end_object
+                                                        idb_set_context <20-0-258>
+                                                        idb_atr_offset <0>
+                                                        idb_get_value <04x>
+                                                        var_number_set_from_atom <A>
+                                                        idb_end_context
+                                                        var_number_set <B, 2>
+                                                        if_numa_eq_numb_then <1>
+                                                        man_start_object <trigger, "NEA Online">
+                                                          mat_relative_tag <1000>
+                                                          mat_bool_disabled <yes>
+                                                          act_replace_select_action
+                                                              <
+                                                              uni_start_stream
+                                                              sm_send_k1 <2-1921>
+                                                              >
+                                                          man_end_object
+                                                          uni_sync_skip <1>
+                                                          man_start_object <ornament, "">
+                                                            mat_relative_tag <8>
+                                                          man_end_object
+                                                          man_start_object <trigger, "Edit Go To Menu">
+                                                            mat_relative_tag <11>
+                                                            act_replace_select_action
+                                                                <
+                                                                uni_start_stream_wait_on
+                                                                  uni_invoke_no_context <32-529>
+                                                                uni_wait_off_end_stream
+                                                                >
+                                                            man_end_object
+                                                            uni_invoke_local <32-538>
+                                                          man_end_object
+                                                          man_insert_object_before <31>
+                                                          mat_title <"Mail">
+                                                          mat_object_id <20-0-42>
+                                                          mat_shortcut_key <"M">
+                                                          man_start_object <trigger, "Mail Center">
+                                                            mat_bool_disabled <yes>
+                                                            mat_shortcut_key <"P">
+                                                            mat_relative_tag <50>
+                                                            act_replace_select_action
+                                                                <
+                                                                uni_start_stream
+                                                                sm_send_paid_f1 <40-4391>
+                                                              uni_end_stream
+                                                              >
+                                                          man_end_object
+                                                          man_start_object <trigger, "Compose Mail">
+                                                            mat_shortcut_key <"C">
+                                                            mat_relative_tag <1>
+                                                            mat_command_key <4dx>
+                                                            act_replace_select_action
+                                                                <
+                                                                uni_start_stream_wait_on
+                                                                  sm_enter_paid
+                                                                  mip_display_mail_form <0>
+                                                                uni_wait_off_end_stream
+                                                                >
+                                                            man_end_object
+                                                            man_start_object <trigger, "Read New Mail">
+                                                              mat_shortcut_key <"N">
+                                                              mat_bool_disabled <yes>
+                                                              mat_relative_tag <2>
+                                                              mat_command_key <52x>
+                                                              idb_exists <20-0-74>
+                                                              if_last_return_false_then <10, 20>
+                                                              act_replace_select_action
+                                                                  <
+                                                                  uni_start_stream_wait_on
+                                                                    sm_enter_paid
+                                                                    man_do_magic_token_arg <"eL">
+                                                                    if_last_return_false_then <1>
+                                                                    buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                                                                    buf_set_token <"eL">
+                                                                    buf_close_buffer
+                                                                    uni_sync_skip <1>
+                                                                  uni_end_stream
+                                                                  >
+                                                                uni_sync_skip <10>
+                                                                act_replace_select_action
+                                                                    <
+                                                                    uni_start_stream
+                                                                      sm_enter_paid
+                                                                      mip_action_command <1dx>
+                                                                    uni_end_stream
+                                                                    >
+                                                                  uni_sync_skip <20>
+                                                                man_end_object
+                                                                man_start_object <trigger, "Check Mail You've Read">
+                                                                  mat_shortcut_key <"R">
+                                                                  mat_bool_disabled <yes>
+                                                                  mat_relative_tag <3>
+                                                                  idb_exists <20-0-74>
+                                                                  if_last_return_false_then <10, 20>
+                                                                  act_replace_select_action
+                                                                      <
+                                                                      uni_start_stream_wait_on
+                                                                        sm_enter_paid
+                                                                        man_do_magic_token_arg <"eO">
+                                                                        if_last_return_false_then <1>
+                                                                        buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                                                                        buf_set_token <"eO">
+                                                                        buf_close_buffer
+                                                                        uni_sync_skip <1>
+                                                                      uni_end_stream
+                                                                      >
+                                                                    uni_sync_skip <10>
+                                                                    act_replace_select_action
+                                                                        <
+                                                                        uni_start_stream
+                                                                          sm_enter_paid
+                                                                          mip_action_command <1ex>
+                                                                        uni_end_stream
+                                                                        >
+                                                                      uni_sync_skip <20>
+                                                                    man_end_object
+                                                                    man_start_object <trigger, "Check Mail You've Sent">
+                                                                      mat_shortcut_key <"S">
+                                                                      mat_bool_disabled <yes>
+                                                                      mat_relative_tag <4>
+                                                                      act_replace_select_action
+                                                                          <
+                                                                          uni_start_stream_wait_on
+                                                                            sm_enter_paid
+                                                                            man_do_magic_token_arg <"oL">
+                                                                            if_last_return_false_then <1>
+                                                                            buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                                                                            buf_set_token <"oL">
+                                                                            buf_close_buffer
+                                                                            uni_sync_skip <1>
+                                                                          uni_end_stream
+                                                                          >
+                                                                        uni_sync_skip <10>
+                                                                        act_replace_select_action
+                                                                            <
+                                                                            uni_start_stream
+                                                                              sm_enter_paid
+                                                                              mip_action_command <1fx>
+                                                                            uni_end_stream
+                                                                            >
+                                                                          uni_sync_skip <20>
+                                                                        man_end_object
+                                                                        man_start_object <ornament, "">
+                                                                          mat_relative_tag <9>
+                                                                        man_end_object
+                                                                        man_start_object <trigger, "Fax/Paper Mail">
+                                                                          mat_shortcut_key <"F">
+                                                                          mat_bool_disabled <yes>
+                                                                          act_replace_select_action
+                                                                              <
+                                                                              uni_start_stream_wait_on
+                                                                                sm_enter_paid
+                                                                                man_do_magic_token_arg <"K1", 2-43263>
+                                                                                if_last_return_false_then <1>
+                                                                                buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                                                                                buf_set_token <"K1">
+                                                                                buf_add_atom_data <174335>
+                                                                                buf_close_buffer
+                                                                                uni_sync_skip <1>
+                                                                              uni_end_stream
+                                                                              >
+                                                                            mat_relative_tag <5>
+                                                                          man_end_object
+                                                                          man_start_object <trigger, "Edit Address Book...">
+                                                                            mat_shortcut_key <"A">
+                                                                            mat_relative_tag <6>
+                                                                            act_replace_select_action
+                                                                                <
+                                                                                uni_start_stream_wait_on
+                                                                                  sm_enter_paid
+                                                                                  lm_open_window <32-425>
+                                                                                  ad_set_caller <00x, 00x, 00x, 00x>
+                                                                                  man_update_display
+                                                                                uni_wait_off_end_stream
+                                                                                >
+                                                                            man_end_object
+                                                                            mat_relative_tag <10>
+                                                                            man_start_object <ornament, "">
+                                                                            man_end_object
+                                                                            man_start_object <trigger, "Set Up FlashSession...">
+                                                                              mat_relative_tag <11>
+                                                                              act_replace_select_action
+                                                                                  <
+                                                                                  uni_start_stream
+                                                                                    idb_exists <20-0-62>
+                                                                                    if_last_return_true_then <1, 2>
+                                                                                    man_do_magic_response_id <2099658>
+                                                                                    uni_invoke_no_context <32-2506>
+                                                                                    uni_sync_skip <1>
+                                                                                    uni_invoke_no_context <32-2507>
+                                                                                    uni_sync_skip <2>
+                                                                                  uni_end_stream
+                                                                                  >
+                                                                              man_end_object
+                                                                              man_start_object <trigger, "Activate FlashSession Now">
+                                                                                mat_relative_tag <12>
+                                                                                act_replace_select_action
+                                                                                    <
+                                                                                    uni_start_stream
+                                                                                      sm_enter_paid
+                                                                                      uni_invoke_no_context <32-2522>
+                                                                                    uni_end_stream
+                                                                                    >
+                                                                                man_end_object
+                                                                                man_start_object <trigger, "Read Incoming FlashMail">
+                                                                                  mat_shortcut_key <"I">
+                                                                                  mat_relative_tag <13>
+                                                                                  act_replace_select_action
+                                                                                      <
+                                                                                      uni_start_stream
+                                                                                        sm_enter_paid
+                                                                                        uni_invoke_no_context <32-4634>
+                                                                                      uni_end_stream
+                                                                                      >
+                                                                                  man_end_object
+                                                                                  man_start_object <trigger, "Read Outgoing FlashMail">
+                                                                                    mat_shortcut_key <"O">
+                                                                                    mat_relative_tag <14>
+                                                                                    act_replace_select_action
+                                                                                        <
+                                                                                        uni_start_stream
+                                                                                          sm_enter_paid
+                                                                                          uni_invoke_no_context <32-4635>
+                                                                                        uni_end_stream
+                                                                                        >
+                                                                                    man_end_object
+                                                                                  man_end_object
+                                                                                  man_insert_object_before <31>
+                                                                                  mat_title <"Members">
+                                                                                  mat_object_id <20-0-43>
+                                                                                  mat_shortcut_key <"B">
+                                                                                  man_start_object <trigger, "Member Services">
+                                                                                    mat_bool_disabled <yes>
+                                                                                    mat_relative_tag <50>
+                                                                                    act_replace_select_action
+                                                                                        <
+                                                                                        uni_start_stream
+                                                                                        sm_send_free_f1 <40-4218>
+                                                                                      uni_end_stream
+                                                                                      >
+                                                                                  man_end_object
+                                                                                  man_start_object <trigger, "My AOL">
+                                                                                    mat_bool_disabled <yes>
+                                                                                    mat_relative_tag <5>
+                                                                                    act_replace_select_action
+                                                                                        <
+                                                                                        uni_start_stream
+                                                                                        sm_send_f1 <40-4408>
+                                                                                        >
+                                                                                    man_end_object
+                                                                                    man_start_object <trigger, "Preferences">
+                                                                                      mat_relative_tag <9>
+                                                                                      act_replace_select_action
+                                                                                          <
+                                                                                          uni_start_stream_wait_on
+                                                                                            man_do_magic_response_id <8436>
+                                                                                            uni_invoke_no_context <32-278>
+                                                                                          uni_wait_off_end_stream
+                                                                                          >
+                                                                                      man_end_object
+                                                                                      man_start_object <trigger, "Parental Control">
+                                                                                        mat_bool_disabled <yes>
+                                                                                        mat_relative_tag <52>
+                                                                                        act_replace_select_action
+                                                                                            <
+                                                                                            uni_start_stream
+                                                                                            sm_send_k1 <2-15919>
+                                                                                            >
+                                                                                        man_end_object
+                                                                                        man_start_object <ornament, "">
+                                                                                          mat_relative_tag <6>
+                                                                                        man_end_object
+                                                                                        man_start_object <trigger, "Member Directory">
+                                                                                          mat_bool_disabled <yes>
+                                                                                          mat_relative_tag <4>
+                                                                                          act_replace_select_action
+                                                                                              <
+                                                                                              uni_start_stream_wait_on
+                                                                                                man_do_magic_token_arg <"f1", 40-25172>
+                                                                                                if_last_return_false_then <1>
+                                                                                                buf_start_buffer <token_header | stream_id_header | host_bound | start_stream_header | end_stream_trailer | response_id_header>
+                                                                                                buf_set_token <"K1">
+                                                                                                buf_add_atom_data <542055>
+                                                                                                buf_close_buffer
+                                                                                                uni_sync_skip <1>
+                                                                                              uni_end_stream
+                                                                                              >
+                                                                                          man_end_object
+                                                                                          man_start_object <trigger, "Send an Instant Message">
+                                                                                            mat_bool_disabled <yes>
+                                                                                            mat_relative_tag <1>
+                                                                                            mat_command_key <49x>
+                                                                                            act_replace_select_action
+                                                                                                <
+                                                                                                uni_start_stream_wait_on
+                                                                                                  man_do_magic_response_id <8417>
+                                                                                                  uni_invoke_no_context <32-225>
+                                                                                                uni_wait_off_end_stream
+                                                                                                >
+                                                                                            man_end_object
+                                                                                            man_start_object <trigger, "Get a Member's Profile">
+                                                                                              mat_bool_disabled <yes>
+                                                                                              mat_relative_tag <2>
+                                                                                              mat_command_key <47x>
+                                                                                              act_replace_select_action
+                                                                                                  <
+                                                                                                  uni_start_stream_wait_on
+                                                                                                    sm_enter_paid
+                                                                                                    man_do_magic_response_id <2104838>
+                                                                                                    uni_invoke_no_context <32-486>
+                                                                                                  uni_wait_off_end_stream
+                                                                                                  >
+                                                                                              man_end_object
+                                                                                              man_start_object <trigger, "Locate a Member Online">
+                                                                                                mat_bool_disabled <yes>
+                                                                                                mat_relative_tag <3>
+                                                                                                mat_command_key <4cx>
+                                                                                                act_replace_select_action
+                                                                                                    <
+                                                                                                    uni_start_stream_wait_on
+                                                                                                      man_do_magic_response_id <8416>
+                                                                                                      uni_invoke_no_context <32-224>
+                                                                                                    uni_wait_off_end_stream
+                                                                                                    >
+                                                                                                man_end_object
+                                                                                                man_start_object <ornament, "">
+                                                                                                  mat_relative_tag <8>
+                                                                                                man_end_object
+                                                                                                man_start_object <trigger, "Buddy Lists">
+                                                                                                  mat_bool_disabled <yes>
+                                                                                                  mat_relative_tag <7>
+                                                                                                  act_replace_select_action
+                                                                                                      <
+                                                                                                      uni_start_stream
+                                                                                                      sm_send_paid_k1 <17-21293>
+                                                                                                    uni_end_stream
+                                                                                                    >
+                                                                                                man_end_object
+                                                                                              man_end_object
+                                                                                              man_insert_object_after <31>
+                                                                                              mat_object_type <dss_list, "">
+                                                                                              mat_title <"Help">
+                                                                                              mat_object_id <20-0-51>
+                                                                                              mat_shortcut_key <"H">
+                                                                                              act_get_db_value <14x, 00x, 00x, d1x>
+                                                                                              if_last_return_true_then <1, 2>
+                                                                                              man_start_object <trigger, "America Online Help Topics">
+                                                                                                mat_shortcut_key <"T">
+                                                                                                mat_relative_tag <1>
+                                                                                                act_replace_select_action
+                                                                                                    <
+                                                                                                    uni_start_stream
+                                                                                                      async_exec_help <00x>
+                                                                                                    uni_end_stream
+                                                                                                    >
+                                                                                                man_end_object
+                                                                                                uni_sync_skip <1>
+                                                                                                man_start_object <trigger, "Contents">
+                                                                                                  mat_shortcut_key <"C">
+                                                                                                  mat_relative_tag <1>
+                                                                                                  act_replace_select_action
+                                                                                                      <
+                                                                                                      uni_start_stream
+                                                                                                        async_exec_help <00x>
+                                                                                                      uni_end_stream
+                                                                                                      >
+                                                                                                  man_end_object
+                                                                                                  man_start_object <trigger, "Search for Help On...">
+                                                                                                    mat_shortcut_key <"S">
+                                                                                                    mat_relative_tag <2>
+                                                                                                    act_replace_select_action
+                                                                                                        <
+                                                                                                        uni_start_stream
+                                                                                                          async_exec_help <01x>
+                                                                                                        uni_end_stream
+                                                                                                        >
+                                                                                                    man_end_object
+                                                                                                    uni_sync_skip <2>
+                                                                                                    man_start_object <trigger, "How to Use Help...">
+                                                                                                      mat_shortcut_key <"H">
+                                                                                                      mat_relative_tag <3>
+                                                                                                      act_replace_select_action
+                                                                                                          <
+                                                                                                          uni_start_stream
+                                                                                                            async_exec_help <7fx>
+                                                                                                          uni_end_stream
+                                                                                                          >
+                                                                                                      man_end_object
+                                                                                                      man_start_object <ornament, "">
+                                                                                                        mat_relative_tag <4>
+                                                                                                      man_end_object
+                                                                                                      man_start_object <trigger, "Online Support">
+                                                                                                        mat_relative_tag <6>
+                                                                                                        mat_bool_disabled <yes>
+                                                                                                        act_replace_select_action
+                                                                                                            <
+                                                                                                            uni_start_stream
+                                                                                                            sm_send_free_f1 <40-4218>
+                                                                                                          uni_end_stream
+                                                                                                          >
+                                                                                                      man_end_object
+                                                                                                      man_start_object <trigger, "New Member Info">
+                                                                                                        mat_relative_tag <7>
+                                                                                                        mat_bool_disabled <yes>
+                                                                                                        act_replace_select_action
+                                                                                                            <
+                                                                                                            uni_start_stream
+                                                                                                            sm_send_paid_f1 <40-11700>
+                                                                                                          uni_end_stream
+                                                                                                          >
+                                                                                                      man_end_object
+                                                                                                      man_start_object <ornament, "">
+                                                                                                        mat_relative_tag <8>
+                                                                                                      man_end_object
+                                                                                                      man_start_object <trigger, "About America Online">
+                                                                                                        mat_shortcut_key <"A">
+                                                                                                        mat_relative_tag <5>
+                                                                                                        mat_bool_disabled <no>
+                                                                                                        act_replace_select_action
+                                                                                                            <
+                                                                                                            uni_start_stream_wait_on
+                                                                                                              uni_invoke_no_context <32-2618>
+                                                                                                            uni_wait_off_end_stream
+                                                                                                            >
+                                                                                                        man_end_object
+                                                                                                      man_end_object
+                                                                                                      man_update_display <2>
+                                                                                                    uni_end_stream

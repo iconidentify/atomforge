@@ -1,0 +1,44 @@
+uni_start_stream
+  if_offline_then <1>
+  var_number_set <A, 0>
+uni_abort_stream
+uni_sync_skip <1>
+man_set_context_globalid <1>
+var_lookup_by_id <A, 192>
+if_numa_true_then <1>
+var_number_set <A, 0>
+uni_abort_stream
+uni_sync_skip <1>
+man_end_context
+async_alert <yes_no, "Welcome!\x7f\x7fYou are entering an AOL Unlimited Use area.\x7f\x7fTime spent here does not count. Browse all you want, but keep\x7fin mind that some AOL features cannot be used here.\x7f\x7fAre you ready?">
+var_number_set_from_atom <A>
+var_number_set <B, 1>
+if_numa_neq_numb_then <1>
+var_number_set <A, 1>
+uni_abort_stream
+uni_sync_skip <1>
+xfer_finish_later
+uni_wait_on
+man_get_first_window
+uni_save_result
+uni_start_loop
+uni_get_result
+if_last_return_true_then <1>
+uni_get_result
+uni_use_last_atom_value <man_set_context_globalid>
+act_do_action <67108871>
+man_end_context
+uni_get_result
+uni_use_last_atom_value <man_update_display>
+man_get_next_window
+uni_save_result
+uni_end_loop
+uni_sync_skip <1>
+uni_invoke_no_context <32-481>
+uni_invoke_no_context <32-483>
+man_set_context_globalid <1>
+var_number_set <A, 1>
+var_number_save <A, 192>
+man_end_context
+var_number_set <A, 0>
+uni_end_stream

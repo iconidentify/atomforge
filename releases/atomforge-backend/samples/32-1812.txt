@@ -1,0 +1,162 @@
+uni_start_stream <00x>
+  man_preset_gid <59>
+  if_last_return_false_then <1>
+  man_set_context_globalid <1>
+  man_start_object <org_group, "">
+    uni_sync_skip <1>
+    man_use_default_title
+    man_start_object <ind_group, "">
+      mat_style_id <32-1812>
+      mat_orientation <hff>
+      mat_style_id <32-29>
+      mat_context_help <"Drag me to any folder in your\x7fPersonal Filing Cabinet.">
+      mat_form_icon <1-0-1307>
+      act_set_criterion <10>
+      act_replace_action
+          <
+          uni_start_stream
+            man_set_context_relative <20>
+            mat_bool_disabled <no>
+            man_is_rendered
+            if_last_return_true_then <1>
+            man_update_display
+            uni_sync_skip <1>
+            man_end_context
+          uni_end_stream
+          >
+        act_set_criterion <11>
+        act_replace_action
+            <
+            uni_start_stream
+              man_set_context_relative <20>
+              mat_bool_disabled <yes>
+              man_is_rendered
+              if_last_return_true_then <1>
+              man_update_display
+              uni_sync_skip <1>
+              man_end_context
+            uni_end_stream
+            >
+          act_set_criterion <7>
+          act_replace_action
+              <
+              uni_start_stream
+                mat_bool_invisible <yes>
+              uni_end_stream
+              >
+            act_set_criterion <8>
+            act_replace_action
+                <
+                uni_start_stream
+                  var_lookup_by_id <A, 192>
+                  if_numa_false_then <1, 2>
+                  mat_bool_invisible <no>
+                  uni_sync_skip <1>
+                  act_do_action <close>
+                  man_close
+                  uni_sync_skip <2>
+                uni_end_stream
+                >
+              mat_position <center_center>
+              man_start_object <org_group, "">
+                mat_orientation <vct>
+                man_start_object <trigger, "Reply">
+                  mat_relative_tag <30>
+                  mat_art_id <1-0-1290>
+                  mat_bool_default <yes>
+                  act_replace_select_action
+                      <
+                      uni_start_stream
+                        mip_action_command <00x>
+                      uni_end_stream
+                      >
+                  man_start_sibling <trigger, "Forward">
+                    mat_relative_tag <31>
+                    mat_art_id <1-0-1293>
+                    act_replace_select_action
+                        <
+                        uni_start_stream
+                          mip_action_command <01x>
+                        uni_end_stream
+                        >
+                    man_start_sibling <trigger, "Reply to All">
+                      mat_relative_tag <32>
+                      mat_art_id <1-0-1291>
+                      act_replace_select_action
+                          <
+                          uni_start_stream
+                            mip_action_command <02x>
+                          uni_end_stream
+                          >
+                      man_end_object
+                    man_start_sibling <org_group, "">
+                      mat_orientation <vcf>
+                      man_start_object <view, "">
+                        mat_size <55, 16, 64000>
+                        mat_relative_tag <1>
+                        rich_manage
+                        rich_bool_read_only <yes>
+                        mat_ruler <7>
+                        mat_bool_writeable <yes>
+                      man_start_sibling <org_group, "">
+                        mat_orientation <hef>
+                        man_start_object <trigger, "">
+                          mat_relative_tag <10>
+                          mat_bool_hidden <yes>
+                          mat_bool_disabled <yes>
+                          mat_command_key <98x, 00x>
+                          mat_art_id <1-0-1281>
+                          act_replace_select_action
+                              <
+                              uni_start_stream
+                                mip_action_command <13x>
+                              uni_end_stream
+                              >
+                          man_start_sibling <trigger, "Download File">
+                            mat_relative_tag <20>
+                            mat_bool_hidden <yes>
+                            if_offline_then <1>
+                            mat_bool_disabled <yes>
+                            uni_sync_skip <1>
+                            act_replace_select_action
+                                <
+                                uni_start_stream
+                                  sm_enter_paid
+                                  mip_action_command <16x>
+                                uni_end_stream
+                                >
+                            man_start_sibling <trigger, "Download Later">
+                              mat_relative_tag <21>
+                              mat_bool_hidden <yes>
+                              act_replace_select_action
+                                  <
+                                  uni_start_stream
+                                    mip_action_command <17x>
+                                  uni_end_stream
+                                  >
+                              man_start_sibling <trigger, "Delete">
+                                mat_relative_tag <22>
+                                mat_bool_hidden <yes>
+                                act_replace_select_action
+                                    <
+                                    uni_start_stream
+                                      mip_action_command <10x>
+                                    uni_end_stream
+                                    >
+                                man_start_sibling <trigger, "">
+                                  mat_relative_tag <11>
+                                  mat_bool_hidden <yes>
+                                  mat_bool_disabled <yes>
+                                  mat_command_key <99x, 00x>
+                                  mat_art_id <1-0-1280>
+                                  act_replace_select_action
+                                      <
+                                      uni_start_stream
+                                        mip_action_command <12x>
+                                      uni_end_stream
+                                      >
+                                  man_end_object
+                                man_end_object
+                              man_end_object
+                              man_update_display
+                            uni_end_stream <00x>

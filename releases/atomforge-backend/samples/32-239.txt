@@ -1,0 +1,116 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Network & Modem Setup">
+    mat_object_id <32-239>
+    mat_style_id <32-239>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <org_group, "">
+      mat_orientation <hff>
+      man_start_object <dss_list, "Choose Location:">
+        mat_orientation <vff>
+        mat_size <25, 10>
+        mat_relative_tag <16>
+        act_get_db_value <14x, 00x, 00x, 2ex>
+        uni_use_last_atom_value <mat_value>
+        act_replace_select_action
+            <
+            uni_start_stream
+              ccl_get_locality
+              man_close_update
+            uni_end_stream
+            >
+        man_start_sibling <org_group, "">
+          mat_orientation <vec>
+          man_start_object <trigger, "Edit Location">
+            mat_title_width <15>
+            act_replace_select_action
+                <
+                uni_start_stream
+                  uni_wait_on
+                  ccl_get_locality
+                  act_get_db_value <14x, 00x, 00x, 2ex>
+                  uni_use_last_atom_value <ccl_translate_locality>
+                  var_string_set_from_atom <A>
+                  uni_invoke_no_context <32-4580>
+                uni_end_stream
+                >
+            man_start_sibling <trigger, "Create Location">
+              mat_title_width <15>
+              act_replace_select_action
+                  <
+                  uni_start_stream
+                    uni_wait_on
+                    uni_invoke_no_context <32-4580>
+                    uni_invoke_no_context <32-577>
+                    uni_wait_off
+                  uni_end_stream
+                  >
+              man_start_sibling <trigger, "Delete Location">
+                mat_title_width <15>
+                act_replace_select_action
+                    <
+                    uni_start_stream
+                      lm_user_delete_item <2097391>
+                      uni_wait_on
+                      ccl_get_locality
+                      uni_wait_off
+                    uni_end_stream
+                    >
+                man_start_sibling <trigger, "Setup Modem">
+                  mat_title_width <15>
+                  act_replace_select_action
+                      <
+                      uni_start_stream <00x>
+                        man_preset_gid <40-10737>
+                        if_last_return_true_then <1, 2>
+                        man_make_focus
+                        man_update_display
+                        uni_sync_skip <1>
+                        uni_wait_on
+                        uni_invoke_no_context <40-10737>
+                        uni_sync_skip <2>
+                      uni_end_stream <00x>
+                      >
+                  man_start_sibling <trigger, "Help & Info">
+                    mat_title_width <15>
+                    act_replace_select_action
+                        <
+                        uni_start_stream
+                          uni_wait_on
+                          act_get_db_value <14x, 00x, 00x, d1x>
+                          if_last_return_true_then <1, 2>
+                          async_exec_context_help <73x, 65x, 74x, 75x, 70x>
+                          uni_sync_skip <1>
+                          async_exec_help <00x>
+                          uni_sync_skip <2>
+                          uni_wait_off
+                        uni_end_stream
+                        >
+                    man_start_sibling <org_group, "">
+                      mat_orientation <hff>
+                      man_start_object <trigger, "OK">
+                        mat_title_width <6>
+                        mat_bool_default <yes>
+                        act_replace_select_action
+                            <
+                            uni_start_stream
+                              ccl_get_locality
+                              man_close_update
+                            uni_end_stream
+                            >
+                        man_start_sibling <trigger, "Cancel">
+                          mat_title_width <6>
+                          act_replace_select_action
+                              <
+                              uni_start_stream <00x>
+                                man_close_update
+                              uni_end_stream <00x>
+                              >
+                          man_end_object
+                        man_end_object
+                      man_end_object
+                    man_end_object
+                    man_update_display
+                    uni_wait_off
+                  uni_end_stream <00x>

@@ -1,0 +1,124 @@
+uni_start_stream <00x>
+  man_set_context_globalid <1>
+  var_number_set <A, 0>
+  var_number_save <A, 161>
+  man_end_context
+  man_set_context_globalid <53>
+  man_start_object <ind_group, "">
+    mat_orientation <vef>
+    mat_position <center_center>
+    mat_bool_non_closeable <yes>
+    mat_object_id <32-30>
+    man_start_object <org_group, "">
+      mat_orientation <hef>
+      man_start_object <org_group, "">
+        mat_orientation <vcc>
+        man_start_object <ornament, "">
+          mat_art_id <1-0-1366>
+          mat_bool_disabled <yes>
+        man_start_sibling <ornament, "">
+          mat_art_id <1-0-1367>
+          mat_bool_disabled <yes>
+        man_end_object
+      man_start_sibling <org_group, "">
+        mat_orientation <vcc>
+        man_start_object <trigger, "No Mail">
+          mat_title_width <10>
+          mat_relative_tag <22>
+          mat_art_id <1-0-1312>
+          mat_horizontal_spacing <8>
+          mat_bool_disabled <yes>
+          act_replace_select_action
+              <
+              uni_start_stream_wait_on <00x>
+              sm_m_send_token_arg <"eL">
+              >
+          man_start_sibling <trigger, "New Services">
+            mat_title_width <10>
+            mat_relative_tag <21>
+            mat_art_id <1-0-1340>
+            mat_horizontal_spacing <8>
+          man_end_object
+        man_start_sibling <org_group, "">
+          mat_orientation <vcc>
+          man_start_object <ornament, "">
+            mat_art_id <1-0-1603>
+            mat_bool_disabled <yes>
+          man_start_sibling <trigger, "Go To Mercury Center">
+            act_replace_select_action
+                <
+                uni_start_stream_wait_on <00x>
+                sm_m_send_token_arg <"K1", 3-62200>
+                >
+              mat_font_id <small_fonts>
+              mat_font_size <7>
+            man_end_object
+          man_end_object
+        man_start_sibling <org_group, "">
+          mat_orientation <hff>
+          man_start_object <org_group, "">
+            mat_orientation <vff>
+            man_start_object <org_group, "">
+              mat_orientation <hff>
+              man_start_object <trigger, "Click Here">
+                mat_relative_tag <17>
+                mat_art_id <1-0-1352>
+                mat_bool_resize_horizontal <yes>
+              man_start_sibling <ornament, "">
+                mat_size <24, 5>
+                mat_relative_tag <10>
+              man_end_object
+            man_start_sibling <org_group, "">
+              mat_orientation <hff>
+              man_start_object <trigger, "Click Here">
+                mat_relative_tag <18>
+                mat_art_id <1-0-1292>
+                mat_bool_resize_horizontal <yes>
+              man_start_sibling <ornament, "">
+                mat_size <24, 5>
+                mat_relative_tag <12>
+              man_end_object
+            man_end_object
+          man_start_sibling <ornament, "">
+            mat_art_id <1-0-1604>
+            mat_horizontal_spacing <4>
+            mat_bool_disabled <yes>
+          man_start_sibling <org_group, "">
+            mat_orientation <vff>
+            man_start_object <org_group, "">
+              mat_orientation <hff>
+              man_start_object <ornament, "">
+                mat_size <24, 5>
+                mat_relative_tag <14>
+              man_start_sibling <trigger, "Click Here">
+                mat_relative_tag <19>
+                mat_art_id <1-0-1598>
+                mat_bool_resize_horizontal <yes>
+              man_end_object
+            man_start_sibling <org_group, "">
+              mat_orientation <hff>
+              man_start_object <ornament, "">
+                mat_size <24, 5>
+                mat_relative_tag <16>
+              man_start_sibling <trigger, "Click Here">
+                mat_relative_tag <20>
+                mat_art_id <1-0-1301>
+                mat_bool_resize_horizontal <yes>
+              man_end_object
+            man_end_object
+          man_end_object
+        man_start_sibling <trigger, "Departments">
+          mat_bool_default <yes>
+          act_replace_select_action
+              <
+              uni_start_stream_wait_on
+                man_do_magic_response_id <8414>
+                uni_invoke_no_context <32-222>
+              uni_wait_off_end_stream
+              >
+          man_start_sibling <ornament, "">
+            mat_size <40, 1>
+            mat_relative_tag <3>
+            mat_bool_invisible <yes>
+          man_end_object
+        uni_end_stream <00x>

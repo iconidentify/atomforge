@@ -1,0 +1,9 @@
+uni_start_stream
+  de_start_extraction
+  buf_set_token <"eT">
+  man_set_context_relative <12>
+  de_get_data
+  man_end_context
+  de_end_extraction
+  buf_close_buffer
+uni_end_stream

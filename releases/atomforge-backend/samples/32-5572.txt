@@ -1,0 +1,28 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "">
+    mat_object_id <32-5572>
+    mat_style_id <32-5572>
+    mat_orientation <vcf>
+    mat_art_id <1-0-27256>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    mat_bool_background_tile <yes>
+    man_start_object <ornament, "">
+      mat_size <30, 3>
+      man_set_context_globalid <1>
+      var_lookup_by_id <A, 316>
+      man_end_context
+      var_string_get <A>
+      uni_use_last_atom_string <man_replace_data>
+    man_start_sibling <trigger, "OK">
+      mat_bool_default <yes>
+      act_replace_select_action
+          <
+          uni_start_stream <00x>
+            man_close_update
+          uni_end_stream <00x>
+          >
+      man_end_object
+      man_update_display
+      uni_wait_off
+    uni_end_stream <00x>

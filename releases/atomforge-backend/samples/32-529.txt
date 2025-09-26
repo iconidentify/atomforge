@@ -1,0 +1,259 @@
+uni_start_stream <00x>
+  man_start_object <ind_group, "Favorite Places">
+    mat_object_id <32-529>
+    mat_orientation <vff>
+    mat_position <center_center>
+    mat_bool_modal <yes>
+    man_start_object <org_group, "">
+      mat_orientation <hff>
+      man_start_object <ornament, "Key">
+        mat_size <3, 1, 3>
+      man_start_sibling <ornament, "Menu Entry">
+        mat_size <10, 1, 10>
+      man_start_sibling <ornament, "Keyword">
+        mat_size <7, 1, 7>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <ornament, "1">
+        mat_size <3, 1, 3>
+      man_start_sibling <edit_view, "">
+        mat_size <30, 1, 30>
+        mat_relative_tag <1>
+        mat_bool_writeable <yes>
+      man_start_sibling <edit_view, "">
+        mat_size <30, 1, 30>
+        mat_relative_tag <2>
+        mat_bool_writeable <yes>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <ornament, "2">
+        mat_size <3, 1, 3>
+      man_start_sibling <edit_view, "">
+        mat_size <30, 1, 30>
+        mat_relative_tag <3>
+        mat_bool_writeable <yes>
+      man_start_sibling <edit_view, "">
+        mat_size <30, 1, 30>
+        mat_relative_tag <4>
+        mat_bool_writeable <yes>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <ornament, "3">
+        mat_size <3, 1, 3>
+      man_start_sibling <edit_view, "">
+        mat_size <30, 1, 30>
+        mat_relative_tag <5>
+        mat_bool_writeable <yes>
+      man_start_sibling <edit_view, "">
+        mat_size <30, 1, 30>
+        mat_relative_tag <6>
+        mat_bool_writeable <yes>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <ornament, "4">
+        mat_size <3, 1, 3>
+      man_start_sibling <edit_view, "">
+        mat_size <30, 1, 30>
+        mat_relative_tag <7>
+        mat_bool_writeable <yes>
+      man_start_sibling <edit_view, "">
+        mat_size <30, 1, 30>
+        mat_relative_tag <8>
+        mat_bool_writeable <yes>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <ornament, "5">
+        mat_size <3, 1, 3>
+      man_start_sibling <edit_view, "">
+        mat_size <30, 1, 30>
+        mat_relative_tag <9>
+        mat_bool_writeable <yes>
+      man_start_sibling <edit_view, "">
+        mat_size <30, 1, 30>
+        mat_relative_tag <10>
+        mat_bool_writeable <yes>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <ornament, "6">
+        mat_size <3, 1, 3>
+      man_start_sibling <edit_view, "">
+        mat_size <30, 1, 30>
+        mat_relative_tag <11>
+        mat_bool_writeable <yes>
+      man_start_sibling <edit_view, "">
+        mat_size <30, 1, 30>
+        mat_relative_tag <12>
+        mat_bool_writeable <yes>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <ornament, "7">
+        mat_size <3, 1, 3>
+      man_start_sibling <edit_view, "">
+        mat_size <30, 1, 30>
+        mat_relative_tag <13>
+        mat_bool_writeable <yes>
+      man_start_sibling <edit_view, "">
+        mat_size <30, 1, 30>
+        mat_relative_tag <14>
+        mat_bool_writeable <yes>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <ornament, "8">
+        mat_size <3, 1, 3>
+      man_start_sibling <edit_view, "">
+        mat_size <30, 1, 30>
+        mat_relative_tag <15>
+        mat_bool_writeable <yes>
+      man_start_sibling <edit_view, "">
+        mat_size <30, 1, 30>
+        mat_relative_tag <16>
+        mat_bool_writeable <yes>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <ornament, "9">
+        mat_size <3, 1, 3>
+      man_start_sibling <edit_view, "">
+        mat_size <30, 1, 30>
+        mat_relative_tag <17>
+        mat_bool_writeable <yes>
+      man_start_sibling <edit_view, "">
+        mat_size <30, 1, 30>
+        mat_relative_tag <18>
+        mat_bool_writeable <yes>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <ornament, "10">
+        mat_size <3, 1, 3>
+      man_start_sibling <edit_view, "">
+        mat_size <30, 1, 30>
+        mat_relative_tag <19>
+        mat_bool_writeable <yes>
+      man_start_sibling <edit_view, "">
+        mat_size <30, 1, 30>
+        mat_relative_tag <20>
+        mat_bool_writeable <yes>
+      man_end_object
+    man_start_sibling <org_group, "">
+      mat_orientation <hff>
+      man_start_object <trigger, "Save Changes">
+        mat_bool_default <yes>
+        act_replace_select_action
+            <
+            uni_start_stream
+              uni_invoke_local <32-542>
+            uni_end_stream
+            >
+        man_start_sibling <trigger, "Cancel">
+          act_replace_select_action
+              <
+              uni_start_stream
+                man_close_update
+              uni_end_stream
+              >
+          man_end_object
+        man_end_object
+        man_update_display
+        uni_start_stream
+          fm_start
+          fm_item_type <ini_data_type>
+          fm_item_set <"\x00">
+          fm_item_type <ini_group>
+          fm_item_set <"WAOLGOTO">
+          fm_item_type <ini_file>
+          fm_item_set <"GOTO.INI">
+          fm_item_type <ini_key>
+          fm_item_set <"GOTO1">
+          man_set_context_relative <1>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_item_set <"KEYWORD1">
+          man_set_context_relative <2>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_item_set <"GOTO2">
+          man_set_context_relative <3>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_item_set <"KEYWORD2">
+          man_set_context_relative <4>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_item_set <"GOTO3">
+          man_set_context_relative <5>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_item_set <"KEYWORD3">
+          man_set_context_relative <6>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_item_set <"GOTO4">
+          man_set_context_relative <7>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_item_set <"KEYWORD4">
+          man_set_context_relative <8>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_item_set <"GOTO5">
+          man_set_context_relative <9>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_item_set <"KEYWORD5">
+          man_set_context_relative <10>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_item_set <"GOTO6">
+          man_set_context_relative <11>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_item_set <"KEYWORD6">
+          man_set_context_relative <12>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_item_set <"GOTO7">
+          man_set_context_relative <13>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_item_set <"KEYWORD7">
+          man_set_context_relative <14>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_item_set <"GOTO8">
+          man_set_context_relative <15>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_item_set <"KEYWORD8">
+          man_set_context_relative <16>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_item_set <"GOTO9">
+          man_set_context_relative <17>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_item_set <"KEYWORD9">
+          man_set_context_relative <18>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_item_set <"GOTO10">
+          man_set_context_relative <19>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_item_set <"KEYWORD10">
+          man_set_context_relative <20>
+          fm_ini_read_data
+          uni_use_last_atom_string <man_replace_data>
+          fm_end
+          man_update_display
+        uni_end_stream
+        uni_wait_off
+      uni_end_stream <00x>

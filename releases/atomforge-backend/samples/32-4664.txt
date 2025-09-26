@@ -1,0 +1,67 @@
+uni_start_stream <00x>
+  man_preset_gid <59>
+  if_last_return_false_then <1>
+  man_set_context_globalid <1>
+  man_start_object <org_group, "">
+    uni_sync_skip <1>
+    man_use_default_title
+    man_start_object <ind_group, "">
+      mat_object_id <32-4664>
+      mat_style_id <32-4664>
+      mat_orientation <vff>
+      mat_managed_by <258>
+      mat_dirty_query <yes>
+      mat_style_id <32-4664>
+      mat_art_id <1-0-7564>
+      mat_position <center_center>
+      mat_bool_background_tile <yes>
+      man_start_object <org_group, "">
+        mat_orientation <hlc>
+        man_start_object <ornament, "Send to:">
+          mat_size <7, 1>
+          mat_font_id <system>
+          mat_font_size <9>
+        man_start_sibling <ornament, "">
+          mat_size <50, 1>
+          mat_relative_tag <2>
+        man_end_object
+      man_start_sibling <edit_view, "Subject:">
+        mat_title_width <8>
+        mat_size <50, 1>
+        mat_relative_tag <8>
+        mat_title_pos <left | center>
+        mat_vertical_spacing <5>
+        mat_validation <128>
+      man_start_sibling <edit_view, "">
+        mat_size <55, 12>
+        mat_relative_tag <1>
+        mat_frame_style <single_line_pop_in>
+        mat_bool_expand_to_fit <yes>
+        mat_bool_writeable <yes>
+        mat_validation <128>
+      man_start_sibling <org_group, "">
+        mat_orientation <hcf>
+        man_start_object <trigger, "Save Changes">
+          mat_trigger_style <place>
+          mat_font_size <10>
+          mat_font_style <bold>
+          act_replace_select_action
+              <
+              uni_start_stream
+                de_validate <display_msg | terminate>
+                mip_action_command <26x>
+                man_close_update
+                async_alert <info, "Your revised message has been saved.">
+              uni_end_stream
+              >
+          man_end_object
+        man_start_sibling <view, "">
+          mat_relative_tag <3>
+          mat_bool_resize_vertical <no>
+          mat_bool_resize_horizontal <no>
+          mat_bool_invisible <yes>
+          mat_bool_exportable <no>
+        man_end_object
+        man_update_display
+        uni_wait_off
+      uni_end_stream <00x>

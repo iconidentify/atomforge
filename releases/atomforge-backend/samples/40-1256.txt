@@ -1,0 +1,51 @@
+uni_start_stream
+  man_preset_gid <40-1256>
+  man_start_object <ind_group, "">
+    mat_position <top_left>
+    mat_title <"Image Transfer">
+    mat_bool_modal <no>
+    mat_orientation <hcc>
+    man_start_object <range, "">
+      mat_relative_tag <2>
+      mat_width <20>
+      mat_height <1>
+      mat_horizontal_spacing <3>
+    man_end_object
+    man_start_object <org_group, "">
+      mat_orientation <vcf>
+    man_end_object
+    man_start_object <org_group, "">
+      mat_orientation <hcf>
+      man_start_object <trigger, "">
+        mat_title <"Finish Later">
+        mat_font_id <arial>
+        mat_font_size <9>
+        mat_font_style <bold>
+        mat_relative_tag <6>
+        act_set_criterion <select>
+        act_append_action
+          <
+          uni_start_stream
+            xfer_finish_later
+          uni_end_stream
+          >
+      man_end_object
+      man_start_object <trigger, "">
+        mat_title <"Cancel">
+        mat_font_id <arial>
+        mat_font_size <9>
+        mat_font_style <bold>
+        mat_relative_tag <7>
+        act_set_criterion <select>
+        act_append_action
+          <
+          uni_start_stream
+            xfer_abort
+          uni_end_stream
+          >
+      man_end_object
+    man_end_object
+  man_end_object
+  man_update_display
+man_end_object
+uni_end_stream

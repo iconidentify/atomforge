@@ -1,0 +1,32 @@
+uni_start_stream
+  xfer_bool_in_progress
+  if_last_return_true_then <199, 202>
+  async_alert <info, "You cannot start a FlashSession during a download.">
+  uni_sync_skip <199>
+  async_is_known_subaccount
+  if_last_return_false_then <201, 202>
+  async_alert <info, "You must register an account to use this feature.">
+  uni_sync_skip <201>
+  idb_exists <20-0-62>
+  if_last_return_false_then <211, 202>
+  uni_invoke_no_context <32-2507>
+  uni_sync_skip <211>
+  if_online_then <1, 2>
+  sm_enter_paid
+  uni_invoke_no_context <32-2537>
+  uni_sync_skip <1>
+  mip_get_active_name_count
+  var_number_set_from_atom <A>
+  if_numa_false_then <3>
+  async_alert <info, "You have not selected any screen names.">
+  uni_sync_skip <3>
+  var_number_set <B, 1>
+  if_numa_eq_numb_then <4>
+  uni_invoke_no_context <32-2536>
+  uni_sync_skip <4>
+  if_numa_gt_numb_then <5>
+  uni_invoke_no_context <32-2535>
+  uni_sync_skip <5>
+  uni_sync_skip <2>
+  uni_sync_skip <202>
+uni_end_stream

@@ -1,0 +1,250 @@
+uni_start_stream
+  uni_wait_off
+  man_preset_gid <32-4624>
+  if_last_return_false_then <210, 211>
+  man_start_object <ind_group, "">
+    mat_form_icon <1-0-1468>
+    if_online_then <1>
+    var_number_set <A, 1>
+    var_number_save <A, 41>
+    uni_sync_skip <1>
+    act_set_criterion <10>
+    act_replace_action
+        <
+        uni_start_stream
+          var_number_set <A, 1>
+          var_number_save <A, 41>
+          act_do_action <140>
+        uni_end_stream
+        >
+      act_set_criterion <11>
+      act_replace_action
+          <
+          uni_start_stream
+            var_number_set <A, 0>
+            var_number_save <A, 41>
+            act_do_action <140>
+          uni_end_stream
+          >
+        act_set_criterion <140>
+        act_replace_action
+            <
+            uni_start_stream
+              var_lookup_by_id <A, 41>
+              man_set_context_relative <1>
+              morg_view_has_mult_selections
+              var_number_set_from_atom <B>
+              morg_obj_count_children
+              if_last_return_false_then <1, 2>
+              man_set_context_relative <4>
+              mat_bool_disabled <yes>
+              man_change_context_relative <5>
+              mat_bool_disabled <yes>
+              man_change_context_relative <8>
+              mat_bool_disabled <yes>
+              man_end_context
+              uni_sync_skip <1>
+              man_set_context_relative <4>
+              mat_bool_disabled <yes>
+              man_change_context_relative <8>
+              mat_bool_disabled <yes>
+              man_end_context
+              if_numb_false_then <17>
+              if_numa_true_then <17>
+              man_set_context_relative <4>
+              mat_bool_disabled <no>
+              man_end_context
+              uni_sync_skip <17>
+              if_numa_true_then <18>
+              man_set_context_relative <8>
+              mat_bool_disabled <no>
+              man_end_context
+              uni_sync_skip <18>
+              man_set_context_relative <5>
+              mat_bool_disabled <no>
+              man_end_context
+              uni_sync_skip <2>
+              man_end_context
+              man_update_display
+            uni_end_stream
+            >
+          mat_title <"Download Manager">
+          man_start_object <ornament, "">
+            mat_size <74, 1>
+          man_end_object
+          man_start_object <org_group, "">
+            mat_orientation <vef>
+            man_start_object <view, "">
+              mat_relative_tag <1>
+              mat_managed_by <70>
+              mat_font_id <arial>
+              mat_font_size <9>
+              mat_width <72>
+              mat_height <10>
+              morg_view_path <"Download Manager\\Files to Download">
+              var_number_set_from_atom <A>
+              morg_view_highlight_full_line <yes>
+              var_number_set_from_atom <A>
+              act_set_criterion <129>
+              act_replace_action
+                  <
+                  uni_start_stream
+                    man_close_update
+                  uni_end_stream
+                  >
+                act_set_criterion <128>
+                act_replace_action
+                    <
+                    uni_start_stream
+                      act_do_action <140>
+                    uni_end_stream
+                    >
+                  act_set_criterion <130>
+                  act_replace_action
+                      <
+                      uni_start_stream
+                        act_do_action <140>
+                      uni_end_stream
+                      >
+                  man_end_object
+                  man_start_object <org_group, "">
+                    mat_orientation <hlf>
+                    man_start_object <ornament, "">
+                      mat_title <"Files will be downloaded to:">
+                      mat_height <1>
+                    man_end_object
+                    man_start_object <ornament, "">
+                      mat_relative_tag <2>
+                      mat_height <1>
+                      mat_width <37>
+                    man_end_object
+                  man_end_object
+                  man_start_object <ornament, "">
+                    mat_relative_tag <3>
+                    mat_height <1>
+                    mat_width <68>
+                  man_end_object
+                  man_start_object <org_group, "">
+                    mat_orientation <hef>
+                    man_start_object <trigger, "">
+                      mat_art_id <1-0-1467>
+                      mat_title <"View\x7fDescription">
+                      mat_relative_tag <4>
+                      act_set_criterion <select>
+                      act_append_action
+                        <
+                        uni_start_stream
+                          uni_wait_on
+                          man_set_context_relative <1>
+                          xfer_show_file_description
+                          man_end_context
+                        uni_end_stream
+                        >
+                    man_end_object
+                    man_start_object <trigger, "">
+                      mat_art_id <1-0-1469>
+                      mat_title <"Delete\x7fItem">
+                      mat_relative_tag <5>
+                      act_set_criterion <select>
+                      act_append_action
+                        <
+                        uni_start_stream_wait_on
+                          man_set_context_relative <1>
+                          morg_delete_current_object
+                          man_end_context
+                        uni_wait_off_end_stream
+                        >
+                    man_end_object
+                    man_start_object <trigger, "">
+                      mat_art_id <1-0-1310>
+                      mat_title <"Show Files\x7fDownloaded">
+                      mat_relative_tag <6>
+                      act_set_criterion <select>
+                      act_append_action
+                        <
+                        uni_start_stream
+                          xfer_invoke_archive
+                        uni_end_stream
+                        >
+                    man_end_object
+                    man_start_object <trigger, "">
+                      mat_art_id <1-0-1468>
+                      mat_title <"Select\x7fDestination">
+                      mat_relative_tag <7>
+                      act_set_criterion <select>
+                      act_append_action
+                        <
+                        uni_start_stream
+                          fm_start
+                          fm_add_file_type_mask
+                          fm_item_type <filename>
+                          fm_item_set <"path">
+                          fm_dialog_put_file <"Select Path">
+                          fm_handle_error <display_msg | terminate>
+                          fm_item_get <path>
+                          uni_save_result
+                          man_set_context_relative <2>
+                          uni_get_result
+                          uni_use_last_atom_string <man_replace_data>
+                          man_end_context
+                          man_update_display
+                          idb_start_obj <"t">
+                          idb_atr_globalid <20-2-14>
+                          uni_get_result
+                          uni_use_last_atom_string <idb_append_data>
+                          idb_end_obj
+                        uni_end_stream
+                        >
+                    man_end_object
+                    man_start_object <trigger, "">
+                      mat_art_id <1-0-1292>
+                      mat_title <"Start\x7fDownload">
+                      mat_relative_tag <8>
+                      act_set_criterion <select>
+                      act_append_action
+                        <
+                        uni_start_stream
+                          xfer_start_download
+                        uni_end_stream
+                        >
+                    man_end_object
+                    man_start_object <trigger, "">
+                      mat_art_id <1-0-1309>
+                      mat_title <"Download\x7fPreferences">
+                      mat_relative_tag <10>
+                      act_replace_select_action
+                          <
+                          uni_start_stream_wait_on <00x>
+                            man_preset_gid <32-280>
+                            if_last_return_true_then <1, 2>
+                            man_make_focus
+                            man_update_display
+                            uni_sync_skip <1>
+                            uni_invoke_no_context <32-280>
+                            uni_sync_skip <2>
+                          uni_wait_off_end_stream
+                          >
+                      man_end_object
+                      man_start_object <trigger, "">
+                        mat_art_id <1-0-1325>
+                        mat_title <"Help">
+                        mat_relative_tag <9>
+                        act_replace_select_action
+                            <
+                            uni_start_stream_wait_on
+                              async_exec_context_help <44x, 6fx, 77x, 6ex, 6cx, 6fx, 61x, 64x>
+                            uni_wait_off_end_stream
+                            >
+                        man_end_object
+                      man_end_object
+                    man_end_object
+                    man_update_display
+                    man_set_context_relative <1>
+                    act_do_action <128>
+                    man_end_context
+                  man_end_object
+                  uni_sync_skip <210>
+                  man_make_focus
+                  man_update_display
+                  uni_sync_skip <211>
+                uni_end_stream

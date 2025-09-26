@@ -1,0 +1,17 @@
+uni_start_stream
+  man_insert_object_after <335544371>
+  mat_object_type <dss_list, "">
+  mat_object_id <32-5831>
+  mat_title <"       Exit Unlimited Use">
+  man_start_object <trigger, "EXIT NOW">
+    mat_relative_tag <1>
+    act_replace_select_action
+        <
+        uni_start_stream_wait_on
+          sm_enter_paid
+        uni_wait_off_end_stream
+        >
+    man_end_object
+  man_end_object
+  man_update_display
+uni_end_stream
