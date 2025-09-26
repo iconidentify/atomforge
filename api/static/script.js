@@ -492,49 +492,280 @@ const App = (() => {
       return;
     }
 
-    async function loadExamples() {
+    let searchDebounceTimer = null;
+    let currentSearchQuery = '';
+    let allExamples = [];
+    let searchInput = null;
+    let searchContainer = null;
+    let examplesContainer = null;
+    let loadingIndicator = null;
+    let noResultsMsg = null;
+
+    async function loadExamples(searchQuery = '') {
       try {
-        const res = await fetch('/examples');
+        // Build URL with search param if provided
+        const url = searchQuery ? `/examples?search=${encodeURIComponent(searchQuery)}` : '/examples';
+        const res = await fetch(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const list = await res.json();
-        el.examplesMenu.innerHTML = '';
-        const items = (list || []).slice(0, 200); // protect UX if very large
+        return list || [];
+      } catch (err) {
+        console.error('Failed to load examples:', err);
+        showToast('Failed to load examples', 'error');
+        return [];
+      }
+    }
 
-        // If too many, make the menu scrollable with a fixed height via inline style
-        if (items.length > 12) {
-          el.examplesMenu.style.maxHeight = '50vh';
-          el.examplesMenu.style.overflowY = 'auto';
-          el.examplesMenu.style.minWidth = '360px';
+    function createSearchUI() {
+      // Clear and rebuild menu structure
+      el.examplesMenu.innerHTML = '';
+      el.examplesMenu.style.minWidth = '400px';
+      el.examplesMenu.style.maxHeight = '60vh';
+      el.examplesMenu.style.display = 'flex';
+      el.examplesMenu.style.flexDirection = 'column';
+
+      // Create search container
+      searchContainer = document.createElement('div');
+      searchContainer.style.padding = '8px';
+      searchContainer.style.borderBottom = '1px solid var(--border)';
+      searchContainer.style.position = 'sticky';
+      searchContainer.style.top = '0';
+      searchContainer.style.background = 'var(--background)';
+      searchContainer.style.zIndex = '10';
+
+      // Create search input wrapper with icon
+      const searchWrapper = document.createElement('div');
+      searchWrapper.style.position = 'relative';
+      searchWrapper.style.display = 'flex';
+      searchWrapper.style.alignItems = 'center';
+
+      // Search icon
+      const searchIcon = document.createElement('span');
+      searchIcon.innerHTML = '🔍';
+      searchIcon.style.position = 'absolute';
+      searchIcon.style.left = '10px';
+      searchIcon.style.fontSize = '14px';
+      searchIcon.style.opacity = '0.6';
+      searchIcon.style.pointerEvents = 'none';
+
+      // Create search input
+      searchInput = document.createElement('input');
+      searchInput.type = 'text';
+      searchInput.placeholder = 'Search atoms or filenames...';
+      searchInput.style.width = '100%';
+      searchInput.style.padding = '8px 12px 8px 32px';
+      searchInput.style.border = '1px solid var(--border)';
+      searchInput.style.borderRadius = '4px';
+      searchInput.style.fontSize = '13px';
+      searchInput.style.background = 'var(--background)';
+      searchInput.style.color = 'var(--text)';
+      searchInput.setAttribute('autocomplete', 'off');
+      searchInput.setAttribute('spellcheck', 'false');
+
+      // Clear button (initially hidden)
+      const clearBtn = document.createElement('button');
+      clearBtn.innerHTML = '✕';
+      clearBtn.type = 'button';
+      clearBtn.style.position = 'absolute';
+      clearBtn.style.right = '8px';
+      clearBtn.style.background = 'none';
+      clearBtn.style.border = 'none';
+      clearBtn.style.color = 'var(--text-secondary)';
+      clearBtn.style.cursor = 'pointer';
+      clearBtn.style.padding = '4px';
+      clearBtn.style.fontSize = '14px';
+      clearBtn.style.display = 'none';
+      clearBtn.style.opacity = '0.7';
+      clearBtn.title = 'Clear search';
+      
+      clearBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        searchInput.value = '';
+        clearBtn.style.display = 'none';
+        currentSearchQuery = '';
+        performSearch('');
+      });
+
+      searchWrapper.appendChild(searchIcon);
+      searchWrapper.appendChild(searchInput);
+      searchWrapper.appendChild(clearBtn);
+      searchContainer.appendChild(searchWrapper);
+
+      // Loading indicator
+      loadingIndicator = document.createElement('div');
+      loadingIndicator.textContent = 'Searching...';
+      loadingIndicator.style.padding = '12px';
+      loadingIndicator.style.textAlign = 'center';
+      loadingIndicator.style.color = 'var(--text-secondary)';
+      loadingIndicator.style.fontSize = '13px';
+      loadingIndicator.style.display = 'none';
+
+      // No results message
+      noResultsMsg = document.createElement('div');
+      noResultsMsg.textContent = 'No matching examples found';
+      noResultsMsg.style.padding = '20px';
+      noResultsMsg.style.textAlign = 'center';
+      noResultsMsg.style.color = 'var(--text-secondary)';
+      noResultsMsg.style.fontSize = '13px';
+      noResultsMsg.style.display = 'none';
+
+      // Examples container
+      examplesContainer = document.createElement('div');
+      examplesContainer.style.flex = '1';
+      examplesContainer.style.overflowY = 'auto';
+      examplesContainer.style.minHeight = '100px';
+      examplesContainer.style.maxHeight = 'calc(60vh - 60px)';
+
+      el.examplesMenu.appendChild(searchContainer);
+      el.examplesMenu.appendChild(loadingIndicator);
+      el.examplesMenu.appendChild(noResultsMsg);
+      el.examplesMenu.appendChild(examplesContainer);
+
+      // Search input event handler with debouncing
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.trim();
+        clearBtn.style.display = query ? 'block' : 'none';
+        
+        // Clear existing timer
+        if (searchDebounceTimer) {
+          clearTimeout(searchDebounceTimer);
         }
 
-        items.forEach(ex => {
-          const b = document.createElement('button');
-          b.type = 'button';
-          b.setAttribute('role','menuitem');
-          b.textContent = ex.label || ex.name || 'Example';
-          b.title = `${b.textContent} — ${ex.size?.toLocaleString?.() || ''} bytes`;
-          b.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            el.fdoInput.value = ex.text || ex.source || '';
-            el.examplesMenu.hidden = true;
-            el.examplesBtn.setAttribute('aria-expanded', 'false');
-            setMode('compile');
-            el.fdoInput.focus();
-            showToast(`Loaded example: ${b.textContent}`, 'success');
-          });
-          el.examplesMenu.appendChild(b);
-        });
-      } catch (err) {
-        showToast('Failed to load examples', 'error');
+        // Set new timer for debounced search
+        searchDebounceTimer = setTimeout(() => {
+          if (query !== currentSearchQuery) {
+            currentSearchQuery = query;
+            performSearch(query);
+          }
+        }, 300); // 300ms debounce
+      });
+
+      // Prevent menu from closing when interacting with search
+      searchInput.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+
+      searchInput.addEventListener('keydown', (e) => {
+        e.stopPropagation();
+        if (e.key === 'Escape') {
+          searchInput.value = '';
+          clearBtn.style.display = 'none';
+          currentSearchQuery = '';
+          performSearch('');
+        }
+      });
+    }
+
+    async function performSearch(query) {
+      // Show loading state
+      loadingIndicator.style.display = 'block';
+      noResultsMsg.style.display = 'none';
+      examplesContainer.innerHTML = '';
+
+      // Load examples with search query
+      const examples = await loadExamples(query);
+
+      // Hide loading
+      loadingIndicator.style.display = 'none';
+
+      if (examples.length === 0 && query) {
+        noResultsMsg.style.display = 'block';
+        return;
       }
+
+      renderExamples(examples.slice(0, 200)); // Cap at 200 for performance
+    }
+
+    function renderExamples(examples) {
+      examplesContainer.innerHTML = '';
+      
+      if (examples.length === 0) {
+        noResultsMsg.style.display = 'block';
+        return;
+      }
+
+      noResultsMsg.style.display = 'none';
+
+      examples.forEach(ex => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.setAttribute('role', 'menuitem');
+        b.style.width = '100%';
+        b.style.textAlign = 'left';
+        b.style.padding = '8px 12px';
+        b.style.border = 'none';
+        b.style.background = 'none';
+        b.style.cursor = 'pointer';
+        b.style.color = 'var(--text)';
+        b.style.fontSize = '13px';
+        b.style.transition = 'background 0.15s';
+        
+        // Create content with name and size
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = ex.label || ex.name || 'Example';
+        nameSpan.style.display = 'inline-block';
+        nameSpan.style.marginRight = '8px';
+        
+        const sizeSpan = document.createElement('span');
+        sizeSpan.textContent = `(${ex.size?.toLocaleString?.() || '0'} bytes)`;
+        sizeSpan.style.color = 'var(--text-secondary)';
+        sizeSpan.style.fontSize = '12px';
+        
+        b.appendChild(nameSpan);
+        b.appendChild(sizeSpan);
+        b.title = `${ex.name} — ${ex.size?.toLocaleString?.() || ''} bytes`;
+
+        // Hover effect
+        b.addEventListener('mouseenter', () => {
+          b.style.background = 'var(--hover)';
+        });
+        b.addEventListener('mouseleave', () => {
+          b.style.background = 'none';
+        });
+
+        b.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          el.fdoInput.value = ex.text || ex.source || '';
+          el.examplesMenu.hidden = true;
+          el.examplesBtn.setAttribute('aria-expanded', 'false');
+          setMode('compile');
+          el.fdoInput.focus();
+          showToast(`Loaded example: ${ex.name}`, 'success');
+        });
+
+        examplesContainer.appendChild(b);
+      });
+    }
+
+    async function openExamplesMenu() {
+      // Create UI if not already created
+      if (!searchContainer) {
+        createSearchUI();
+      }
+
+      // Reset search on open
+      if (searchInput) {
+        searchInput.value = '';
+        currentSearchQuery = '';
+      }
+
+      // Load initial examples
+      await performSearch('');
+
+      // Focus search input
+      setTimeout(() => {
+        if (searchInput) searchInput.focus();
+      }, 50);
     }
 
     el.examplesBtn.addEventListener('click', async (e) => {
       e.preventDefault();
       e.stopPropagation();
       const isHidden = el.examplesMenu.hasAttribute('hidden') || el.examplesMenu.hidden;
-      if (isHidden) await loadExamples();
+      if (isHidden) {
+        await openExamplesMenu();
+      }
       el.examplesMenu.hidden = !isHidden;
       el.examplesBtn.setAttribute('aria-expanded', String(!isHidden));
     });

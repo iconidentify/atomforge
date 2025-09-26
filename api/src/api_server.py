@@ -425,8 +425,12 @@ async def decompile_fdo(request: DecompileRequest):
 
 
 @app.get("/examples", response_model=List[ExampleResponse])
-async def get_examples():
-    """Get available FDO examples from golden tests"""
+async def get_examples(search: str = None):
+    """Get available FDO examples from golden tests, optionally filtered by search query
+    
+    Args:
+        search: Optional search query to filter examples by content or filename
+    """
     try:
         # Prefer vendor-provided samples under the selected backend drop
         release_info = fdo_tools_manager.get_release_info()
@@ -446,6 +450,13 @@ async def get_examples():
                     with open(file_path, 'r', encoding='utf-8') as f:
                         content = f.read()
 
+                    # Apply search filter if provided
+                    if search:
+                        search_lower = search.lower()
+                        # Search in both filename and content (case-insensitive)
+                        if search_lower not in file_path.name.lower() and search_lower not in content.lower():
+                            continue
+
                     examples.append(ExampleResponse(
                         name=file_path.name,
                         source=content,
@@ -455,14 +466,14 @@ async def get_examples():
                     logger.warning(f"Failed to load example {file_path}: {e}")
 
         # If no examples found, provide a basic one
-        if not examples:
+        if not examples and not search:
             examples.append(ExampleResponse(
                 name="basic_example.txt",
                 source="uni_start_stream <00x>\n  man_start_object <independent, \"Test\">\n    mat_object_id <test-001>\n  man_end_object <>\nuni_end_stream <>",
                 size=120
             ))
 
-        logger.info(f"Loaded {len(examples)} FDO examples from {samples_dir}")
+        logger.info(f"Loaded {len(examples)} FDO examples from {samples_dir}" + (f" (filtered by '{search}')" if search else ""))
         return examples
 
     except Exception as e:
