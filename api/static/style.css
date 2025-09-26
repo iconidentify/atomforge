@@ -530,7 +530,7 @@ body {
 }
 
 .out-panel {
-    padding: 12px;
+    padding: 0 12px 12px 12px; /* remove top padding to avoid gap above toolbar */
 }
 
 .log {
