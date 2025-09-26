@@ -47,68 +47,43 @@ class FdoToolsManager:
                           "Please set FDO_RELEASES_DIR environment variable or ensure releases/ exists.")
 
     def discover_releases(self) -> Dict[str, str]:
-        """
-        Discover available FDO Tools releases
-
-        Returns:
-            Dictionary mapping version -> release_path
-        """
-        releases = {}
+        """Discover the current vendor backend only (atomforge-backend/bin layout)."""
+        releases: Dict[str, str] = {}
 
         if not os.path.exists(self.releases_dir):
             logger.warning(f"Releases directory does not exist: {self.releases_dir}")
             return releases
 
-        for item in os.listdir(self.releases_dir):
-            item_path = os.path.join(self.releases_dir, item)
+        backend_root = os.path.join(self.releases_dir, "atomforge-backend")
+        bin_dir = os.path.join(backend_root, "bin")
 
-            # Look for fdo_tools_vX.X.X directories
-            if os.path.isdir(item_path) and item.startswith("fdo_tools_v"):
-                version_match = re.match(r"fdo_tools_v(\d+\.\d+\.\d+)", item)
-                if version_match:
-                    version = version_match.group(1)
+        if os.path.isdir(bin_dir):
+            # Validate required files under bin/
+            required = ["fdo_daemon.exe", "fdo_compiler.exe", "fdo_decompiler.exe", "Ada32.dll"]
+            ada_ok = any(os.path.exists(os.path.join(bin_dir, n)) for n in ["Ada.bin", "ADA.BIN", "ada.bin"])
+            if all(os.path.exists(os.path.join(bin_dir, f)) for f in required) and ada_ok:
+                releases["current"] = backend_root
+                logger.info(f"Found atomforge-backend at {backend_root}")
+        else:
+            logger.warning(f"atomforge-backend/bin not found under {self.releases_dir}")
 
-                    # Verify release has required structure
-                    if self._validate_release(item_path):
-                        releases[version] = item_path
-                        logger.debug(f"Found valid release: {version} at {item_path}")
-
-            # Also support new atomforge-backend drop (single backend folder)
-            # Treat it as version "backend" to make selection deterministic if present.
-            if os.path.isdir(item_path) and item == "atomforge-backend":
-                # Minimal validation: daemon + Ada32.dll + compiler/decompiler. Accept ADA.BIN or Ada.bin (case-insensitive)
-                required_present = all(os.path.exists(os.path.join(item_path, f)) for f in [
-                    "fdo_daemon.exe",
-                    "fdo_compiler.exe",
-                    "fdo_decompiler.exe",
-                    "Ada32.dll",
-                ])
-                ada_bin_present = any(os.path.exists(os.path.join(item_path, name)) for name in [
-                    "Ada.bin", "ADA.BIN", "ada.bin"
-                ])
-                if required_present and ada_bin_present:
-                    # Register a pseudo-version that sorts after numeric versions
-                    releases["9999.9999.9999"] = item_path
-                    logger.info(f"Found atomforge-backend at {item_path} (registered as latest)")
-
-        logger.info(f"Discovered {len(releases)} FDO Tools releases")
+        logger.info(f"Discovered {len(releases)} FDO Tools releases (current layout only)")
         return releases
 
     def _validate_release(self, release_path: str) -> bool:
-        """Validate that release has required files"""
-        required_files = [
-            "bin/fdo_compiler.exe",
-            "bin/fdo_decompiler.exe",
-            "bin/Ada32.dll",
-            "bin/Ada.bin",
-            "python/fdo_tools/__init__.py"
-        ]
-
-        for required_file in required_files:
-            if not os.path.exists(os.path.join(release_path, required_file)):
-                logger.warning(f"Release {release_path} missing required file: {required_file}")
+        """Validate vendor backend (bin layout)."""
+        bin_dir = os.path.join(release_path, "bin")
+        if not os.path.isdir(bin_dir):
+            logger.warning(f"Release {release_path} missing bin/ directory")
+            return False
+        required = ["fdo_compiler.exe", "fdo_decompiler.exe", "fdo_daemon.exe", "Ada32.dll"]
+        for name in required:
+            if not os.path.exists(os.path.join(bin_dir, name)):
+                logger.warning(f"Release {release_path} missing required file: bin/{name}")
                 return False
-
+        if not any(os.path.exists(os.path.join(bin_dir, n)) for n in ["Ada.bin", "ADA.BIN", "ada.bin"]):
+            logger.warning(f"Release {release_path} missing Ada.bin in bin/")
+            return False
         return True
 
     def select_latest_release(self) -> Optional[str]:
@@ -196,14 +171,11 @@ class FdoToolsManager:
     # --- New helpers for daemon-first integration ---
     def get_daemon_exe_path(self) -> Optional[str]:
         """Return path to fdo_daemon.exe for the selected release or backend drop."""
-        # Case 1: curated release structure
-        if self.selected_release and os.path.exists(os.path.join(self.selected_release, "bin", "fdo_daemon.exe")):
-            return os.path.join(self.selected_release, "bin", "fdo_daemon.exe")
-
-        # Case 2: atomforge-backend flat drop
-        backend_path = os.path.join(self.releases_dir, "atomforge-backend", "fdo_daemon.exe")
-        if os.path.exists(backend_path):
-            return backend_path
+        # Only support the current backend layout
+        if self.selected_release:
+            candidate = os.path.join(self.selected_release, "bin", "fdo_daemon.exe")
+            if os.path.exists(candidate):
+                return candidate
 
         return None
 
