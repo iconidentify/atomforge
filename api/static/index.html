@@ -11,7 +11,34 @@
 <body>
     <!-- Minimal App Shell -->
     <header class="topbar">
-        <div class="brand">AtomForge</div>
+        <div class="header-left">
+            <div class="brand">AtomForge</div>
+            <div class="file-menu">
+                <button id="fileBtn" class="btn ghost file-btn" aria-haspopup="menu" aria-expanded="false">File</button>
+                <menu id="fileMenu" class="menu dropdown-menu" role="menu" hidden>
+                    <button role="menuitem" id="saveBtn" data-action="save">
+                        Save
+                        <span class="menu-shortcut">Ctrl+S</span>
+                    </button>
+                    <button role="menuitem" id="saveAsBtn" data-action="save-as">
+                        Save As...
+                    </button>
+                    <hr class="menu-divider" />
+                    <button role="menuitem" id="openBtn" data-action="open">
+                        Open...
+                        <span class="menu-shortcut">Ctrl+O</span>
+                    </button>
+                    <button role="menuitem" id="recentBtn" data-action="recent">
+                        Recent Files
+                    </button>
+                    <hr class="menu-divider" />
+                    <button role="menuitem" id="newBtn" data-action="new">
+                        New
+                        <span class="menu-shortcut">Ctrl+N</span>
+                    </button>
+                </menu>
+            </div>
+        </div>
         <nav class="mode-tabs" role="tablist" aria-label="Modes">
             <button role="tab" id="tab-compile" class="tab" data-mode="compile" aria-selected="true" aria-controls="panel-compile">Compile</button>
             <button role="tab" id="tab-decompile" class="tab" data-mode="decompile" aria-selected="false" aria-controls="panel-decompile" tabindex="-1">Decompile</button>
@@ -19,7 +46,7 @@
         <div class="actions">
             <div class="examples">
                 <button id="examplesBtn" class="btn ghost" aria-haspopup="menu" aria-expanded="false">Examples</button>
-                <menu id="examplesMenu" class="menu" role="menu" hidden>
+                <menu id="examplesMenu" class="menu dropdown-menu" role="menu" hidden>
                     <!-- populated by JS: <button role="menuitem" data-example="basic">Basic Object</button> -->
                 </menu>
             </div>
@@ -55,20 +82,26 @@
                         <span>Drop an FDO binary or JSONL file here or click to choose</span>
                     </div>
                     <input id="binaryFile" type="file" accept=".fdo,.str,.bin,.jsonl" hidden />
-                    <div class="file-meta">
-                        <span>Decoded: <span id="fileDecoded">0</span> bytes</span>
-                        <button id="openAsHexBtn" class="btn small" hidden>Open as Hex</button>
-                    </div>
+                    <button id="openAsHexBtn" class="btn small" hidden>Open as Hex</button>
                 </div>
 
                 <div id="hexInputView" class="input-view active">
                     <textarea id="hexInput" class="editor mono" spellcheck="false" placeholder="Paste hex here (e.g., 40 01 02 … or 400102…)"></textarea>
-                    <div class="file-meta">
-                        <span>Decoded: <span id="hexDecoded">0</span> bytes</span>
-                    </div>
                 </div>
             </div>
         </section>
+
+        <!-- Status Bar -->
+        <div id="statusBar" class="status-bar">
+            <div class="status-left">
+                <span id="statusOperation" class="status-operation">Untitled</span>
+            </div>
+            <div class="status-right">
+                <span id="statusStats" class="status-stats">0 lines, 0 chars</span>
+                <span class="status-separator">|</span>
+                <span id="statusMode" class="status-mode">Compile</span>
+            </div>
+        </div>
 
         <!-- Content Splitter -->
         <div class="splitter h content-split" role="separator" aria-orientation="horizontal" tabindex="0" aria-label="Resize output"></div>
@@ -188,10 +221,134 @@
 }</code></pre>
                 </section>
 
-                
+
             </div>
         </div>
     </div>
+
+    <!-- Save Dialog Modal -->
+    <div id="saveModal" class="modal" hidden role="dialog" aria-labelledby="saveModalTitle" aria-modal="true">
+        <div class="modal-backdrop" aria-hidden="true"></div>
+        <div class="modal-content compact">
+            <header class="modal-header">
+                <h2 id="saveModalTitle">Save Script</h2>
+                <button id="saveModalClose" class="btn ghost small" aria-label="Close save dialog">×</button>
+            </header>
+            <div class="modal-body">
+                <form id="saveForm" class="save-form">
+                    <div class="form-group">
+                        <label for="scriptName" class="form-label">Script Name</label>
+                        <input
+                            type="text"
+                            id="scriptName"
+                            class="form-input"
+                            placeholder="Enter script name..."
+                            maxlength="100"
+                            required
+                        />
+                        <div class="form-help">
+                            Choose a descriptive name for your script (max 100 characters)
+                        </div>
+
+                        <!-- Save Status Indicator -->
+                        <div id="saveStatus" class="save-status" hidden>
+                            <div class="status-icon"></div>
+                            <div class="status-message"></div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="saveCancelBtn" class="btn ghost">Cancel</button>
+                        <button type="submit" id="saveConfirmBtn" class="btn primary" disabled>
+                            <span class="btn-text">Save</span>
+                            <span class="btn-spinner" hidden>
+                                <svg class="spinner" width="16" height="16" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="31.416" stroke-dashoffset="31.416">
+                                        <animate attributeName="stroke-dasharray" dur="2s" values="0 31.416;15.708 15.708;0 31.416" repeatCount="indefinite"/>
+                                        <animate attributeName="stroke-dashoffset" dur="2s" values="0;-15.708;-31.416" repeatCount="indefinite"/>
+                                    </circle>
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Browser Modal -->
+    <div id="fileBrowserModal" class="modal" hidden role="dialog" aria-labelledby="fileBrowserModalTitle" aria-modal="true">
+        <div class="modal-backdrop" aria-hidden="true"></div>
+        <div class="modal-content large">
+            <header class="modal-header">
+                <h2 id="fileBrowserModalTitle">Open Script</h2>
+                <button id="fileBrowserModalClose" class="btn ghost small" aria-label="Close file browser">×</button>
+            </header>
+            <div class="modal-body">
+                <div class="file-browser">
+                    <div class="file-browser-toolbar">
+                        <div class="search-wrapper">
+                            <span class="search-icon"></span>
+                            <input
+                                type="text"
+                                id="fileSearchInput"
+                                class="search-input"
+                                placeholder="Search scripts..."
+                                autocomplete="off"
+                                spellcheck="false"
+                            />
+                            <button id="fileSearchClear" class="search-clear" type="button" hidden>×</button>
+                        </div>
+                        <div class="file-filters">
+                            <button id="showAllFiles" class="filter-btn active" data-filter="all">All</button>
+                            <button id="showFavorites" class="filter-btn" data-filter="favorites">Favorites</button>
+                            <button id="showRecent" class="filter-btn" data-filter="recent">Recent</button>
+                        </div>
+                    </div>
+
+                    <div id="fileLoadingIndicator" class="loading-indicator" hidden>
+                        <span>Loading scripts...</span>
+                    </div>
+
+                    <div id="fileNoResults" class="no-results" hidden>
+                        <span>No scripts found</span>
+                    </div>
+
+                    <div class="file-list-container">
+                        <div class="file-list-header">
+                            <div class="file-name-header">Name</div>
+                            <div class="file-size-header">Size</div>
+                            <div class="file-date-header">Modified</div>
+                            <div class="file-actions-header">Actions</div>
+                        </div>
+                        <div id="fileList" class="file-list">
+                            <!-- File rows will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Dialog -->
+    <div id="confirmModal" class="modal" hidden role="dialog" aria-labelledby="confirmModalTitle" aria-modal="true">
+        <div class="modal-backdrop" aria-hidden="true"></div>
+        <div class="modal-content mini">
+            <header class="modal-header">
+                <h2 id="confirmModalTitle">Confirm Action</h2>
+                <button id="confirmModalClose" class="btn ghost small" aria-label="Close confirmation">×</button>
+            </header>
+            <div class="modal-body">
+                <p id="confirmMessage">Are you sure you want to continue?</p>
+                <div class="form-actions">
+                    <button type="button" id="confirmCancelBtn" class="btn ghost">Cancel</button>
+                    <button type="button" id="confirmOkBtn" class="btn primary">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
     <!-- Scripts -->
     <script src="/script.js?v=2025-09-26-search"></script>

@@ -28,6 +28,10 @@ from fdo_tools_manager import get_fdo_tools_manager
 from fdo_daemon_manager import FdoDaemonManager
 from fdo_daemon_client import FdoDaemonClient, FdoDaemonError
 
+# Import file management
+from database import init_database, test_database_connection
+from file_manager import FileManager, Script
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -72,6 +76,36 @@ class ExampleResponse(BaseModel):
     name: str
     source: str
     size: int
+
+
+# File Management Models
+class SaveScriptRequest(BaseModel):
+    name: str
+    content: str
+    script_id: Optional[int] = None
+
+
+class ScriptResponse(BaseModel):
+    id: int
+    name: str
+    content: str
+    created_at: str
+    updated_at: str
+    is_favorite: bool
+    content_length: int
+
+
+class ScriptListResponse(BaseModel):
+    id: int
+    name: str
+    created_at: str
+    updated_at: str
+    is_favorite: bool
+    content_length: int
+
+
+class DuplicateScriptRequest(BaseModel):
+    new_name: Optional[str] = None
 
 
 # --- Helpers ---
@@ -180,6 +214,15 @@ async def startup_event():
     logger.info("🚀 Starting AtomForge API Server v2.0 (daemon-only)")
 
     try:
+        # Initialize database
+        if not init_database():
+            raise RuntimeError("Failed to initialize database")
+
+        if not test_database_connection():
+            raise RuntimeError("Database connection test failed")
+
+        logger.info("📦 Database initialized successfully")
+
         # Initialize manager and discover releases/backends
         fdo_tools_manager = get_fdo_tools_manager()
         releases = fdo_tools_manager.discover_releases()
@@ -482,6 +525,205 @@ async def get_examples(search: str = None):
             status_code=500,
             detail=f"Failed to load examples: {str(e)}"
         )
+
+
+# File Management Endpoints
+
+@app.get("/files", response_model=List[ScriptListResponse])
+async def list_scripts(search: str = None, favorites_only: bool = False):
+    """List all saved scripts, optionally filtered by search term or favorites"""
+    try:
+        scripts = FileManager.list_scripts(search=search, favorites_only=favorites_only)
+
+        # Convert to list response format (exclude content for performance)
+        script_list = []
+        for script in scripts:
+            script_list.append(ScriptListResponse(
+                id=script.id,
+                name=script.name,
+                created_at=script.created_at,
+                updated_at=script.updated_at,
+                is_favorite=script.is_favorite,
+                content_length=len(script.content) if script.content else 0
+            ))
+
+        logger.info(f"Listed {len(script_list)} scripts (search: {search}, favorites: {favorites_only})")
+        return script_list
+
+    except Exception as e:
+        logger.error(f"Failed to list scripts: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to list scripts: {str(e)}")
+
+
+@app.get("/files/recent", response_model=List[ScriptListResponse])
+async def get_recent_scripts(limit: int = 10):
+    """Get recently updated scripts"""
+    try:
+        if limit > 50:
+            limit = 50  # Cap at 50 for performance
+
+        scripts = FileManager.get_recent_scripts(limit=limit)
+
+        # Convert to list response format
+        script_list = []
+        for script in scripts:
+            script_list.append(ScriptListResponse(
+                id=script.id,
+                name=script.name,
+                created_at=script.created_at,
+                updated_at=script.updated_at,
+                is_favorite=script.is_favorite,
+                content_length=len(script.content) if script.content else 0
+            ))
+
+        logger.info(f"Retrieved {len(script_list)} recent scripts")
+        return script_list
+
+    except Exception as e:
+        logger.error(f"Failed to get recent scripts: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get recent scripts: {str(e)}")
+
+
+@app.get("/files/{script_id}", response_model=ScriptResponse)
+async def get_script(script_id: int):
+    """Get a specific script by ID"""
+    try:
+        script = FileManager.get_script(script_id)
+        if not script:
+            raise HTTPException(status_code=404, detail="Script not found")
+
+        return ScriptResponse(**script.to_dict())
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to get script {script_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get script: {str(e)}")
+
+
+@app.post("/files", response_model=ScriptResponse)
+async def save_script(request: SaveScriptRequest):
+    """Save a new script or update an existing one"""
+    try:
+        # Validate script name
+        if not request.name.strip():
+            raise HTTPException(status_code=400, detail="Script name cannot be empty")
+
+        if len(request.name) > 100:
+            raise HTTPException(status_code=400, detail="Script name too long (max 100 characters)")
+
+        script = FileManager.save_script(
+            name=request.name.strip(),
+            content=request.content,
+            script_id=request.script_id
+        )
+
+        if not script:
+            raise HTTPException(status_code=500, detail="Failed to save script")
+
+        logger.info(f"Saved script: {script.name} (ID: {script.id})")
+        return ScriptResponse(**script.to_dict())
+
+    except ValueError as e:
+        # Handle unique constraint violations
+        raise HTTPException(status_code=409, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to save script: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to save script: {str(e)}")
+
+
+@app.put("/files/{script_id}", response_model=ScriptResponse)
+async def update_script(script_id: int, request: SaveScriptRequest):
+    """Update an existing script"""
+    try:
+        # Validate script exists
+        existing_script = FileManager.get_script(script_id)
+        if not existing_script:
+            raise HTTPException(status_code=404, detail="Script not found")
+
+        # Validate script name
+        if not request.name.strip():
+            raise HTTPException(status_code=400, detail="Script name cannot be empty")
+
+        if len(request.name) > 100:
+            raise HTTPException(status_code=400, detail="Script name too long (max 100 characters)")
+
+        script = FileManager.save_script(
+            name=request.name.strip(),
+            content=request.content,
+            script_id=script_id
+        )
+
+        if not script:
+            raise HTTPException(status_code=500, detail="Failed to update script")
+
+        logger.info(f"Updated script: {script.name} (ID: {script_id})")
+        return ScriptResponse(**script.to_dict())
+
+    except ValueError as e:
+        # Handle unique constraint violations
+        raise HTTPException(status_code=409, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to update script {script_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to update script: {str(e)}")
+
+
+@app.delete("/files/{script_id}")
+async def delete_script(script_id: int):
+    """Delete a script by ID"""
+    try:
+        success = FileManager.delete_script(script_id)
+        if not success:
+            raise HTTPException(status_code=404, detail="Script not found")
+
+        logger.info(f"Deleted script ID: {script_id}")
+        return {"success": True, "message": "Script deleted successfully"}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to delete script {script_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete script: {str(e)}")
+
+
+@app.post("/files/{script_id}/duplicate", response_model=ScriptResponse)
+async def duplicate_script(script_id: int, request: DuplicateScriptRequest):
+    """Duplicate an existing script"""
+    try:
+        script = FileManager.duplicate_script(script_id, request.new_name)
+        if not script:
+            raise HTTPException(status_code=404, detail="Original script not found")
+
+        logger.info(f"Duplicated script ID {script_id} as: {script.name} (ID: {script.id})")
+        return ScriptResponse(**script.to_dict())
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to duplicate script {script_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to duplicate script: {str(e)}")
+
+
+@app.put("/files/{script_id}/favorite")
+async def toggle_favorite(script_id: int):
+    """Toggle favorite status of a script"""
+    try:
+        new_status = FileManager.toggle_favorite(script_id)
+        if new_status is None:
+            raise HTTPException(status_code=404, detail="Script not found")
+
+        logger.info(f"Toggled favorite for script ID {script_id}: {new_status}")
+        return {"success": True, "is_favorite": new_status}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to toggle favorite for script {script_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to toggle favorite: {str(e)}")
 
 
 # Mount static files (web interface)

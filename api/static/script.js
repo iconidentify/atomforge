@@ -28,7 +28,7 @@ const App = (() => {
     fileDecoded: qs('#fileDecoded'),
     openAsHexBtn: qs('#openAsHexBtn'),
     hexInput: qs('#hexInput'),
-    hexDecoded: qs('#hexDecoded'),
+    // hexDecoded removed - functionality moved to status bar
     extractFdoBtn: qs('#extractFdoBtn'),
     preNormalizeCheck: qs('#preNormalizeCheck'),
     // Output
@@ -56,6 +56,48 @@ const App = (() => {
     apiModal: qs('#apiModal'),
     apiModalClose: qs('#apiModalClose'),
     apiBackdrop: qs('#apiModal .modal-backdrop'),
+    // File management
+    fileBtn: qs('#fileBtn'),
+    fileMenu: qs('#fileMenu'),
+    saveBtn: qs('#saveBtn'),
+    saveAsBtn: qs('#saveAsBtn'),
+    openBtn: qs('#openBtn'),
+    recentBtn: qs('#recentBtn'),
+    newBtn: qs('#newBtn'),
+    // Save modal
+    saveModal: qs('#saveModal'),
+    saveModalClose: qs('#saveModalClose'),
+    saveForm: qs('#saveForm'),
+    scriptName: qs('#scriptName'),
+    saveConfirmBtn: qs('#saveConfirmBtn'),
+    saveCancelBtn: qs('#saveCancelBtn'),
+    saveStatus: qs('#saveStatus'),
+    btnText: qs('#saveConfirmBtn .btn-text'),
+    btnSpinner: qs('#saveConfirmBtn .btn-spinner'),
+    // File browser modal
+    fileBrowserModal: qs('#fileBrowserModal'),
+    fileBrowserModalClose: qs('#fileBrowserModalClose'),
+    fileSearchInput: qs('#fileSearchInput'),
+    fileSearchClear: qs('#fileSearchClear'),
+    showAllFiles: qs('#showAllFiles'),
+    showFavorites: qs('#showFavorites'),
+    showRecent: qs('#showRecent'),
+    fileLoadingIndicator: qs('#fileLoadingIndicator'),
+    fileNoResults: qs('#fileNoResults'),
+    fileList: qs('#fileList'),
+    // Confirmation modal
+    confirmModal: qs('#confirmModal'),
+    confirmModalClose: qs('#confirmModalClose'),
+    confirmMessage: qs('#confirmMessage'),
+    confirmCancelBtn: qs('#confirmCancelBtn'),
+    confirmOkBtn: qs('#confirmOkBtn'),
+    // Toast system
+    toastContainer: qs('#toastContainer'),
+    // Status bar
+    statusBar: qs('#statusBar'),
+    statusOperation: qs('#statusOperation'),
+    statusStats: qs('#statusStats'),
+    statusMode: qs('#statusMode'),
   };
 
   let currentBinary = null;   // Uint8Array from file OR hex
@@ -67,6 +109,15 @@ const App = (() => {
   // ASCII helper removed
   let asciiAtoms = [];
   let asciiSupportEnabled = false;
+
+  // File management state
+  let currentScript = null;         // Currently loaded script
+  let hasUnsavedChanges = false;    // Track unsaved changes
+  let originalContent = '';         // Content when file was loaded/saved
+  let searchDebounceTimer = null;   // For file search
+  let currentFilter = 'all';        // Current file filter
+  let autoSaveTimer = null;         // Auto-save timer
+  let compileCheckTimer = null;     // For compilation checking
 
   // Per-mode output state preservation
   let modeOutputs = {
@@ -95,12 +146,15 @@ const App = (() => {
     bindDownloads();
     setupExamples();
     setupAPIModal();
+    setupFileManagement();
+    setupDocumentBar();
     setupBottomResize();
     // ASCII support removed
     // P3 extraction removed
     // Ensure hex input is enabled by default since it's now the default view
     el.hexInput.removeAttribute('disabled');
     setMode(st.mode, {pushHash:false});
+    updateStatusBar(); // Initialize status bar with current content
     log('Ready.');
   }
 
@@ -118,6 +172,35 @@ const App = (() => {
 
     // Update output tab availability based on mode
     updateOutputTabsForMode(mode);
+
+    // Status bar is always visible on both modes
+    if (el.statusBar) {
+      el.statusBar.style.display = 'flex';
+    }
+
+    // Show/hide file menu based on mode (only relevant for compile mode)
+    if (el.fileBtn && el.fileMenu) {
+      const showFileMenu = mode === 'compile';
+      // Use visibility to preserve layout and prevent tab shifting
+      el.fileBtn.style.visibility = showFileMenu ? 'visible' : 'hidden';
+      el.fileBtn.style.pointerEvents = showFileMenu ? 'auto' : 'none';
+      if (!showFileMenu) {
+        el.fileMenu.hidden = true; // Ensure menu is closed when hidden
+        el.fileBtn.setAttribute('aria-expanded', 'false');
+      }
+    }
+
+    // Update status mode text and trigger validation check
+    if (el.statusMode) {
+      el.statusMode.textContent = mode === 'compile' ? 'Compile' : 'Decompile';
+      el.statusMode.className = 'status-mode'; // Reset to neutral state when switching modes
+
+      // Trigger validation check and status bar update for the new mode
+      setTimeout(() => {
+        updateStatusBar(); // Update metrics (lines/chars vs bytes)
+        updateValidationStatus();
+      }, 100); // Small delay to ensure mode switch is complete
+    }
 
     if (pushHash) location.hash = mode;
     (mode==='compile' ? el.fdoInput : el.hexInput).focus();
@@ -340,7 +423,7 @@ const App = (() => {
       const bytes = new Uint8Array(clean.length/2);
       for (let i=0;i<clean.length;i+=2) bytes[i/2] = parseInt(clean.substr(i,2),16);
       currentBinary = bytes;
-      el.hexDecoded.textContent = bytes.length.toLocaleString();
+      // hexDecoded.textContent removed - functionality moved to status bar
       return bytes;
     }
     if (!currentBinary) { showToast('Choose a file or paste hex.', 'error'); return null; }
@@ -541,7 +624,7 @@ const App = (() => {
 
       // Search icon
       const searchIcon = document.createElement('span');
-      searchIcon.innerHTML = '🔍';
+      searchIcon.innerHTML = '';
       searchIcon.style.position = 'absolute';
       searchIcon.style.left = '10px';
       searchIcon.style.fontSize = '14px';
@@ -564,7 +647,7 @@ const App = (() => {
 
       // Clear button (initially hidden)
       const clearBtn = document.createElement('button');
-      clearBtn.innerHTML = '✕';
+      clearBtn.innerHTML = '×';
       clearBtn.type = 'button';
       clearBtn.style.position = 'absolute';
       clearBtn.style.right = '8px';
@@ -726,11 +809,30 @@ const App = (() => {
         b.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();
+
+          // Load example content
           el.fdoInput.value = ex.text || ex.source || '';
           el.examplesMenu.hidden = true;
           el.examplesBtn.setAttribute('aria-expanded', 'false');
           setMode('compile');
+
+          // Set up example state for document bar
+          currentScript = {
+            name: ex.name || 'Example',
+            is_example: true,
+            is_readonly: true,
+            is_favorite: false
+          };
+          originalContent = ex.text || ex.source || '';
+          hasUnsavedChanges = false;
+
+          updateStatusBar();
+          setStatusOperation(`Loaded example: ${ex.name} at ${new Date().toLocaleTimeString()}`);
+          log(`Loaded example: ${ex.name} (${(ex.text || ex.source || '').length} chars)`);
+          updateValidationStatus();
           el.fdoInput.focus();
+          el.fdoInput.setSelectionRange(0, 0); // Set cursor to start
+          el.fdoInput.scrollTop = 0; // Scroll to top
           showToast(`Loaded example: ${ex.name}`, 'success');
         });
 
@@ -1074,13 +1176,11 @@ const App = (() => {
   // ---------- ASCII Atom Support ----------
   // ASCII helpers removed
 
-  // P3 Extraction Support
+  // P3 extraction removed - refreshHexDecoded functionality moved to status bar
   function refreshHexDecoded() {
-    const clean = (el.hexInput.value||'').replace(/[^0-9A-Fa-f]/g, '');
-    el.hexDecoded.textContent = (clean.length/2|0).toLocaleString();
+    // Legacy function - now triggers status bar update for compatibility
+    updateStatusBar();
   }
-
-  // P3 extraction removed
 
   async function extractFDOFromP3() {
     const hexData = el.hexInput.value.trim();
@@ -1109,7 +1209,7 @@ const App = (() => {
         refreshHexDecoded();
 
         // Log success details with enhanced metrics
-        log(`✓ FDO extracted successfully`);
+        log(`FDO extracted successfully`);
         log(`  Found ${result.frames_found} P3 frames`);
         log(`  Extracted ${result.total_fdo_bytes} FDO bytes`);
         if (result.skipped_non_fdo_packets > 0) {
@@ -1134,6 +1234,930 @@ const App = (() => {
       el.extractFdoBtn.disabled = false;
       el.extractFdoBtn.textContent = 'Extract FDO';
     }
+  }
+
+  // ---------- File Management System ----------
+  function setupFileManagement() {
+    if (!el.fileBtn || !el.fileMenu) {
+      console.warn('File management elements not found');
+      return;
+    }
+
+    bindFileMenu();
+    bindSaveDialog();
+    bindFileBrowser();
+    bindConfirmDialog();
+    setupUnsavedChangesTracking();
+    setupKeyboardShortcuts();
+
+    log('File management initialized');
+  }
+
+  function bindFileMenu() {
+    // File menu toggle
+    el.fileBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const isHidden = el.fileMenu.hasAttribute('hidden') || el.fileMenu.hidden;
+      el.fileMenu.hidden = !isHidden;
+      el.fileBtn.setAttribute('aria-expanded', String(!isHidden));
+
+      // Focus first menu item when opening
+      if (!isHidden) {
+        const firstItem = el.fileMenu.querySelector('button[role="menuitem"]:not([disabled])');
+        if (firstItem) {
+          setTimeout(() => firstItem.focus(), 50);
+        }
+      }
+    });
+
+    // Keyboard navigation for File menu
+    el.fileMenu.addEventListener('keydown', (e) => {
+      const items = Array.from(el.fileMenu.querySelectorAll('button[role="menuitem"]:not([disabled])'));
+      const currentIndex = items.indexOf(document.activeElement);
+
+      switch(e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          const nextIndex = (currentIndex + 1) % items.length;
+          items[nextIndex]?.focus();
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          const prevIndex = currentIndex - 1 < 0 ? items.length - 1 : currentIndex - 1;
+          items[prevIndex]?.focus();
+          break;
+        case 'Escape':
+          e.preventDefault();
+          el.fileMenu.hidden = true;
+          el.fileBtn.setAttribute('aria-expanded', 'false');
+          el.fileBtn.focus();
+          break;
+        case 'Home':
+          e.preventDefault();
+          items[0]?.focus();
+          break;
+        case 'End':
+          e.preventDefault();
+          items[items.length - 1]?.focus();
+          break;
+      }
+    });
+
+    // Close file menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!el.fileBtn.contains(e.target) && !el.fileMenu.contains(e.target)) {
+        el.fileMenu.hidden = true;
+        el.fileBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Close on Escape key globally
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !el.fileMenu.hidden) {
+        el.fileMenu.hidden = true;
+        el.fileBtn.setAttribute('aria-expanded', 'false');
+        el.fileBtn.focus();
+      }
+    });
+
+    // File menu actions
+    el.saveBtn.addEventListener('click', () => {
+      el.fileMenu.hidden = true;
+      handleSave();
+    });
+
+    el.saveAsBtn.addEventListener('click', () => {
+      el.fileMenu.hidden = true;
+      handleSaveAs();
+    });
+
+    el.openBtn.addEventListener('click', () => {
+      el.fileMenu.hidden = true;
+      handleOpen();
+    });
+
+    el.recentBtn.addEventListener('click', () => {
+      el.fileMenu.hidden = true;
+      handleRecentFiles();
+    });
+
+    el.newBtn.addEventListener('click', () => {
+      el.fileMenu.hidden = true;
+      handleNew();
+    });
+  }
+
+  function bindSaveDialog() {
+    const openSaveModal = (isNew = false, suggestedName = '') => {
+      el.scriptName.value = suggestedName;
+      el.saveModal.hidden = false;
+      el.scriptName.focus();
+      document.body.style.overflow = 'hidden';
+      validateSaveName();
+      resetSaveStatus();
+    };
+
+    const closeSaveModal = () => {
+      el.saveModal.hidden = true;
+      document.body.style.overflow = '';
+      el.fileBtn.focus();
+      resetSaveStatus();
+    };
+
+    const resetSaveStatus = () => {
+      el.saveStatus.hidden = true;
+      el.saveStatus.className = 'save-status';
+      el.saveForm.classList.remove('saving');
+      el.saveConfirmBtn.classList.remove('saving');
+      el.btnSpinner.hidden = true;
+      el.saveConfirmBtn.disabled = false;
+    };
+
+    const setSaveStatus = (type, message) => {
+      el.saveStatus.hidden = false;
+      el.saveStatus.className = `save-status ${type}`;
+      el.saveStatus.querySelector('.status-message').textContent = message;
+    };
+
+    const setSavingState = (saving) => {
+      el.saveForm.classList.toggle('saving', saving);
+      el.saveConfirmBtn.classList.toggle('saving', saving);
+      el.saveConfirmBtn.disabled = saving;
+      el.btnSpinner.hidden = !saving;
+      el.saveCancelBtn.disabled = saving;
+
+      if (saving) {
+        setSaveStatus('loading', 'Saving script...');
+      }
+    };
+
+    // Save form validation
+    const validateSaveName = () => {
+      const name = el.scriptName.value.trim();
+      const isValid = name && name.length <= 100;
+      el.saveConfirmBtn.disabled = !isValid;
+
+      // Clear error status when user types
+      if (el.saveStatus.classList.contains('error')) {
+        resetSaveStatus();
+      }
+
+      return isValid;
+    };
+
+    el.scriptName.addEventListener('input', validateSaveName);
+
+    // Enhanced save form submission with proper feedback
+    el.saveForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = el.scriptName.value.trim();
+
+      if (!validateSaveName()) return;
+
+      setSavingState(true);
+
+      try {
+        const content = el.fdoInput.value || '';
+        const script = await saveScript(name, content, currentScript?.id);
+
+        if (script) {
+          // Success state
+          setSaveStatus('success', `Saved "${name}" successfully!`);
+
+          // Update app state
+          currentScript = script;
+          originalContent = content;
+          hasUnsavedChanges = false;
+          updateUIForSavedState();
+          setStatusOperation(`Saved "${name}" at ${new Date().toLocaleTimeString()}`);
+          log(`Saved "${name}" (${content.length} chars)`);
+
+          // Close modal after short delay to show success
+          setTimeout(() => {
+            closeSaveModal();
+            showToast(`Saved "${name}"`, 'success');
+          }, 1200);
+        } else {
+          throw new Error('Save operation returned no result');
+        }
+      } catch (error) {
+        setSavingState(false);
+
+        // Determine error message based on error type
+        let errorMessage = 'Failed to save script';
+
+        if (error.status === 409) {
+          errorMessage = 'A script with that name already exists';
+        } else if (error.status === 400) {
+          errorMessage = 'Invalid script name or content';
+        } else if (error.status === 413) {
+          errorMessage = 'Script is too large to save';
+        } else if (error.status >= 500) {
+          errorMessage = 'Server error occurred. Please try again.';
+        } else if (error.name === 'NetworkError' || !window.navigator.onLine) {
+          errorMessage = 'Network connection lost. Check your connection.';
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+
+        setSaveStatus('error', errorMessage);
+
+        // Re-enable form for retry
+        setTimeout(() => {
+          el.saveConfirmBtn.disabled = false;
+          el.saveCancelBtn.disabled = false;
+        }, 500);
+      }
+    });
+
+    // Close handlers
+    el.saveModalClose.addEventListener('click', closeSaveModal);
+    el.saveCancelBtn.addEventListener('click', closeSaveModal);
+
+    // Expose openSaveModal for use by other functions
+    window.openSaveModal = openSaveModal;
+  }
+
+  function bindFileBrowser() {
+    let currentScripts = [];
+
+    const openFileBrowser = async (filter = 'all') => {
+      // Validate all required elements
+      const requiredElements = ['fileBrowserModal', 'fileList', 'fileLoadingIndicator', 'fileNoResults', 'fileSearchInput'];
+      const missingElements = requiredElements.filter(name => !el[name]);
+
+      if (missingElements.length > 0) {
+        console.error('Missing required elements for file browser:', missingElements);
+        showToast(`File browser initialization error: missing ${missingElements.join(', ')}`, 'error');
+        return;
+      }
+
+      currentFilter = filter;
+      updateFilterButtons();
+      el.fileBrowserModal.hidden = false;
+      await loadScripts();
+      el.fileSearchInput.focus();
+      document.body.style.overflow = 'hidden';
+    };
+
+    const closeFileBrowser = () => {
+      el.fileBrowserModal.hidden = true;
+      document.body.style.overflow = '';
+      el.fileBtn.focus();
+    };
+
+    const updateFilterButtons = () => {
+      [el.showAllFiles, el.showFavorites, el.showRecent].forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === currentFilter);
+      });
+    };
+
+    const loadScripts = async (searchTerm = '') => {
+      if (!el.fileList) {
+        console.error('fileList element not found in loadScripts');
+        showToast('File browser not properly initialized', 'error');
+        return;
+      }
+
+      el.fileLoadingIndicator.hidden = false;
+      el.fileNoResults.hidden = true;
+      el.fileList.innerHTML = '';
+
+      try {
+        let scripts;
+        if (currentFilter === 'recent') {
+          scripts = await fetchRecentScripts();
+        } else {
+          const favoritesOnly = currentFilter === 'favorites';
+          scripts = await fetchScripts(searchTerm, favoritesOnly);
+        }
+
+        currentScripts = scripts;
+        renderFileList(scripts);
+      } catch (error) {
+        console.error('Error loading scripts:', error);
+        showToast(`Failed to load scripts: ${error.message}`, 'error');
+        currentScripts = [];
+      } finally {
+        el.fileLoadingIndicator.hidden = true;
+      }
+    };
+
+    const renderFileList = (scripts) => {
+      if (!el.fileList) {
+        console.error('fileList element not found');
+        return;
+      }
+
+      el.fileList.innerHTML = '';
+
+      if (scripts.length === 0) {
+        el.fileNoResults.hidden = false;
+        return;
+      }
+
+      el.fileNoResults.hidden = true;
+
+      scripts.forEach(script => {
+        const item = createFileItem(script);
+        el.fileList.appendChild(item);
+      });
+    };
+
+    const createFileItem = (script) => {
+      const item = document.createElement('div');
+      item.className = 'file-row';
+      item.dataset.scriptId = script.id;
+
+      const icon = script.is_favorite ? '★' : '';
+      const lastModified = new Date(script.updated_at).toLocaleTimeString([], {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      const sizeInBytes = Math.ceil((script.content_length || 0) * 1.5); // Rough char to byte conversion
+
+      item.innerHTML = `
+        <div class="file-name-col">
+          <span class="file-favorite">${icon}</span>
+          <span class="file-name" title="${script.name}">${script.name}</span>
+        </div>
+        <div class="file-size-col">${sizeInBytes.toLocaleString()}B</div>
+        <div class="file-date-col">${lastModified}</div>
+        <div class="file-actions-col">
+          <button class="file-action-btn favorite-btn ${script.is_favorite ? 'active' : ''}"
+                  data-action="favorite" title="Toggle favorite">★</button>
+          <button class="file-action-btn delete-btn" data-action="delete" title="Delete script">×</button>
+        </div>
+      `;
+
+      // Single click handler for both loading scripts and action buttons
+      item.addEventListener('click', async (e) => {
+        // Handle action buttons first
+        if (e.target.dataset.action === 'favorite') {
+          e.stopPropagation();
+          await toggleScriptFavorite(script.id);
+          loadScripts(el.fileSearchInput.value); // Refresh list
+          return;
+        } else if (e.target.dataset.action === 'delete') {
+          e.stopPropagation();
+          await confirmDeleteScript(script.id, script.name);
+          return;
+        }
+
+        // If not clicking action buttons, load the script
+        if (!e.target.dataset.action) {
+          try {
+            const fullScript = await fetchScript(script.id);
+            if (fullScript) {
+              await loadScriptIntoEditor(fullScript);
+              closeFileBrowser();
+            }
+          } catch (error) {
+            showToast('Failed to load script', 'error');
+          }
+        }
+      });
+
+      return item;
+    };
+
+    // Search functionality
+    el.fileSearchInput.addEventListener('input', (e) => {
+      const query = e.target.value.trim();
+      el.fileSearchClear.hidden = !query;
+
+      if (searchDebounceTimer) {
+        clearTimeout(searchDebounceTimer);
+      }
+
+      searchDebounceTimer = setTimeout(() => {
+        loadScripts(query);
+      }, 300);
+    });
+
+    el.fileSearchClear.addEventListener('click', () => {
+      el.fileSearchInput.value = '';
+      el.fileSearchClear.hidden = true;
+      loadScripts('');
+    });
+
+    // Filter buttons
+    el.showAllFiles.addEventListener('click', () => {
+      currentFilter = 'all';
+      updateFilterButtons();
+      loadScripts(el.fileSearchInput.value);
+    });
+
+    el.showFavorites.addEventListener('click', () => {
+      currentFilter = 'favorites';
+      updateFilterButtons();
+      loadScripts(el.fileSearchInput.value);
+    });
+
+    el.showRecent.addEventListener('click', () => {
+      currentFilter = 'recent';
+      updateFilterButtons();
+      loadScripts('');
+    });
+
+    // Close handlers
+    el.fileBrowserModalClose.addEventListener('click', closeFileBrowser);
+
+    // Expose openFileBrowser for use by other functions
+    window.openFileBrowser = openFileBrowser;
+  }
+
+  function bindConfirmDialog() {
+    let currentResolve = null;
+
+    const showConfirmDialog = (message, title = 'Confirm Action') => {
+      return new Promise((resolve) => {
+        currentResolve = resolve;
+        el.confirmMessage.textContent = message;
+        document.querySelector('#confirmModalTitle').textContent = title;
+        el.confirmModal.hidden = false;
+        document.body.style.overflow = 'hidden';
+        el.confirmOkBtn.focus();
+      });
+    };
+
+    const closeConfirmDialog = (result = false) => {
+      el.confirmModal.hidden = true;
+      document.body.style.overflow = '';
+      if (currentResolve) {
+        currentResolve(result);
+        currentResolve = null;
+      }
+    };
+
+    el.confirmOkBtn.addEventListener('click', () => closeConfirmDialog(true));
+    el.confirmCancelBtn.addEventListener('click', () => closeConfirmDialog(false));
+    el.confirmModalClose.addEventListener('click', () => closeConfirmDialog(false));
+
+    // Expose showConfirmDialog for use by other functions
+    window.showConfirmDialog = showConfirmDialog;
+  }
+
+  function setupUnsavedChangesTracking() {
+    // Track changes to the editor
+    el.fdoInput.addEventListener('input', () => {
+      const currentContent = el.fdoInput.value || '';
+
+      // If this was a read-only example and user is editing, transition to editable
+      if (currentScript && currentScript.is_readonly && currentContent !== originalContent) {
+        currentScript.is_readonly = false;
+        currentScript.is_example = false;
+        currentScript.name = `${currentScript.name} (Copy)`;
+      }
+
+      hasUnsavedChanges = currentContent !== originalContent;
+      updateUIForUnsavedChanges();
+      updateStatusBar();
+      updateValidationStatus();
+    });
+
+    // Track changes to the hex input for decompile validation and status bar
+    el.hexInput.addEventListener('input', () => {
+      updateStatusBar(); // Update byte count in status bar
+      updateValidationStatus(); // This now handles both compile and decompile validation
+    });
+
+    // Warn before leaving if there are unsaved changes
+    window.addEventListener('beforeunload', (e) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+        return e.returnValue;
+      }
+    });
+  }
+
+  function setupKeyboardShortcuts() {
+    document.addEventListener('keydown', async (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key.toLowerCase()) {
+          case 's':
+            e.preventDefault();
+            if (e.shiftKey) {
+              handleSaveAs();
+            } else {
+              handleSave();
+            }
+            break;
+          case 'o':
+            e.preventDefault();
+            handleOpen();
+            break;
+          case 'n':
+            e.preventDefault();
+            handleNew();
+            break;
+        }
+      }
+    });
+  }
+
+  // File operation handlers
+  async function handleSave() {
+    if (currentScript) {
+      // Update existing script
+      try {
+        const content = el.fdoInput.value || '';
+        const updatedScript = await saveScript(currentScript.name, content, currentScript.id);
+        if (updatedScript) {
+          currentScript = updatedScript;
+          originalContent = content;
+          hasUnsavedChanges = false;
+          updateUIForSavedState();
+          setStatusOperation(`Saved "${currentScript.name}" at ${new Date().toLocaleTimeString()}`);
+          log(`Auto-saved "${currentScript.name}" (${content.length} chars)`);
+          showToast(`Saved "${currentScript.name}"`, 'success');
+        }
+      } catch (error) {
+        showToast('Failed to save script', 'error');
+      }
+    } else {
+      // No current script, show save as dialog
+      handleSaveAs();
+    }
+  }
+
+  async function handleSaveAs() {
+    const suggestedName = currentScript?.name || 'Untitled Script';
+    window.openSaveModal(true, suggestedName);
+  }
+
+  async function handleOpen() {
+    if (hasUnsavedChanges) {
+      const shouldContinue = await window.showConfirmDialog(
+        'You have unsaved changes that will be lost. Continue?',
+        'Unsaved Changes'
+      );
+      if (!shouldContinue) return;
+    }
+
+    window.openFileBrowser('all');
+  }
+
+  async function handleRecentFiles() {
+    window.openFileBrowser('recent');
+  }
+
+  async function handleNew() {
+    if (hasUnsavedChanges) {
+      const shouldContinue = await window.showConfirmDialog(
+        'You have unsaved changes that will be lost. Continue?',
+        'Unsaved Changes'
+      );
+      if (!shouldContinue) return;
+    }
+
+    currentScript = null;
+    el.fdoInput.value = '';
+    originalContent = '';
+    hasUnsavedChanges = false;
+    updateUIForNewFile();
+    setStatusOperation(`New file created at ${new Date().toLocaleTimeString()}`);
+    log('New file created');
+    el.fdoInput.focus();
+    showToast('New file created', 'success');
+  }
+
+  async function loadScriptIntoEditor(script) {
+    currentScript = script;
+    el.fdoInput.value = script.content || '';
+    originalContent = script.content || '';
+    hasUnsavedChanges = false;
+    updateUIForLoadedScript();
+    setStatusOperation(`Loaded "${script.name}" at ${new Date().toLocaleTimeString()}`);
+    log(`Loaded "${script.name}" (${(script.content || '').length} chars)`);
+    updateValidationStatus();
+    el.fdoInput.focus();
+    el.fdoInput.setSelectionRange(0, 0); // Set cursor to start
+    el.fdoInput.scrollTop = 0; // Scroll to top
+    showToast(`Loaded "${script.name}"`, 'success');
+  }
+
+  async function confirmDeleteScript(scriptId, scriptName) {
+    const shouldDelete = await window.showConfirmDialog(
+      `Are you sure you want to delete "${scriptName}"? This action cannot be undone.`,
+      'Delete Script'
+    );
+
+    if (shouldDelete) {
+      try {
+        const success = await deleteScript(scriptId);
+        if (success) {
+          log(`Deleted "${scriptName}"`);
+          showToast(`Deleted "${scriptName}"`, 'success');
+          // Refresh the file list
+          if (el.fileBrowserModal && !el.fileBrowserModal.hidden) {
+            window.openFileBrowser(currentFilter);
+          }
+        }
+      } catch (error) {
+        showToast('Failed to delete script', 'error');
+      }
+    }
+  }
+
+  async function toggleScriptFavorite(scriptId) {
+    try {
+      await toggleFavorite(scriptId);
+    } catch (error) {
+      showToast('Failed to update favorite status', 'error');
+    }
+  }
+
+  // API functions
+  async function fetchScripts(search = '', favoritesOnly = false) {
+    const params = new URLSearchParams();
+    if (search) params.set('search', search);
+    if (favoritesOnly) params.set('favorites_only', 'true');
+
+    const response = await fetch(`/files?${params}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+    return response.json();
+  }
+
+  async function fetchRecentScripts(limit = 10) {
+    const response = await fetch(`/files/recent?limit=${limit}`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.json();
+  }
+
+  async function fetchScript(scriptId) {
+    const response = await fetch(`/files/${scriptId}`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.json();
+  }
+
+  async function saveScript(name, content, scriptId = null) {
+    const url = scriptId ? `/files/${scriptId}` : '/files';
+    const method = scriptId ? 'PUT' : 'POST';
+
+    const response = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, content, script_id: scriptId })
+    });
+
+    if (!response.ok) {
+      const error = new Error(`HTTP ${response.status}`);
+      error.status = response.status;
+      throw error;
+    }
+
+    return response.json();
+  }
+
+  async function deleteScript(scriptId) {
+    const response = await fetch(`/files/${scriptId}`, { method: 'DELETE' });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const result = await response.json();
+    return result.success;
+  }
+
+  async function toggleFavorite(scriptId) {
+    const response = await fetch(`/files/${scriptId}/favorite`, { method: 'PUT' });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.json();
+  }
+
+  // Document Bar Management
+  function setupDocumentBar() {
+    if (!el.documentBar) return;
+
+
+    // Handle close button
+    el.docCloseBtn.addEventListener('click', () => {
+      handleNew();
+    });
+
+  }
+
+  // UI update functions
+  function updateUIForSavedState() {
+    document.title = currentScript ? `AtomForge - ${currentScript.name}` : 'AtomForge';
+    updateStatusBar();
+  }
+
+  function updateUIForUnsavedChanges() {
+    const title = currentScript ? currentScript.name : 'Untitled';
+    document.title = hasUnsavedChanges ? `AtomForge - ${title}*` : `AtomForge - ${title}`;
+  }
+
+  function updateUIForLoadedScript() {
+    updateUIForSavedState();
+  }
+
+  function updateUIForNewFile() {
+    document.title = 'AtomForge';
+    updateStatusBar();
+  }
+
+  // Status Bar Management
+  function updateStatusBar() {
+    if (!el.statusStats) return;
+
+    if (st.mode === 'compile') {
+      // Compile mode: show lines and chars
+      const content = el.fdoInput.value || '';
+      const lines = content ? content.split('\n').length : 0;
+      const chars = content.length;
+
+      // Show editor statistics with save status
+      let saveIndicator = '';
+      if (hasUnsavedChanges) {
+        saveIndicator = ' • modified';
+      }
+
+      el.statusStats.textContent = `${lines} lines, ${chars.toLocaleString()} chars${saveIndicator}`;
+    } else if (st.mode === 'decompile') {
+      // Decompile mode: show byte count based on hex input
+      const hexInput = el.hexInput.value || '';
+      const cleanHex = hexInput.replace(/[^0-9A-Fa-f]/g, '');
+      const isValidHex = cleanHex.length > 0 && cleanHex.length % 2 === 0;
+      const byteCount = Math.floor(cleanHex.length / 2);
+
+      if (isValidHex) {
+        el.statusStats.textContent = `Decoded: ${byteCount.toLocaleString()} bytes`;
+      } else if (cleanHex.length > 0) {
+        el.statusStats.textContent = `Input: ${byteCount.toLocaleString()} bytes`;
+      } else {
+        el.statusStats.textContent = `Decoded: 0 bytes`;
+      }
+    }
+
+    updateStatusFilename();
+  }
+
+  function setStatusOperation(message, duration = 3000) {
+    if (!el.statusOperation) return;
+
+    el.statusOperation.textContent = message;
+
+    // Clear after duration
+    if (duration > 0) {
+      setTimeout(() => {
+        updateStatusFilename(); // Restore filename display
+      }, duration);
+    }
+  }
+
+  function updateStatusFilename() {
+    if (!el.statusOperation) return;
+
+    if (currentScript) {
+      el.statusOperation.textContent = `Loaded: ${currentScript.name}`;
+    } else {
+      el.statusOperation.textContent = 'Untitled';
+    }
+  }
+
+  // Compilation Status Checking
+  async function checkCompilationStatus(source) {
+    try {
+      const response = await fetch('/compile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ source })
+      });
+
+      return response.ok;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async function checkDecompilationStatus(input) {
+    try {
+      // For hex input, try to convert it to base64
+      let binaryData;
+      if (typeof input === 'string' && input.trim()) {
+        // Clean up hex input (remove spaces, ensure even length)
+        const hexClean = input.replace(/\s+/g, '').replace(/^0x/i, '');
+        if (hexClean.length % 2 !== 0 || !/^[0-9a-fA-F]*$/.test(hexClean)) {
+          return false; // Invalid hex format
+        }
+
+        // Convert hex to base64
+        const bytes = [];
+        for (let i = 0; i < hexClean.length; i += 2) {
+          bytes.push(parseInt(hexClean.substr(i, 2), 16));
+        }
+        binaryData = btoa(String.fromCharCode.apply(null, bytes));
+      } else {
+        return false; // No input
+      }
+
+      const response = await fetch('/decompile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          binary_data: binaryData,
+          pre_normalize: false
+        })
+      });
+
+      return response.ok;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function updateValidationStatus() {
+    // Check validation status for both compile and decompile modes
+    clearTimeout(compileCheckTimer);
+    compileCheckTimer = setTimeout(async () => {
+      if (st.mode === 'compile') {
+        const source = el.fdoInput.value || '';
+        if (!source.trim()) {
+          // Empty source - neutral state
+          el.statusMode.className = 'status-mode';
+          el.statusMode.textContent = 'Compile';
+          return;
+        }
+
+        const isValid = await checkCompilationStatus(source);
+        if (isValid) {
+          el.statusMode.className = 'status-mode compile-valid';
+          el.statusMode.textContent = 'Compile';
+        } else {
+          el.statusMode.className = 'status-mode compile-invalid';
+          el.statusMode.textContent = 'Compile';
+        }
+      } else if (st.mode === 'decompile') {
+        const hexInput = el.hexInput.value || '';
+        if (!hexInput.trim()) {
+          // Empty input - neutral state
+          el.statusMode.className = 'status-mode';
+          el.statusMode.textContent = 'Decompile';
+          return;
+        }
+
+        // Check for hex format validity (uneven pairs)
+        const cleanHex = hexInput.replace(/[^0-9A-Fa-f]/g, '');
+        const hasUnevenPairs = cleanHex.length > 0 && cleanHex.length % 2 !== 0;
+
+        if (hasUnevenPairs) {
+          // Invalid hex format - show format error
+          el.statusMode.className = 'status-mode decompile-invalid';
+          el.statusMode.textContent = 'Decompile (invalid hex)';
+          return;
+        }
+
+        // Valid hex format - check if it will decompile successfully
+        const isValid = await checkDecompilationStatus(hexInput);
+        if (isValid) {
+          el.statusMode.className = 'status-mode decompile-valid';
+          el.statusMode.textContent = 'Decompile';
+        } else {
+          el.statusMode.className = 'status-mode decompile-invalid';
+          el.statusMode.textContent = 'Decompile';
+        }
+      }
+    }, 1000); // Check 1 second after user stops typing
+  }
+
+  // Toast notification system
+  function showToast(message, type = 'info', duration = 3000) {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+      <div class="toast-message">${message}</div>
+      <button class="toast-close" type="button" aria-label="Close notification">×</button>
+    `;
+
+    // Add to container
+    el.toastContainer.appendChild(toast);
+
+    // Close button handler
+    const closeBtn = toast.querySelector('.toast-close');
+    closeBtn.addEventListener('click', () => removeToast(toast));
+
+    // Auto-remove after duration
+    setTimeout(() => removeToast(toast), duration);
+
+    // Return toast for manual control if needed
+    return toast;
+  }
+
+  function removeToast(toast) {
+    if (!toast || !toast.parentNode) return;
+
+    toast.classList.add('removing');
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.parentNode.removeChild(toast);
+      }
+    }, 300);
   }
 
   // init
