@@ -13,12 +13,14 @@ import logging
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 
-from fastapi import FastAPI, HTTPException, File, UploadFile, Request
-from fastapi.responses import Response, JSONResponse
+from fastapi import FastAPI, HTTPException, File, UploadFile, Request, WebSocket, WebSocketDisconnect
+from fastapi.responses import Response, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
+import asyncio
+import json
 
 # Add src directory to Python path
 sys.path.insert(0, os.path.dirname(__file__))
@@ -31,6 +33,16 @@ from fdo_daemon_client import FdoDaemonClient, FdoDaemonError
 # Import file management
 from database import init_database, test_database_connection
 from file_manager import FileManager, Script
+
+# Import chunking functionality
+from fdo_chunker import FdoChunker, FdoChunkingError
+
+# Import P3 frame parsing and FDO detection
+from p3_frame_parser import P3FrameParser, P3FrameParseError
+from fdo_detector import FdoDetector, FdoDetectionError
+
+# Import JSONL processing
+from jsonl_processor import JsonlProcessor, JsonlProcessingError
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -52,7 +64,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Global daemon manager/client
+# Global managers and clients
 fdo_tools_manager = None
 daemon_manager = None
 daemon_client = None
@@ -106,6 +118,68 @@ class ScriptListResponse(BaseModel):
 
 class DuplicateScriptRequest(BaseModel):
     new_name: Optional[str] = None
+
+
+# Chunking models
+class CompileChunkRequest(BaseModel):
+    source: str                    # FDO script content
+    token: str = "AT"             # 2-byte token (AT, at, At, f1, ff, DD, D3, OT, XS)
+    stream_id: int = 0            # Stream identifier
+    validate_first: bool = True   # Pre-validate entire script
+
+
+class ChunkInfo(BaseModel):
+    """Information about a single P3 payload chunk"""
+    payload: str                            # Base64-encoded P3 payload
+    size: int                              # Payload size in bytes
+    is_continuation: bool                  # True if this chunk needs P3 continuation bit (0x80)
+    sequence_index: int                    # Position in the sequence (0-based)
+
+
+class CompileChunkResponse(BaseModel):
+    success: bool
+    chunks: Optional[List[str]] = None      # Base64-encoded P3 payload chunks (legacy)
+    chunk_info: Optional[List[ChunkInfo]] = None  # Enhanced chunk metadata with continuation info
+    chunk_count: int = 0
+    total_size: int = 0                     # Total bytes across all chunks
+    validation_result: Optional[Dict] = None  # If validate_first=True
+    stats: Optional[Dict] = None            # Chunking statistics
+    error: Optional[str] = None             # Error message if failed
+
+
+# P3 FDO Detection models
+class DetectFdoRequest(BaseModel):
+    p3_frame: str                           # Base64-encoded complete P3 frame
+
+
+class DetectFdoResponse(BaseModel):
+    success: bool                           # Whether P3 frame parsing succeeded
+    fdo_detected: bool = False              # Whether FDO data was found
+    p3_frame_valid: bool = False            # Whether P3 frame structure is valid
+    error: Optional[str] = None             # Error message if parsing failed
+    p3_metadata: Optional[Dict] = None      # P3 frame information
+    fdo_metadata: Optional[Dict] = None     # FDO payload information (if detected)
+    fdo_data: Optional[str] = None          # Base64-encoded raw FDO data (if detected)
+    summary: Optional[str] = None           # Human-readable detection summary
+
+
+# JSONL Processing models
+class JsonlProcessResponse(BaseModel):
+    success: bool                           # Whether JSONL processing succeeded
+    source: Optional[str] = None            # Decompiled FDO source code
+    frames_processed: int = 0               # Total number of frames parsed
+    fdo_frames_found: int = 0               # Number of frames containing FDO data
+    total_fdo_bytes: int = 0                # Total bytes of extracted FDO data
+    chronological_order: str = "unknown"   # "oldest_first" or "newest_first"
+    supported_tokens: List[str] = []        # List of token types found
+    error: Optional[str] = None             # Error message if processing failed
+    decompilation_time: Optional[str] = None # Time taken for decompilation
+    frames_decompiled_successfully: int = 0  # Number of frames successfully decompiled
+    frames_failed_decompilation: int = 0     # Number of frames that failed decompilation
+    decompilation_failure_rate: Optional[float] = None  # Percentage of frames that failed
+    killer_frames_count: int = 0            # Number of frames that crashed daemon
+    daemon_restarts: int = 0                # Number of times daemon was restarted
+    frames_skipped_after_crash: int = 0     # Number of frames skipped due to unrecoverable crashes
 
 
 # --- Helpers ---
@@ -198,20 +272,37 @@ def _build_daemon_error_detail(daemon_content_type: str, daemon_text: str, daemo
         err = _normalize_daemon_error_json(daemon_json)
     if not err and daemon_text:
         err = _normalize_daemon_error_text(daemon_text)
-    # Clean Ada32 prefix for headline message
+
+    # Clean Ada32 prefix for headline message and detect crash types
     msg = err.get("message") or ""
+    code = err.get("code") or ""
+
     if msg:
         import re
-        msg = re.sub(r'^Ada32\s+error\s+rc=[^:]+:\s*', '', msg, flags=re.I).strip()
-        err["message"] = msg
+        # Detect new daemon crash error codes
+        if code == "0xfffffc18" or "Ada32 crashed:" in msg:
+            # This is a graceful crash response from new daemon
+            # Keep the crash message as-is for visibility
+            err["crash_type"] = "ada32_crash_handled"
+            if "Segmentation fault" in msg:
+                err["crash_signal"] = "SIGSEGV"
+            elif "Floating point exception" in msg:
+                err["crash_signal"] = "SIGFPE"
+            elif "Illegal instruction" in msg:
+                err["crash_signal"] = "SIGILL"
+        else:
+            # Normal Ada32 error - clean the prefix
+            msg = re.sub(r'^Ada32\s+error\s+rc=[^:]+:\s*', '', msg, flags=re.I).strip()
+            err["message"] = msg
+
     return err
 
 @app.on_event("startup")
 async def startup_event():
     """Initialize FDO Tools on startup"""
-    global fdo_tools_class, fdo_tools_manager
+    global fdo_tools_manager, daemon_manager, daemon_client
 
-    logger.info("🚀 Starting AtomForge API Server v2.0 (daemon-only)")
+    logger.info(f"🚀 Starting AtomForge API Server v2.0 (single daemon)")
 
     try:
         # Initialize database
@@ -232,32 +323,28 @@ async def startup_event():
         if not selected_release:
             raise RuntimeError("No FDO releases/backends found")
 
-        # Start daemon (mandatory; no fallback)
+        # Start single daemon
         daemon_exe = fdo_tools_manager.get_daemon_exe_path()
         if not daemon_exe:
             raise RuntimeError("fdo_daemon.exe not found in selected release or backend drop")
 
         bind = os.getenv("FDO_DAEMON_BIND", "127.0.0.1")
+        token = os.getenv("FDO_DAEMON_TOKEN")
         port_env = os.getenv("FDO_DAEMON_PORT", "0")
         port = int(port_env) if port_env.isdigit() else 0
-        log_path = os.getenv("FDO_DAEMON_LOG")
 
-        # Start manager and client
-        global daemon_manager, daemon_client
         daemon_manager = FdoDaemonManager(
             exe_path=daemon_exe,
             bind_host=bind,
             port=(port or None),
-            log_path=log_path,
         )
         daemon_manager.start()
 
-        token = os.getenv("FDO_DAEMON_TOKEN")
         daemon_client = FdoDaemonClient(base_url=daemon_manager.base_url, token=token)
 
         # Confirm health
         health = daemon_client.health()
-        logger.info(f"FDO Daemon health: {health}")
+        logger.info(f"📡 Single daemon health: {health}")
 
     except Exception as e:
         logger.error(f"Failed to initialize FDO Tools: {e}")
@@ -268,13 +355,17 @@ async def startup_event():
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint"""
+    """Health check endpoint with enhanced crash monitoring"""
     try:
-        health = daemon_client.health()
         release_info = fdo_tools_manager.get_release_info()
+        health = daemon_client.health()
+
+        # Extract crash count and readiness from new daemon health response
+        crash_count = health.get("crash_count", 0) if isinstance(health, dict) else 0
+        readiness = health.get("ready", True) if isinstance(health, dict) else True
 
         return {
-            "status": "healthy" if health else "degraded",
+            "status": "healthy" if health and readiness else "degraded",
             "service": "atomforge-fdo-api",
             "version": "2.0.0",
             "features": [
@@ -286,12 +377,14 @@ async def health_check():
                 "bind": daemon_manager.bind_host,
                 "port": daemon_manager.port,
                 "health": health,
+                "crash_count": crash_count,  # New: Ada32 crashes handled gracefully
+                "ready": readiness,  # New: Daemon readiness status
             },
             "release": {
                 "path": release_info.get("path"),
                 "bin_dir": release_info.get("bin_dir"),
             },
-            "execution_mode": "daemon"
+            "execution_mode": "single_daemon"
         }
 
     except Exception as e:
@@ -305,6 +398,14 @@ async def health_check():
                 "error": str(e)
             }
         )
+
+
+
+
+
+
+
+
 
 
 @app.post("/compile")
@@ -334,7 +435,7 @@ async def compile_fdo(request: CompileRequest):
         try:
             binary_data = daemon_client.compile_source(sanitize_fdo_source(source))
         except FdoDaemonError as e:
-            # Pass-through daemon error details with normalized error payload
+            # Single daemon error details with normalized error payload
             norm = _build_daemon_error_detail(e.content_type, e.text, e.json)
             raise HTTPException(
                 status_code=e.status_code or 500,
@@ -464,6 +565,360 @@ async def decompile_fdo(request: DecompileRequest):
                 "error": "Internal server error during decompilation",
                 "details": {"exception": str(e)}
             }
+        )
+
+
+@app.post("/decompile-jsonl", response_model=JsonlProcessResponse)
+async def decompile_jsonl_file(file: UploadFile = File(...)):
+    """
+    Process JSONL file containing P3 frames to extract and decompile FDO streams.
+
+    This endpoint analyzes JSONL logs of P3 protocol frames, extracts FDO data
+    from frames with known token types, reassembles the streams chronologically,
+    and decompiles the result to human-readable FDO source code.
+
+    Args:
+        file: Uploaded JSONL file containing P3 frame data
+
+    Returns:
+        JsonlProcessResponse with decompiled source and processing metadata
+    """
+    start_time = time.time()
+
+    try:
+        # Validate file type
+        if not file.filename.lower().endswith('.jsonl'):
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "success": False,
+                    "error": "File must have .jsonl extension",
+                    "details": {"filename": file.filename}
+                }
+            )
+
+        # Read file content and create line iterator for streaming processing
+        try:
+            content = await file.read()
+            jsonl_content = content.decode('utf-8')
+        except UnicodeDecodeError as e:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "success": False,
+                    "error": "File must be valid UTF-8 encoded JSONL",
+                    "details": {"decode_error": str(e)}
+                }
+            )
+        except Exception as e:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "success": False,
+                    "error": "Failed to read uploaded file",
+                    "details": {"read_error": str(e)}
+                }
+            )
+
+        if not jsonl_content.strip():
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "success": False,
+                    "error": "JSONL file is empty"
+                }
+            )
+
+        # Create line iterator factory for streaming processor
+        def create_line_iterator():
+            """Create line iterator that yields JSONL lines one at a time."""
+            for line in jsonl_content.splitlines():
+                if line.strip():  # Skip empty lines
+                    yield line
+
+        # Process JSONL file using streaming processor
+        try:
+            # Pass line iterator factory to allow multiple iterations
+            processing_result = JsonlProcessor.stream_process_file(create_line_iterator)
+        except JsonlProcessingError as e:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "success": False,
+                    "error": f"JSONL processing failed: {str(e)}"
+                }
+            )
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail={
+                    "success": False,
+                    "error": "Internal error during JSONL processing",
+                    "details": {"exception": str(e)}
+                }
+            )
+
+        # Check if processing found any FDO data
+        if not processing_result['success']:
+            return JsonlProcessResponse(
+                success=False,
+                frames_processed=processing_result['frames_processed'],
+                fdo_frames_found=processing_result['fdo_frames_found'],
+                total_fdo_bytes=processing_result['total_fdo_bytes'],
+                chronological_order=processing_result['chronological_order'],
+                supported_tokens=processing_result['supported_tokens'],
+                error=processing_result['error']
+            )
+
+        # Decompile the extracted FDO frames individually
+        fdo_frames = processing_result['fdo_frames']
+        if not fdo_frames:
+            return JsonlProcessResponse(
+                success=False,
+                frames_processed=processing_result['frames_processed'],
+                fdo_frames_found=processing_result['fdo_frames_found'],
+                total_fdo_bytes=0,
+                chronological_order=processing_result['chronological_order'],
+                supported_tokens=processing_result['supported_tokens'],
+                error="No FDO data extracted from frames"
+            )
+
+        # Decompile frames individually using enhanced forensic approach with daemon restart capability
+        decompile_start = time.time()
+        try:
+            # Pass daemon_manager for restart capability during crashes
+            decompilation_result = JsonlProcessor._decompile_frames_individually(fdo_frames, daemon_client, daemon_manager)
+            source_code = decompilation_result['source']
+            frames_decompiled_successfully = decompilation_result['frames_decompiled_successfully']
+            frames_failed_decompilation = decompilation_result['frames_failed_decompilation']
+            decompilation_failure_rate = decompilation_result['decompilation_failure_rate']
+            killer_frames = decompilation_result.get('killer_frames', [])
+            daemon_restarts = decompilation_result.get('daemon_restarts', 0)
+            frames_skipped_after_crash = decompilation_result.get('frames_skipped_after_crash', 0)
+        except Exception as e:
+            return JsonlProcessResponse(
+                success=False,
+                frames_processed=processing_result['frames_processed'],
+                fdo_frames_found=processing_result['fdo_frames_found'],
+                total_fdo_bytes=processing_result['total_fdo_bytes'],
+                chronological_order=processing_result['chronological_order'],
+                supported_tokens=processing_result['supported_tokens'],
+                error=f"Frame-by-frame decompilation error: {str(e)}"
+            )
+
+        decompile_duration = time.time() - decompile_start
+        total_duration = time.time() - start_time
+
+        logger.info(f"Enhanced JSONL processing successful: {file.filename}, "
+                   f"{processing_result['frames_processed']} frames, "
+                   f"{processing_result['fdo_frames_found']} FDO frames, "
+                   f"{frames_decompiled_successfully}/{processing_result['fdo_frames_found']} frames decompiled, "
+                   f"{len(killer_frames)} killer frames, {daemon_restarts} daemon restarts, "
+                   f"{frames_skipped_after_crash} frames skipped, "
+                   f"{len(source_code)} chars, {decompilation_failure_rate:.1f}% failure rate, "
+                   f"{total_duration:.3f}s")
+
+        if killer_frames:
+            logger.warning(f"🔥 {len(killer_frames)} KILLER FRAMES detected in {file.filename}!")
+            for killer in killer_frames[:3]:  # Log first 3 killer frames
+                logger.warning(f"   Killer Frame {killer['index']}: {killer['token']}/{killer['stream_id']} "
+                             f"({killer['size_bytes']} bytes) - {killer['error']}")
+
+        return JsonlProcessResponse(
+            success=True,
+            source=source_code,
+            frames_processed=processing_result['frames_processed'],
+            fdo_frames_found=processing_result['fdo_frames_found'],
+            total_fdo_bytes=processing_result['total_fdo_bytes'],
+            chronological_order=processing_result['chronological_order'],
+            supported_tokens=processing_result['supported_tokens'],
+            decompilation_time=f"{decompile_duration:.3f}s",
+            frames_decompiled_successfully=frames_decompiled_successfully,
+            frames_failed_decompilation=frames_failed_decompilation,
+            decompilation_failure_rate=decompilation_failure_rate,
+            killer_frames_count=len(killer_frames),
+            daemon_restarts=daemon_restarts,
+            frames_skipped_after_crash=frames_skipped_after_crash
+        )
+
+    except HTTPException:
+        # Re-raise HTTP exceptions (validation errors)
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error during JSONL processing: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "success": False,
+                "error": "Internal server error during JSONL processing",
+                "details": {"exception": str(e)}
+            }
+        )
+
+
+@app.post("/compile-chunk", response_model=CompileChunkResponse)
+async def compile_chunk_fdo(request: CompileChunkRequest):
+    """
+    Chunk FDO script into P3-ready payload segments.
+
+    This endpoint implements AOLBUF.AOL chunking logic for splitting FDO streams
+    into properly sized P3 protocol payloads ready for transmission.
+
+    Args:
+        request: CompileChunkRequest with FDO script, token, stream_id, and options
+
+    Returns:
+        CompileChunkResponse with chunked payloads and metadata
+    """
+    start_time = time.time()
+
+    try:
+        # Initialize chunker with daemon client
+        chunker = FdoChunker(daemon_client)
+
+        # Perform chunking with optional validation
+        result = await chunker.chunk_and_validate(
+            fdo_script=request.source,
+            stream_id=request.stream_id,
+            token=request.token,
+            validate_first=request.validate_first
+        )
+
+        # Convert binary chunks to base64 for JSON response
+        base64_chunks = []
+        chunk_info_list = []
+
+        if result['success'] and result['chunks']:
+            base64_chunks = [base64.b64encode(chunk).decode('ascii') for chunk in result['chunks']]
+
+            # Build enhanced chunk info with continuation metadata
+            for i, (chunk, info) in enumerate(zip(result['chunks'], result['chunk_info'])):
+                chunk_info_list.append(ChunkInfo(
+                    payload=base64.b64encode(chunk).decode('ascii'),
+                    size=info['size'],
+                    is_continuation=info['is_continuation'],
+                    sequence_index=info['sequence_index']
+                ))
+
+        # Build response
+        response = CompileChunkResponse(
+            success=result['success'],
+            chunks=base64_chunks if result['success'] else None,  # Legacy compatibility
+            chunk_info=chunk_info_list if result['success'] else None,  # Enhanced metadata
+            chunk_count=len(base64_chunks) if result['success'] else 0,
+            total_size=result['stats'].get('total_size', 0) if result['success'] else 0,
+            validation_result=result.get('validation'),
+            stats=result.get('stats'),
+            error=result.get('error')
+        )
+
+        duration = time.time() - start_time
+
+        if result['success']:
+            logger.info(f"FDO chunking successful: {len(base64_chunks)} chunks, "
+                       f"{result['stats']['total_size']} bytes, {duration:.3f}s")
+        else:
+            logger.warning(f"FDO chunking failed: {result.get('error', 'Unknown error')}")
+
+        return response
+
+    except FdoChunkingError as e:
+        logger.error(f"Chunking error: {e}")
+        return CompileChunkResponse(
+            success=False,
+            error=f"Chunking failed: {str(e)}"
+        )
+
+    except ValueError as e:
+        logger.error(f"Invalid chunking parameters: {e}")
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "success": False,
+                "error": "Invalid request parameters",
+                "details": {"validation_error": str(e)}
+            }
+        )
+
+    except Exception as e:
+        logger.error(f"Unexpected chunking error: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "success": False,
+                "error": "Internal chunking error",
+                "details": {"exception": str(e)}
+            }
+        )
+
+
+@app.post("/detect-fdo", response_model=DetectFdoResponse)
+async def detect_fdo_in_p3_frame(request: DetectFdoRequest):
+    """
+    Detect and extract FDO data from a complete P3 frame.
+
+    This endpoint analyzes a P3 protocol frame to automatically detect if it contains
+    valid FDO (Field Data Object) data. Designed for real-time UI hints and auto-extraction.
+
+    Args:
+        request: DetectFdoRequest with base64-encoded P3 frame
+
+    Returns:
+        DetectFdoResponse with detection results and extracted FDO data if found
+    """
+    start_time = time.time()
+
+    try:
+        logger.debug(f"Processing P3 frame detection request: {len(request.p3_frame)} base64 chars")
+
+        # Perform FDO detection using the detection engine
+        detection_result = FdoDetector.detect_from_base64(request.p3_frame)
+
+        # Generate human-readable summary
+        summary = FdoDetector.get_detection_summary(detection_result)
+
+        # Build comprehensive response
+        response = DetectFdoResponse(
+            success=detection_result['success'],
+            fdo_detected=detection_result['fdo_detected'],
+            p3_frame_valid=detection_result['p3_frame_valid'],
+            error=detection_result.get('error'),
+            p3_metadata=detection_result.get('p3_metadata'),
+            fdo_metadata=detection_result.get('fdo_metadata'),
+            fdo_data=detection_result.get('fdo_data'),
+            summary=summary
+        )
+
+        duration = time.time() - start_time
+
+        if detection_result['fdo_detected']:
+            meta = detection_result['fdo_metadata']
+            logger.info(f"P3 FDO detection successful: token={meta.get('token')}, "
+                       f"stream_id={meta.get('stream_id')}, fdo_size={meta.get('fdo_size')} bytes, "
+                       f"duration={duration:.3f}s")
+        else:
+            logger.debug(f"P3 FDO detection completed: {summary}, duration={duration:.3f}s")
+
+        return response
+
+    except FdoDetectionError as e:
+        logger.error(f"FDO detection error: {e}")
+        return DetectFdoResponse(
+            success=False,
+            fdo_detected=False,
+            p3_frame_valid=False,
+            error=f"Detection failed: {str(e)}",
+            summary="FDO detection failed"
+        )
+
+    except Exception as e:
+        logger.error(f"Unexpected error during P3 FDO detection: {e}", exc_info=True)
+        return DetectFdoResponse(
+            success=False,
+            fdo_detected=False,
+            p3_frame_valid=False,
+            error=f"Internal server error: {str(e)}",
+            summary="Internal error during detection"
         )
 
 

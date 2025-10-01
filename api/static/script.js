@@ -28,9 +28,10 @@ const App = (() => {
     fileDecoded: qs('#fileDecoded'),
     openAsHexBtn: qs('#openAsHexBtn'),
     hexInput: qs('#hexInput'),
-    // hexDecoded removed - functionality moved to status bar
-    extractFdoBtn: qs('#extractFdoBtn'),
-    preNormalizeCheck: qs('#preNormalizeCheck'),
+    // Hex detection elements
+    hexStatusLine: qs('#hexStatusLine'),
+    hexStatusText: qs('#hexStatusText'),
+    hexStatusIcon: qs('#hexStatusIcon'),
     // Output
     outTabs: qsa('.output .tab'),
     outPanels: {
@@ -98,6 +99,7 @@ const App = (() => {
     statusOperation: qs('#statusOperation'),
     statusStats: qs('#statusStats'),
     statusMode: qs('#statusMode'),
+    brand: qs('.brand'),
   };
 
   let currentBinary = null;   // Uint8Array from file OR hex
@@ -310,9 +312,15 @@ const App = (() => {
   async function run() {
     if (st.mode === 'compile') return compile();
 
-    // Check if we have a JSONL file loaded and we're in decompile mode
-    // P3 JSONL processing removed
+    // Determine which input tab is active
+    const activeInput = el.toggleBtns.find(btn => btn.classList.contains('active'))?.dataset.input;
 
+    // Only process JSONL if on File tab AND JSONL is loaded
+    if (activeInput === 'file' && isJsonlFileLoaded && window.jsonlData) {
+      return decompileJsonl();
+    }
+
+    // For all other cases (File tab with binary, Hex tab), use tab-aware getBinary()
     return decompile();
   }
 
@@ -369,10 +377,9 @@ const App = (() => {
     setBusy(true, 'Decompiling…');
     try {
       const base64 = btoa(String.fromCharCode.apply(null, bytes));
-      const preNormalize = el.preNormalizeCheck.checked;
       const res = await fetch('/decompile', {
         method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ binary_data: base64, pre_normalize: preNormalize })
+        body: JSON.stringify({ binary_data: base64 })
       });
       if (!res.ok) {
         const e = await safeJson(res);
@@ -413,21 +420,107 @@ const App = (() => {
     } finally { setBusy(false); }
   }
 
+  async function decompileJsonl() {
+    if (!window.jsonlData) {
+      log('No JSONL file loaded.', 'error');
+      return;
+    }
+
+    // Estimate processing time and show helpful message
+    const estimatedTime = Math.ceil(window.jsonlData.content.split('\n').length / 10);
+    setBusy(true, `Processing JSONL file (may take ${estimatedTime}+ seconds for large files)...`);
+    log(`Starting JSONL processing of ${window.jsonlData.filename}...`, 'info');
+
+    try {
+      // Create FormData for file upload
+      const formData = new FormData();
+      const blob = new Blob([window.jsonlData.content], { type: 'application/json' });
+      formData.append('file', blob, window.jsonlData.filename);
+
+      const res = await fetch('/decompile-jsonl', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!res.ok) {
+        const e = await safeJson(res);
+        const detail = e && e.detail ? e.detail : e;
+        throw new Error(detail?.error || `HTTP ${res.status}`);
+      }
+
+      const data = await res.json();
+
+      if (!data.success) {
+        throw new Error(data.error || 'JSONL processing failed');
+      }
+
+      // Display the decompiled source
+      decompiledText = data.source || '';
+      el.decompileSize.textContent = `${decompiledText.length.toLocaleString()} chars`;
+      el.sourceView.textContent = decompiledText;
+
+      // Display comprehensive JSONL processing results
+      const metadata = `JSONL Processing Complete
+${'='.repeat(50)}
+Input: ${window.jsonlData.filename}
+Total frames: ${data.frames_processed}
+FDO frames found: ${data.fdo_frames_found}
+Successfully decompiled: ${data.frames_decompiled_successfully}
+Failed (non-FDO data): ${data.frames_failed_decompilation}
+Success rate: ${(100 - data.decompilation_failure_rate).toFixed(1)}%
+Processing time: ${data.decompilation_time}
+
+Supported tokens: ${data.supported_tokens.join(', ')}
+Chronological order: ${data.chronological_order}`;
+
+      el.compileSize.textContent = `${data.fdo_frames_found} FDO frames`;
+      el.hexOutViewer.textContent = metadata;
+
+      // Save decompile outputs to mode state
+      modeOutputs.decompile.hexContent = el.hexOutViewer.textContent;
+      modeOutputs.decompile.hexSize = el.compileSize.textContent;
+      modeOutputs.decompile.sourceContent = el.sourceView.textContent;
+      modeOutputs.decompile.sourceSize = el.decompileSize.textContent;
+      modeOutputs.decompile.text = decompiledText;
+
+      reveal('source');
+      modeOutputs.decompile.activeTab = 'source';
+
+      // Success message with key stats
+      const successRate = (100 - data.decompilation_failure_rate).toFixed(1);
+      log(`JSONL complete: ${data.frames_decompiled_successfully}/${data.fdo_frames_found} FDO frames (${successRate}% success) in ${data.decompilation_time}`, 'success');
+    } catch (err) {
+      log(`JSONL processing failed: ${err.message}`, 'error');
+      reveal('status');
+      modeOutputs.decompile.activeTab = 'status';
+    } finally {
+      setBusy(false);
+    }
+  }
+
   function getBinary() {
-    // Check if hex view is active (not hidden)
-    if (!el.hexInputView.hidden) {
+    // Determine which input tab is active
+    const activeInput = el.toggleBtns.find(btn => btn.classList.contains('active'))?.dataset.input;
+
+    if (activeInput === 'hex') {
+      // Hex tab: only use hex input, never fall back to file
       const raw = (el.hexInput.value || '').trim();
-      if (!raw) { log('Paste hex data or choose a file.', 'error'); return null; }
+      if (!raw) { log('Paste hex data to decompile.', 'error'); return null; }
       const clean = raw.replace(/[^0-9A-Fa-f]/g, '');
       if (clean.length % 2 !== 0) { log('Hex length must be even.', 'error'); return null; }
       const bytes = new Uint8Array(clean.length/2);
       for (let i=0;i<clean.length;i+=2) bytes[i/2] = parseInt(clean.substr(i,2),16);
       currentBinary = bytes;
-      // hexDecoded.textContent removed - functionality moved to status bar
       return bytes;
+    } else if (activeInput === 'file') {
+      // File tab: use loaded file data
+      if (!currentBinary) { showToast('Choose a file to decompile.', 'error'); return null; }
+      return currentBinary;
     }
-    if (!currentBinary) { showToast('Choose a file or paste hex.', 'error'); return null; }
-    return currentBinary;
+
+    // Fallback: no active tab or unrecognized tab
+    showToast('Select an input method.', 'error');
+    return null;
   }
 
   function bindDecompileInputs() {
@@ -436,17 +529,24 @@ const App = (() => {
       btn.addEventListener('click', () => {
         el.toggleBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        const showHex = btn.dataset.input === 'hex';
+        const inputType = btn.dataset.input;
 
-        el.fileView.hidden = showHex;
-        el.hexInputView.hidden = !showHex;
+        // Hide all input views
+        el.fileView.hidden = true;
+        el.hexInputView.hidden = true;
 
-        if (showHex) {
-          el.hexInput.removeAttribute('disabled');
-          el.hexInput.focus();
-          refreshHexDecoded();
-        } else {
-          el.binaryFile.focus();
+        // Show the selected input view
+        switch (inputType) {
+          case 'hex':
+            el.hexInputView.hidden = false;
+            el.hexInput.removeAttribute('disabled');
+            el.hexInput.focus();
+            refreshHexDecoded();
+            break;
+          case 'file':
+            el.fileView.hidden = false;
+            el.binaryFile.focus();
+            break;
         }
       });
     });
@@ -459,7 +559,33 @@ const App = (() => {
       const f = e.target.files?.[0]; if (!f) return;
 
       // Check if this is a JSONL file
-      {
+      if (f.name.toLowerCase().endsWith('.jsonl')) {
+        // Handle JSONL file for P3 frame processing
+        const reader = new FileReader();
+        reader.onload = async ev => {
+          const jsonlContent = ev.target.result;
+
+          // Set the JSONL loaded state
+          isJsonlFileLoaded = true;
+          currentBinary = null; // Clear binary data as we're handling JSONL
+          el.openAsHexBtn.hidden = true;
+
+          // Visually indicate loaded state on the drop zone
+          el.binaryDrop.classList.add('loaded');
+          const msgNode = el.binaryDrop.querySelector('span');
+          if (msgNode) {
+            msgNode.textContent = `${f.name} — JSONL P3 frames (click to change)`;
+          }
+          showToast(`Loaded JSONL file: ${f.name}`, 'success');
+
+          // Store JSONL data for processing during decompile
+          window.jsonlData = {
+            filename: f.name,
+            content: jsonlContent
+          };
+        };
+        reader.readAsText(f);
+      } else {
         // Handle binary file
         const reader = new FileReader();
         reader.onload = ev => {
@@ -467,6 +593,7 @@ const App = (() => {
           el.fileDecoded.textContent = currentBinary.length.toLocaleString();
           el.openAsHexBtn.hidden = false;
           isJsonlFileLoaded = false;
+          window.jsonlData = null; // Clear any JSONL data
 
           // Visually indicate loaded state on the drop zone
           el.binaryDrop.classList.add('loaded');
@@ -501,6 +628,201 @@ const App = (() => {
 
     el.hexInput.addEventListener('input', refreshHexDecoded);
     el.hexInput.addEventListener('paste', (e) => { requestAnimationFrame(refreshHexDecoded); });
+
+    // Hex detection for AOL/P3 frames
+    setupHexDetection();
+  }
+
+  // ---------- Hex Detection for AOL/P3 Frames ----------
+  let hexDetectionTimeout = null;
+  let lastHexDetection = null;
+
+  function setupHexDetection() {
+    if (!el.hexInput || !el.hexStatusLine) return;
+
+    // Real-time hex detection with debouncing
+    el.hexInput.addEventListener('input', () => {
+      clearTimeout(hexDetectionTimeout);
+      hexDetectionTimeout = setTimeout(detectHexFrame, 300); // 300ms debounce
+    });
+
+    el.hexInput.addEventListener('paste', () => {
+      requestAnimationFrame(() => {
+        clearTimeout(hexDetectionTimeout);
+        hexDetectionTimeout = setTimeout(detectHexFrame, 100); // Faster response after paste
+      });
+    });
+
+    // Clickable status bar for FDO extraction
+    el.hexStatusLine.addEventListener('click', (e) => {
+      if (el.hexStatusLine.classList.contains('detected')) {
+        extractFdoFromHex();
+      }
+    });
+
+    // Keyboard support for accessibility
+    el.hexStatusLine.addEventListener('keydown', (e) => {
+      if ((e.key === 'Enter' || e.key === ' ') && el.hexStatusLine.classList.contains('detected')) {
+        e.preventDefault();
+        extractFdoFromHex();
+      }
+    });
+  }
+
+  async function detectHexFrame() {
+    const hexData = (el.hexInput.value || '').trim();
+
+    if (!hexData) {
+      updateHexDetectionStatus('default', '');
+      hideHexActions();
+      lastHexDetection = null;
+      return;
+    }
+
+    // Show analyzing status
+    updateHexDetectionStatus('detecting', 'Analyzing hex data...');
+
+    try {
+      // Clean and validate hex
+      const cleanHex = hexData.replace(/[^0-9A-Fa-f]/g, '');
+      if (cleanHex.length === 0 || cleanHex.length % 2 !== 0) {
+        updateHexDetectionStatus('error', 'Invalid hex format');
+        hideHexActions();
+        lastHexDetection = null;
+        return;
+      }
+
+      // Convert hex to base64 for API
+      const bytes = new Uint8Array(cleanHex.length / 2);
+      for (let i = 0; i < cleanHex.length; i += 2) {
+        bytes[i / 2] = parseInt(cleanHex.substr(i, 2), 16);
+      }
+      const base64Data = btoa(String.fromCharCode.apply(null, bytes));
+
+      // Detect P3/AOL frame
+      const response = await fetch('/detect-fdo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p3_frame: base64Data })
+      });
+
+      const result = await response.json();
+      lastHexDetection = result;
+
+      if (result.success && result.fdo_detected) {
+        const meta = result.fdo_metadata;
+        updateHexDetectionStatus('detected',
+          `AOL/P3 frame detected • ${meta.token} token • ${meta.fdo_size} bytes`
+        );
+        showHexActions();
+      } else if (result.success && result.p3_frame_valid) {
+        updateHexDetectionStatus('invalid',
+          'Valid P3 frame, no FDO data detected'
+        );
+        hideHexActions();
+      } else {
+        updateHexDetectionStatus('neutral', 'No AOL/P3 frame found');
+        hideHexActions();
+      }
+
+    } catch (error) {
+      console.error('Hex detection error:', error);
+      updateHexDetectionStatus('error', 'Network error during detection');
+      hideHexActions();
+      lastHexDetection = null;
+    }
+  }
+
+  function updateHexDetectionStatus(state, message) {
+    if (!el.hexStatusLine || !el.hexStatusText) return;
+
+    // Show/hide status line based on whether there's a message
+    if (message) {
+      el.hexStatusLine.hidden = false;
+
+      // Remove all state classes from status line
+      el.hexStatusLine.classList.remove('detecting', 'detected', 'error', 'invalid', 'neutral', 'warning');
+
+      // Add current state class to status line
+      if (state !== 'default') {
+        el.hexStatusLine.classList.add(state);
+      }
+
+      // Update text
+      el.hexStatusText.textContent = message;
+
+      // Manage accessibility attributes based on state
+      if (state === 'detected') {
+        el.hexStatusLine.setAttribute('tabindex', '0');
+        el.hexStatusLine.setAttribute('aria-disabled', 'false');
+        el.hexStatusLine.setAttribute('aria-label', 'Extract FDO from detected AOL/P3 frame');
+      } else {
+        el.hexStatusLine.setAttribute('tabindex', '-1');
+        el.hexStatusLine.setAttribute('aria-disabled', 'true');
+        el.hexStatusLine.setAttribute('aria-label', 'Hex detection status');
+      }
+
+      // Add subtle border feedback to textarea
+      el.hexInput.classList.remove('detecting', 'detected', 'error', 'warning');
+      if (state !== 'default' && state !== 'neutral') {
+        el.hexInput.classList.add(state);
+      }
+    } else {
+      el.hexStatusLine.hidden = true;
+      el.hexInput.classList.remove('detecting', 'detected', 'error', 'warning');
+    }
+  }
+
+  function showHexActions() {
+    // Status bar is now clickable - accessibility handled in updateHexDetectionStatus
+    // This function kept for compatibility but functionality moved to updateHexDetectionStatus
+  }
+
+  function hideHexActions() {
+    // Status bar is now not clickable - accessibility handled in updateHexDetectionStatus
+    // This function kept for compatibility but functionality moved to updateHexDetectionStatus
+  }
+
+  function extractFdoFromHex() {
+    if (!lastHexDetection || !lastHexDetection.fdo_detected) {
+      showToast('No FDO data detected to extract', 'error');
+      return;
+    }
+
+    try {
+      // Decode base64 FDO data to hex
+      const fdoBytes = atob(lastHexDetection.fdo_data);
+      const hexString = Array.from(fdoBytes)
+        .map(char => char.charCodeAt(0).toString(16).padStart(2, '0'))
+        .join('').toUpperCase();
+
+      // Replace current hex input with extracted FDO data
+      el.hexInput.value = hexString;
+      el.hexInput.focus();
+      refreshHexDecoded();
+
+      // Show success message before clearing detection
+      const meta = lastHexDetection?.fdo_metadata;
+      if (meta) {
+        showToast(`FDO data extracted: ${meta.token} token, ${meta.fdo_size} bytes`, 'success');
+      } else {
+        showToast('FDO data extracted successfully', 'success');
+      }
+
+      // Clear detection status since we've extracted the data
+      updateHexDetectionStatus('default', '');
+      hideHexActions();
+      lastHexDetection = null;
+
+    } catch (error) {
+      console.error('FDO extraction error:', error);
+      showToast('Failed to extract FDO data', 'error');
+    }
+  }
+
+  function isHexString(str) {
+    const cleaned = str.replace(/[^0-9A-Fa-f]/g, '');
+    return cleaned.length > 0 && cleaned.length === str.replace(/[\s\-:]/g, '').length;
   }
 
   // ---------- Output tabs & helpers ----------
@@ -893,6 +1215,9 @@ const App = (() => {
       baseUrlElement.textContent = `${window.location.protocol}//${window.location.host}`;
     }
 
+    // Setup tab functionality
+    setupAPITabs();
+
     // Show modal
     el.apiBtn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -966,6 +1291,38 @@ const App = (() => {
             showToast('Failed to copy to clipboard', 'error');
           }
         }
+      });
+    });
+  }
+
+  function setupAPITabs() {
+    const tabButtons = qsa('.api-tab');
+    const tabPanels = qsa('.api-tab-panel');
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetTab = btn.dataset.tab;
+
+        // Update button states
+        tabButtons.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+
+        // Update panel visibility
+        tabPanels.forEach(panel => {
+          panel.classList.remove('active');
+        });
+        const targetPanel = qs(`#tab-${targetTab}`);
+        if (targetPanel) {
+          targetPanel.classList.add('active');
+        }
+
+        // Re-setup copy buttons for newly visible content
+        setupAPICopyButtons();
       });
     });
   }
@@ -2159,6 +2516,7 @@ const App = (() => {
       }
     }, 300);
   }
+
 
   // init
   window.addEventListener('hashchange', ()=>{

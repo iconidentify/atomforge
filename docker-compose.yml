@@ -18,6 +18,10 @@ services:
       - LOGLEVEL=INFO
       - HOST=0.0.0.0
       - PORT=8000
+      # Single Daemon Configuration
+      - FDO_DAEMON_POOL_ENABLED=false
+      - FDO_DAEMON_BIND=127.0.0.1
+      - FDO_DAEMON_PORT=8080
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -33,13 +37,13 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
-          cpus: '1.0'
-        reservations:
           memory: 256M
           cpus: '0.5'
+        reservations:
+          memory: 128M
+          cpus: '0.25'
     # Labels for monitoring and management
     labels:
       - "com.atomforge.service=api"
       - "com.atomforge.version=2.0.0"
-      - "com.atomforge.mode=daemon"
+      - "com.atomforge.mode=single_daemon"

@@ -68,12 +68,6 @@
                         <button class="toggle-btn active" data-input="hex">Hex</button>
                         <button class="toggle-btn" data-input="file">File</button>
                     </div>
-                    <div class="decompile-options">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="preNormalizeCheck" class="checkbox">
-                            <span class="checkbox-text">Pre-normalize input</span>
-                        </label>
-                    </div>
                     
                 </div>
 
@@ -86,8 +80,15 @@
                 </div>
 
                 <div id="hexInputView" class="input-view active">
-                    <textarea id="hexInput" class="editor mono" spellcheck="false" placeholder="Paste hex here (e.g., 40 01 02 … or 400102…)"></textarea>
+                    <div class="hex-input-wrapper">
+                        <textarea id="hexInput" class="editor mono" spellcheck="false" placeholder="Paste hex data here (auto-detects AOL/P3 frames)"></textarea>
+                        <div class="hex-status-line" id="hexStatusLine" hidden role="button" tabindex="-1" aria-disabled="true" aria-label="Extract FDO from detected AOL/P3 frame">
+                            <span class="status-icon" id="hexStatusIcon"></span>
+                            <span class="status-text" id="hexStatusText">Analyzing hex data...</span>
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </section>
 
@@ -148,78 +149,250 @@
     <!-- API Documentation Modal -->
     <div id="apiModal" class="modal" hidden role="dialog" aria-labelledby="apiModalTitle" aria-modal="true">
         <div class="modal-backdrop" aria-hidden="true"></div>
-        <div class="modal-content">
+        <div class="modal-content large">
             <header class="modal-header">
                 <h2 id="apiModalTitle">AtomForge API Documentation</h2>
                 <button id="apiModalClose" class="btn ghost small" aria-label="Close API documentation">×</button>
             </header>
             <div class="modal-body">
-                <section class="api-overview">
-                    <p>The AtomForge API provides programmatic access to FDO compilation, decompilation, and P3 packet processing capabilities.</p>
-                    <p><strong>Base URL:</strong> <code class="api-base-url">http://localhost:8000</code></p>
-                </section>
+                <!-- Tab Navigation -->
+                <nav class="api-tabs" role="tablist">
+                    <button class="api-tab active" role="tab" data-tab="quick-start" aria-selected="true">Quick Start</button>
+                    <button class="api-tab" role="tab" data-tab="p3-protocol" aria-selected="false">P3 Protocol</button>
+                    <button class="api-tab" role="tab" data-tab="reference" aria-selected="false">Reference</button>
+                </nav>
 
-                <section class="api-endpoint">
-                    <h3>Compile FDO Source</h3>
-                    <div class="endpoint-meta">
-                        <span class="method post">POST</span>
-                        <code>/compile</code>
-                    </div>
-                    <p>Compiles FDO source code into binary format.</p>
+                <!-- Tab Content -->
+                <div class="api-tab-content">
+                    <!-- Quick Start Tab -->
+                    <div class="api-tab-panel active" id="tab-quick-start" role="tabpanel">
+                        <section class="api-overview">
+                            <p>The AtomForge API provides programmatic access to FDO (Field Data Object) compilation and decompilation. Built on a high-performance daemon architecture for low-latency operations.</p>
+                            <p><strong>Base URL:</strong> <code class="api-base-url">http://localhost:8000</code></p>
+                            <p><strong>Content-Type:</strong> <code>application/json</code> for all requests</p>
+                        </section>
 
-                    <h4>Request Body</h4>
-                    <pre class="code-block"><code>{
-  "source": "uni_start_stream &lt;00x&gt;\n  man_start_object &lt;independent, \"Example\"&gt;\n    mat_object_id &lt;example-001&gt;\n  man_end_object &lt;&gt;\nuni_end_stream &lt;&gt;"
+                        <section class="api-endpoint">
+                            <h3>Compile FDO Source</h3>
+                            <div class="endpoint-meta">
+                                <span class="method post">POST</span>
+                                <code>/compile</code>
+                            </div>
+                            <p>Compiles FDO source code into optimized binary format.</p>
+
+                            <h4>Request Example</h4>
+                            <pre class="code-block"><code>{
+  "source": "uni_start_stream &lt;00x&gt;\n  man_start_object &lt;independent, \"Example\"&gt;\n    mat_object_id &lt;example-001&gt;\n  man_end_object &lt;&gt;\nuni_end_stream &lt;&gt;",
+  "normalize": true
 }</code></pre>
 
-                    <h4>cURL Example</h4>
-                    <div class="code-example">
-                        <pre class="code-block"><code>curl -X POST http://localhost:8000/compile \
+                            <h4>cURL Example</h4>
+                            <div class="code-example">
+                                <pre class="code-block"><code>curl -X POST http://localhost:8000/compile \
   -H "Content-Type: application/json" \
   -d '{
-    "source": "uni_start_stream <00x>\n  man_start_object <independent, \"Example\">\n    mat_object_id <example-001>\n  man_end_object <>\nuni_end_stream <>"
+    "source": "uni_start_stream <00x>\n  man_start_object <independent, \"Example\">\n    mat_object_id <example-001>\n  man_end_object <>\nuni_end_stream <>",
+    "normalize": true
   }' \
   --output compiled.fdo</code></pre>
-                        <button class="copy-btn" data-copy="compile">Copy</button>
-                    </div>
+                                <button class="copy-btn" data-copy="compile">Copy</button>
+                            </div>
 
-                    <h4>Response</h4>
-                    <p>Returns binary FDO data (application/octet-stream) on success, or JSON error on failure.</p>
-                </section>
+                            <h4>Response</h4>
+                            <p><strong>Success:</strong> Binary FDO data • <strong>Error:</strong> JSON with error details</p>
+                        </section>
 
-                <section class="api-endpoint">
-                    <h3>Decompile FDO Binary</h3>
-                    <div class="endpoint-meta">
-                        <span class="method post">POST</span>
-                        <code>/decompile</code>
-                    </div>
-                    <p>Decompiles FDO binary data back to source code.</p>
+                        <section class="api-endpoint">
+                            <h3>Decompile FDO Binary</h3>
+                            <div class="endpoint-meta">
+                                <span class="method post">POST</span>
+                                <code>/decompile</code>
+                            </div>
+                            <p>Decompiles FDO binary data back to human-readable source code.</p>
 
-                    <h4>Request Body</h4>
-                    <pre class="code-block"><code>{
-  "binary_data": "base64-encoded-fdo-binary",
-  "pre_normalize": false
+                            <h4>Request Example</h4>
+                            <pre class="code-block"><code>{
+  "binary_data": "UE0xAAABAAAACwAAAHVuaV9zdGFydF9zdHJlYW0gPDAwQj4K...",
+  "format": "text"
 }</code></pre>
 
-                    <h4>cURL Example</h4>
-                    <div class="code-example">
-                        <pre class="code-block"><code>curl -X POST http://localhost:8000/decompile \
+                            <h4>cURL Example</h4>
+                            <div class="code-example">
+                                <pre class="code-block"><code>curl -X POST http://localhost:8000/decompile \
   -H "Content-Type: application/json" \
   -d '{
     "binary_data": "'$(base64 -i compiled.fdo)'",
-    "pre_normalize": false
+    "format": "text"
   }'</code></pre>
-                        <button class="copy-btn" data-copy="decompile">Copy</button>
+                                <button class="copy-btn" data-copy="decompile">Copy</button>
+                            </div>
+
+                            <h4>Response Schema</h4>
+                            <pre class="code-block"><code>{
+  "success": true,
+  "source_code": "string",
+  "input_size": "number",
+  "output_size": "number"
+}</code></pre>
+                        </section>
                     </div>
 
-                    <h4>Response</h4>
-                    <pre class="code-block"><code>{
-  "success": true,
-  "source_code": "uni_start_stream <00x>\n...",
-  "output_size": 156,
-  "input_size": 42
+                    <!-- P3 Protocol Tab -->
+                    <div class="api-tab-panel" id="tab-p3-protocol" role="tabpanel">
+                        <section class="api-overview">
+                            <p>Advanced P3 protocol functionality for AOL-compatible packet chunking using AOLBUF.AOL emulation logic.</p>
+                        </section>
+
+                        <section class="api-endpoint">
+                            <h3>Chunk FDO for P3 Protocol</h3>
+                            <div class="endpoint-meta">
+                                <span class="method post">POST</span>
+                                <code>/compile-chunk</code>
+                            </div>
+                            <p>Compiles and chunks FDO script into P3 protocol payloads using AOLBUF.AOL-compatible segmentation logic. Essential for AOL protocol transmission.</p>
+
+                            <h4>Request Schema</h4>
+                            <pre class="code-block"><code>{
+  "source": "string",           // FDO script content (required)
+  "token": "string",            // 2-byte P3 token: AT, at, f1, ff, DD, D3, OT, XS (optional, default: "AT")
+  "stream_id": "number",        // Stream identifier 0-65535 (optional, default: 0)
+  "validate_first": "boolean"   // Pre-validate script before chunking (optional, default: true)
 }</code></pre>
-                </section>
+
+                            <h4>Supported P3 Tokens</h4>
+                            <ul>
+                                <li><code>AT</code> - Standard atom token (3-byte stream_id)</li>
+                                <li><code>at</code> - Extended atom token (4-byte stream_id)</li>
+                                <li><code>f1</code> - Form request (2-byte stream_id)</li>
+                                <li><code>ff</code> - Form control (2-byte stream_id)</li>
+                                <li><code>DD</code> - Data direct (2-byte stream_id)</li>
+                                <li><code>D3</code> - Special data (2-byte stream_id)</li>
+                                <li><code>OT</code> - Alert message (2-byte stream_id)</li>
+                                <li><code>XS</code> - Force off (2-byte stream_id)</li>
+                            </ul>
+
+                            <h4>Request Example</h4>
+                            <pre class="code-block"><code>{
+  "source": "act_do_action <>\n&lt;\n  sm_send_k1 &lt;8-50934&gt;\n  uni_start_stream &lt;00x&gt;\n    mat_object_id &lt;test-object&gt;\n  uni_end_stream &lt;&gt;\n&gt;",
+  "token": "AT",
+  "stream_id": 1,
+  "validate_first": true
+}</code></pre>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-example">
+                                <pre class="code-block"><code>curl -X POST http://localhost:8000/compile-chunk \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source": "act_do_action <>\n<\n  sm_send_k1 <8-50934>\n  uni_start_stream <00x>\n    mat_object_id <test-object>\n  uni_end_stream <>\n>",
+    "token": "AT",
+    "stream_id": 1,
+    "validate_first": true
+  }'</code></pre>
+                                <button class="copy-btn" data-copy="chunk">Copy</button>
+                            </div>
+
+                            <h4>Response Schema</h4>
+                            <pre class="code-block"><code>{
+  "success": true,
+  "chunks": ["string"],             // Array of base64-encoded P3 payload chunks
+  "chunk_count": "number",          // Total number of chunks generated
+  "total_size": "number",           // Total bytes across all chunks
+  "validation_result": {            // Validation details (if validate_first=true)
+    "syntax": {
+      "valid": true,
+      "errors": [],
+      "stats": { "atom_count": 4, "action_blocks": 1 }
+    },
+    "compilation": {
+      "success": true,
+      "size": 156
+    }
+  },
+  "stats": {                        // Chunking statistics
+    "chunk_count": 2,
+    "total_size": 45,
+    "average_chunk_size": 22.5,
+    "header_size": 5,
+    "token": "AT",
+    "stream_id": 1
+  }
+}</code></pre>
+
+                            <h4>Protocol Limits</h4>
+                            <ul>
+                                <li><strong>Max chunk size:</strong> 119 bytes (including P3 headers)</li>
+                                <li><strong>Max segment size:</strong> 255 bytes before segmentation</li>
+                                <li><strong>Action blocks:</strong> Preserved as atomic units (never split)</li>
+                                <li><strong>Large atoms:</strong> Automatically segmented with continuation markers (0x80)</li>
+                            </ul>
+
+                            <h4>Error Response</h4>
+                            <pre class="code-block"><code>{
+  "success": false,
+  "error": "Compilation failed for atom at line 3: Invalid syntax",
+  "chunk_count": 0,
+  "total_size": 0
+}</code></pre>
+                        </section>
+                    </div>
+
+                    <!-- Reference Tab -->
+                    <div class="api-tab-panel" id="tab-reference" role="tabpanel">
+                        <section class="api-overview">
+                            <p>Utility endpoints for examples, health monitoring, and comprehensive API reference.</p>
+                        </section>
+
+                        <section class="api-endpoint">
+                            <h3>Get FDO Examples</h3>
+                            <div class="endpoint-meta">
+                                <span class="method get">GET</span>
+                                <code>/examples</code>
+                            </div>
+                            <p>Retrieves available FDO example scripts from the sample library with optional search filtering.</p>
+
+                            <h4>Query Parameters</h4>
+                            <ul>
+                                <li><code>search</code> (optional) - Filter examples by content or filename (case-insensitive)</li>
+                            </ul>
+
+                            <h4>cURL Example</h4>
+                            <div class="code-example">
+                                <pre class="code-block"><code>curl "http://localhost:8000/examples?search=object"</code></pre>
+                                <button class="copy-btn" data-copy="examples">Copy</button>
+                            </div>
+
+                            <h4>Response Schema</h4>
+                            <pre class="code-block"><code>[
+  {
+    "filename": "basic_object.txt",
+    "title": "Basic Object Creation",
+    "content": "uni_start_stream <00x>\n  man_start_object <independent, \"Example\">\n..."
+  }
+]</code></pre>
+                        </section>
+
+                        <section class="api-endpoint">
+                            <h3>Health Check</h3>
+                            <div class="endpoint-meta">
+                                <span class="method get">GET</span>
+                                <code>/health</code>
+                            </div>
+                            <p>Returns service health status and daemon connectivity information.</p>
+
+                            <h4>Response Schema</h4>
+                            <pre class="code-block"><code>{
+  "status": "healthy",              // "healthy" or "degraded"
+  "service": "atomforge-fdo-api",
+  "daemon_status": "running",
+  "release_info": {
+    "version": "2.0.0",
+    "backend_path": "/app/releases/atomforge-backend"
+  }
+}</code></pre>
+                        </section>
+                    </div>
+                </div>
 
 
             </div>
@@ -349,6 +522,7 @@
 
     <!-- Toast Container -->
     <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
 
     <!-- Scripts -->
     <script src="/script.js?v=2025-09-26-search"></script>

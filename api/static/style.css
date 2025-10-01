@@ -149,8 +149,44 @@ body {
     letter-spacing: 0.2px;
     font-size: var(--text-lg);
     margin-right: 8px;
-    padding-right: 16px;
+    padding: var(--space-sm) var(--space-lg) var(--space-sm) 0;
     border-right: 1px solid var(--border-primary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border-radius: var(--radius-sm);
+    position: relative;
+    user-select: none;
+}
+
+.brand:hover {
+    color: var(--primary);
+    transform: scale(1.02);
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+    box-shadow: 0 2px 8px rgba(56, 139, 253, 0.1);
+}
+
+.brand:active {
+    transform: scale(0.98);
+    transition: transform 100ms ease-out;
+}
+
+/* Subtle glow effect on hover */
+.brand::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, var(--primary), var(--accent));
+    opacity: 0;
+    border-radius: var(--radius-sm);
+    z-index: -1;
+    transition: opacity var(--transition-fast);
+}
+
+.brand:hover::after {
+    opacity: 0.05;
 }
 
 /* File menu positioning */
@@ -414,6 +450,24 @@ body {
 
 .btn.loading {
     opacity: 0.7;
+    cursor: wait;
+    position: relative;
+}
+
+.btn.loading .label::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    margin-left: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: btn-spin 0.6s linear infinite;
+}
+
+@keyframes btn-spin {
+    to { transform: rotate(360deg); }
 }
 
 
@@ -512,11 +566,6 @@ body {
     background: var(--bg-elevated);
 }
 
-.decompile-options {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-}
 
 .checkbox-label {
     display: flex;
@@ -1002,6 +1051,50 @@ body {
 .api-overview {
     padding-bottom: var(--space-lg);
     border-bottom: 1px solid var(--border-primary);
+}
+
+/* API Tabs */
+.api-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-primary);
+    margin-bottom: var(--space-lg);
+    gap: 0;
+}
+
+.api-tab {
+    background: none;
+    border: none;
+    padding: var(--space-md) var(--space-lg);
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: all var(--transition-fast);
+    position: relative;
+}
+
+.api-tab:hover {
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+}
+
+.api-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    background: var(--bg-secondary);
+}
+
+.api-tab-content {
+    position: relative;
+}
+
+.api-tab-panel {
+    display: none;
+}
+
+.api-tab-panel.active {
+    display: block;
 }
 
 .api-overview code {
@@ -1624,6 +1717,156 @@ body {
     line-height: 1.5;
 }
 
+/* Hex Input with Subtle Inline Status */
+.hex-input-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.hex-status-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 28px;
+    padding: 0 12px;
+    background: transparent;
+    border-top: 1px solid var(--border-primary);
+    font-size: 12px;
+    color: var(--text-muted);
+    cursor: default;
+    user-select: none;
+    transition: all var(--transition-fast);
+    position: relative;
+}
+
+.hex-status-line .status-text {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-muted);
+    line-height: 1;
+    flex: 1;
+}
+
+/* Status icon as activity indicator */
+.hex-status-line .status-icon {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.6;
+    flex-shrink: 0;
+}
+
+/* State: Detecting/Analyzing - Not clickable */
+.hex-status-line.detecting {
+    color: var(--text-secondary);
+    opacity: 0.8;
+}
+
+.hex-status-line.detecting .status-icon {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* State: Detected - Clickable with enhanced styling */
+.hex-status-line.detected {
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.hex-status-line.detected .status-icon {
+    background: #28a745;
+    opacity: 1;
+}
+
+.hex-status-line.detected .status-text {
+    font-weight: 500;
+}
+
+.hex-status-line.detected .status-text::after {
+    content: " → Extract";
+    color: var(--primary);
+    font-weight: 500;
+    margin-left: 4px;
+}
+
+/* Hover feedback for detected state only */
+.hex-status-line.detected:hover {
+    background: rgba(40, 167, 69, 0.08);
+    border-top-color: rgba(40, 167, 69, 0.5);
+}
+
+.hex-status-line.detected:active {
+    background: rgba(40, 167, 69, 0.12);
+    transform: translateY(1px);
+}
+
+.hex-status-line.detected:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: -2px;
+}
+
+/* State: Error - Not clickable */
+.hex-status-line.error {
+    color: var(--error);
+    opacity: 0.7;
+}
+
+.hex-status-line.error .status-icon {
+    background: var(--error);
+    opacity: 0.8;
+}
+
+/* State: Warning - Not clickable */
+.hex-status-line.warning {
+    color: var(--warning);
+    opacity: 0.8;
+}
+
+.hex-status-line.warning .status-icon {
+    background: var(--warning);
+    opacity: 0.8;
+}
+
+/* State: Neutral - Not clickable */
+.hex-status-line.neutral {
+    color: var(--text-muted);
+}
+
+.hex-status-line.neutral .status-icon {
+    background: var(--text-muted);
+    opacity: 0.5;
+}
+
+/* Animations */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+
+
+/* Subtle border state feedback on textarea */
+.hex-input-wrapper .editor.detecting {
+    border-color: rgba(255, 193, 7, 0.3);
+}
+
+.hex-input-wrapper .editor.detected {
+    border-color: rgba(40, 167, 69, 0.3);
+}
+
+.hex-input-wrapper .editor.error {
+    border-color: rgba(220, 53, 69, 0.3);
+}
+
+.hex-input-wrapper .editor.warning {
+    border-color: rgba(210, 153, 34, 0.3);
+}
+
 /* Unsaved Changes Indicator */
 .editor-container {
     position: relative;
@@ -1809,3 +2052,12 @@ body {
         opacity: 0;
     }
 }
+
+
+
+
+
+
+
+
+
