@@ -25,6 +25,7 @@ class P3PayloadBuilder:
         'f1': 2,   # Form request
         'ff': 2,   # Form control
         'DD': 2,   # Data direct
+        'Dd': 2,   # Data direct (case variant) - nested within ZD wrapper
         'D3': 2,   # Special data
         'OT': 2,   # Alert message
         'XS': 2,   # Force off
@@ -33,6 +34,7 @@ class P3PayloadBuilder:
         'iO': 2,   # AOL frame type - extracted from reverse engineering examples
         'ME': 2,   # AOL frame type - extracted from reverse engineering examples
         'fh': 2,   # AOL frame type with 2-byte stream ID
+        'iS': 2,   # AOL frame type with 2-byte stream ID - extracted from protocol analysis
     }
 
     # Protocol limits from AOLBUF

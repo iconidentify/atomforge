@@ -266,6 +266,7 @@
                                 <li><code>f1</code> - Form request (2-byte stream_id)</li>
                                 <li><code>ff</code> - Form control (2-byte stream_id)</li>
                                 <li><code>DD</code> - Data direct (2-byte stream_id)</li>
+                                <li><code>Dd</code> - Data direct variant (2-byte stream_id)</li>
                                 <li><code>D3</code> - Special data (2-byte stream_id)</li>
                                 <li><code>OT</code> - Alert message (2-byte stream_id)</li>
                                 <li><code>XS</code> - Force off (2-byte stream_id)</li>
@@ -523,6 +524,27 @@
     <!-- Toast Container -->
     <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
+    <!-- JSONL Processing Overlay -->
+    <div id="processingOverlay" class="processing-overlay" hidden aria-live="polite" aria-busy="false">
+        <div class="processing-modal">
+            <div class="processing-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <div class="processing-status">
+                <h3 class="processing-title">Processing JSONL File</h3>
+                <p class="processing-message" id="processingMessage">Initializing decompilation...</p>
+                <div class="processing-timer">
+                    <span class="timer-label">Elapsed:</span>
+                    <span class="timer-value" id="processingTimer">0s</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Scripts -->
     <script src="/script.js?v=2025-09-26-search"></script>

@@ -451,23 +451,6 @@ body {
 .btn.loading {
     opacity: 0.7;
     cursor: wait;
-    position: relative;
-}
-
-.btn.loading .label::after {
-    content: '';
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    margin-left: 8px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: btn-spin 0.6s linear infinite;
-}
-
-@keyframes btn-spin {
-    to { transform: rotate(360deg); }
 }
 
 
@@ -2053,9 +2036,202 @@ body {
     }
 }
 
+/* ================================
+   JSONL Processing Overlay
+   ================================ */
 
+.processing-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(13, 17, 23, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: overlayFadeIn 0.3s ease-out;
+}
 
+.processing-modal {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--space-2xl);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xl);
+    min-width: 420px;
+    animation: modalSlideUp 0.4s ease-out;
+}
 
+/* Multi-ring animated spinner */
+.processing-spinner {
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+
+.spinner-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    animation: spinnerRotate linear infinite;
+}
+
+/* Ring 1: Primary color, fast rotation */
+.spinner-ring:nth-child(1) {
+    border-top-color: var(--primary);
+    border-right-color: var(--primary);
+    animation-duration: 1.2s;
+}
+
+/* Ring 2: Accent color, medium rotation */
+.spinner-ring:nth-child(2) {
+    width: 80%;
+    height: 80%;
+    top: 10%;
+    left: 10%;
+    border-top-color: var(--accent);
+    border-bottom-color: var(--accent);
+    animation-duration: 1.8s;
+    animation-direction: reverse;
+}
+
+/* Ring 3: Info color, slow rotation */
+.spinner-ring:nth-child(3) {
+    width: 60%;
+    height: 60%;
+    top: 20%;
+    left: 20%;
+    border-left-color: var(--info);
+    border-right-color: var(--info);
+    animation-duration: 2.4s;
+}
+
+/* Spinner rotation animation */
+@keyframes spinnerRotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Processing status text */
+.processing-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.processing-title {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.processing-message {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    text-align: center;
+    line-height: 1.6;
+    max-width: 360px;
+}
+
+/* Elapsed time counter */
+.processing-timer {
+    font-family: var(--font-mono);
+    font-size: var(--text-base);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.timer-label {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.timer-value {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Indeterminate progress bar */
+.progress-bar-container {
+    width: 100%;
+    height: 4px;
+    background: var(--bg-tertiary);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: var(--space-md);
+}
+
+.progress-bar {
+    height: 100%;
+    width: 40%;
+    background: linear-gradient(90deg,
+        var(--primary) 0%,
+        var(--accent) 50%,
+        var(--primary) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+        transform: translateX(-100%);
+    }
+    100% {
+        background-position: -200% 0;
+        transform: translateX(250%);
+    }
+}
+
+/* Overlay animations */
+@keyframes overlayFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .processing-modal {
+        min-width: 90%;
+        padding: var(--space-xl);
+    }
+
+    .processing-spinner {
+        width: 90px;
+        height: 90px;
+    }
+}
 
 
 

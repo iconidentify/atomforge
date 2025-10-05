@@ -24,6 +24,7 @@ class FdoAtomParser:
         'act_set_criterion',
         'act_do_action',
         'act_append_select_action',
+        'act_append_action',
         'act_prepend_select_action',
         'act_insert_select_action'
     }

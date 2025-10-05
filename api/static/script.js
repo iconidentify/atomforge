@@ -426,9 +426,9 @@ const App = (() => {
       return;
     }
 
-    // Estimate processing time and show helpful message
-    const estimatedTime = Math.ceil(window.jsonlData.content.split('\n').length / 10);
-    setBusy(true, `Processing JSONL file (may take ${estimatedTime}+ seconds for large files)...`);
+    // Show processing overlay with phased messaging
+    processingUI.show();
+    setBusy(true);
     log(`Starting JSONL processing of ${window.jsonlData.filename}...`, 'info');
 
     try {
@@ -494,6 +494,8 @@ Chronological order: ${data.chronological_order}`;
       reveal('status');
       modeOutputs.decompile.activeTab = 'status';
     } finally {
+      // Hide processing overlay
+      processingUI.hide();
       setBusy(false);
     }
   }
@@ -1443,6 +1445,91 @@ Chronological order: ${data.chronological_order}`;
     el.runBtn.classList.toggle('loading', on);
     if(on) log(label||'Working…');
   }
+
+  // ================================
+  // JSONL Processing UI Manager
+  // ================================
+  class JsonlProcessingUI {
+    constructor() {
+      this.overlay = qs('#processingOverlay');
+      this.messageEl = qs('#processingMessage');
+      this.timerEl = qs('#processingTimer');
+      this.startTime = null;
+      this.timerInterval = null;
+      this.phaseTimeouts = [];
+
+      // Phase messages based on elapsed time
+      this.phases = [
+        { time: 0, message: 'Parsing JSONL frames and preparing for decompilation...' },
+        { time: 15, message: 'Decompiling FDO frames from P3 protocol data...' },
+        { time: 30, message: 'Processing continues - large files take time to decompile thoroughly...' },
+        { time: 60, message: 'Still processing - complex FDO data requires careful decompilation...' },
+        { time: 90, message: 'Making progress - your patience is appreciated...' },
+        { time: 120, message: 'Almost there - finalizing decompilation results...' },
+        { time: 150, message: 'Wrapping up - this is a particularly large dataset...' },
+        { time: 180, message: 'Final stages - completing decompilation and building output...' }
+      ];
+    }
+
+    show() {
+      this.startTime = Date.now();
+      this.overlay.hidden = false;
+      this.overlay.setAttribute('aria-busy', 'true');
+      this.messageEl.textContent = this.phases[0].message;
+      this.timerEl.textContent = '0s';
+
+      // Start elapsed time counter
+      this.timerInterval = setInterval(() => this.updateTimer(), 1000);
+
+      // Schedule phase message updates
+      this.schedulePhaseUpdates();
+    }
+
+    hide() {
+      this.overlay.hidden = true;
+      this.overlay.setAttribute('aria-busy', 'false');
+
+      // Clear timer and phase timeouts
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+        this.timerInterval = null;
+      }
+
+      this.phaseTimeouts.forEach(timeout => clearTimeout(timeout));
+      this.phaseTimeouts = [];
+
+      this.startTime = null;
+    }
+
+    updateTimer() {
+      if (!this.startTime) return;
+
+      const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+      const minutes = Math.floor(elapsed / 60);
+      const seconds = elapsed % 60;
+
+      if (minutes > 0) {
+        this.timerEl.textContent = `${minutes}m ${seconds}s`;
+      } else {
+        this.timerEl.textContent = `${seconds}s`;
+      }
+    }
+
+    schedulePhaseUpdates() {
+      // Skip first phase (already shown)
+      for (let i = 1; i < this.phases.length; i++) {
+        const phase = this.phases[i];
+        const timeout = setTimeout(() => {
+          this.messageEl.textContent = phase.message;
+        }, phase.time * 1000);
+
+        this.phaseTimeouts.push(timeout);
+      }
+    }
+  }
+
+  // Initialize processing UI manager
+  const processingUI = new JsonlProcessingUI();
 
   // Clipboard helper: uses async Clipboard API on secure contexts, falls back to execCommand on HTTP
   async function copyTextToClipboard(text){
