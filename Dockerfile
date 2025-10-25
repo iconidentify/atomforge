@@ -49,9 +49,6 @@ RUN pip install --no-cache-dir -r api/requirements.txt
 # Copy FDO Tools releases (contains executables and Python modules)
 COPY releases/ ./releases/
 
-# Copy golden test files for validation
-COPY bin/ ./bin/
-
 # Copy API application
 COPY api/ ./api/
 
