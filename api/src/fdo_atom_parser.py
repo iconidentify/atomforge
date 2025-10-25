@@ -35,16 +35,22 @@ class FdoAtomParser:
     # Maximum hex data length before splitting idb_append_data (hex chars are 2 per byte, so ~100 hex chars = 50 bytes)
     MAX_IDB_APPEND_DATA_HEX_LENGTH = 400
 
+    # Maximum hex data length before splitting dod_data (same as idb_append_data - ~200 bytes when compiled)
+    MAX_DOD_DATA_HEX_LENGTH = 400
+
+    # Maximum hex data length for raw_data (112 bytes = 224 hex chars, max for AT token NON-FDO frames)
+    MAX_RAW_DATA_HEX_LENGTH = 224
+
     @classmethod
     def preprocess_script(cls, fdo_script: str) -> str:
         """
-        Preprocess FDO script to split long man_append_data blocks into smaller chunks.
+        Preprocess FDO script to split long data atoms into smaller chunks.
 
         Args:
             fdo_script: Original FDO script
 
         Returns:
-            Modified FDO script with long text blocks split
+            Modified FDO script with long data blocks split
         """
         lines = fdo_script.split('\n')
         processed_lines = []
@@ -60,6 +66,11 @@ class FdoAtomParser:
                 split_lines = cls._split_idb_append_data_line(line)
                 processed_lines.extend(split_lines)
                 logger.debug(f"Split long idb_append_data into {len(split_lines)} parts")
+            elif cls._is_long_dod_data(line):
+                # Split this line into multiple dod_data statements
+                split_lines = cls._split_dod_data_line(line)
+                processed_lines.extend(split_lines)
+                logger.debug(f"Split long dod_data into {len(split_lines)} parts")
             else:
                 processed_lines.append(line)
 
@@ -165,8 +176,8 @@ class FdoAtomParser:
     @classmethod
     def _extract_hex_from_idb_append_data(cls, line: str) -> str:
         """Extract hex content from idb_append_data <hex_data> format."""
-        # Look for hex data in angle brackets (without quotes, direct hex)
-        match = re.search(r'idb_append_data\s*<\s*([A-Fa-f0-9]+)\s*>', line)
+        # Look for hex data in angle brackets (supports comma-separated hex)
+        match = re.search(r'idb_append_data\s*<\s*([^>]+)\s*>', line)
         if match:
             return match.group(1)
         return ""
@@ -182,8 +193,11 @@ class FdoAtomParser:
         if not hex_content:
             return [line]  # Fallback if we can't parse it
 
+        # Clean hex content - remove all whitespace
+        cleaned_hex = re.sub(r'\s+', '', hex_content)
+
         # Split hex data into chunks that fit within the limit
-        hex_chunks = cls._split_hex_data(hex_content)
+        hex_chunks = cls._split_hex_data(cleaned_hex)
 
         # Generate idb_append_data lines for each chunk
         split_lines = []
@@ -195,7 +209,7 @@ class FdoAtomParser:
 
     @classmethod
     def _split_hex_data(cls, hex_data: str) -> List[str]:
-        """Split hex data into chunks that fit within the byte limit."""
+        """Split hex data into chunks that fit within the byte limit, preferring comma boundaries."""
         chunks = []
         remaining_hex = hex_data.strip()
 
@@ -205,17 +219,130 @@ class FdoAtomParser:
                 chunks.append(remaining_hex)
                 break
 
-            # Split at an even boundary (hex pairs)
+            # Find a good split point (prefer splitting at comma boundaries)
             chunk_size = cls.MAX_IDB_APPEND_DATA_HEX_LENGTH
-            # Ensure we split on hex byte boundaries (even positions)
-            if chunk_size % 2 == 1:
-                chunk_size -= 1
 
-            chunk = remaining_hex[:chunk_size]
-            chunks.append(chunk)
-            remaining_hex = remaining_hex[chunk_size:]
+            # Look for the last comma within the chunk
+            chunk_candidate = remaining_hex[:chunk_size]
+            last_comma = chunk_candidate.rfind(',')
+
+            if last_comma > 0:
+                # Split before the comma
+                chunks.append(remaining_hex[:last_comma])
+                # Skip the comma when advancing (last_comma + 1)
+                remaining_hex = remaining_hex[last_comma + 1:]
+            else:
+                # No comma found, split at character boundary
+                chunks.append(remaining_hex[:chunk_size])
+                remaining_hex = remaining_hex[chunk_size:]
 
         return chunks
+
+    @classmethod
+    def _is_long_dod_data(cls, line: str) -> bool:
+        """Check if a line contains a dod_data with long hex data."""
+        line_clean = line.strip()
+        if not line_clean.startswith('dod_data'):
+            return False
+
+        # Extract hex content from angle brackets (single-line only)
+        hex_content = cls._extract_hex_from_dod_data(line_clean)
+        return hex_content and len(hex_content) > cls.MAX_DOD_DATA_HEX_LENGTH
+
+    @classmethod
+    def _extract_hex_from_dod_data(cls, line: str) -> str:
+        """Extract hex content from dod_data <hex_data> format."""
+        # Look for hex data in angle brackets (supports comma-separated hex)
+        match = re.search(r'dod_data\s*<\s*([^>]+)\s*>', line)
+        if match:
+            return match.group(1)
+        return ""
+
+    @classmethod
+    def _split_dod_data_line(cls, line: str) -> List[str]:
+        """Split a long dod_data line into multiple smaller ones."""
+        # Extract the indentation and hex content
+        indent_match = re.match(r'^(\s*)', line)
+        indent = indent_match.group(1) if indent_match else ""
+
+        hex_content = cls._extract_hex_from_dod_data(line)
+        if not hex_content:
+            return [line]  # Fallback if we can't parse it
+
+        # Clean hex content - remove all whitespace
+        cleaned_hex = re.sub(r'\s+', '', hex_content)
+
+        # Split hex data into chunks that fit within the limit
+        hex_chunks = []
+        remaining_hex = cleaned_hex
+
+        while remaining_hex:
+            if len(remaining_hex) <= cls.MAX_DOD_DATA_HEX_LENGTH:
+                # Remaining hex fits in one chunk
+                hex_chunks.append(remaining_hex)
+                break
+
+            # Find a good split point (prefer splitting at comma boundaries)
+            chunk_size = cls.MAX_DOD_DATA_HEX_LENGTH
+
+            # Look for the last comma within the chunk
+            chunk_candidate = remaining_hex[:chunk_size]
+            last_comma = chunk_candidate.rfind(',')
+
+            if last_comma > 0:
+                # Split before the comma
+                hex_chunks.append(remaining_hex[:last_comma])
+                # Skip the comma when advancing (last_comma + 1)
+                remaining_hex = remaining_hex[last_comma + 1:]
+            else:
+                # No comma found, split at character boundary
+                hex_chunks.append(remaining_hex[:chunk_size])
+                remaining_hex = remaining_hex[chunk_size:]
+
+        # Generate dod_data lines for each chunk
+        split_lines = []
+        for chunk in hex_chunks:
+            split_line = f'{indent}dod_data <{chunk}>'
+            split_lines.append(split_line)
+
+        return split_lines
+
+    @classmethod
+    def _is_raw_data(cls, line: str) -> bool:
+        """Check if a line contains a raw_data atom."""
+        line_clean = line.strip()
+        return line_clean.startswith('raw_data')
+
+    @classmethod
+    def _validate_raw_data(cls, line: str) -> bool:
+        """
+        Validate raw_data format: raw_data <"hex">
+
+        Args:
+            line: Line to validate
+
+        Returns:
+            True if valid, False otherwise
+        """
+        line_clean = line.strip()
+
+        # Check format: raw_data <"hex_content">
+        match = re.search(r'raw_data\s*<\s*"([A-Fa-f0-9]+)"\s*>', line_clean)
+        if not match:
+            logger.warning(f"Invalid raw_data format (expected: raw_data <\"HEX\">): {line_clean[:100]}")
+            return False
+
+        hex_content = match.group(1)
+
+        # Check length constraint
+        if len(hex_content) > cls.MAX_RAW_DATA_HEX_LENGTH:
+            logger.warning(
+                f"raw_data hex exceeds max length: {len(hex_content)} > {cls.MAX_RAW_DATA_HEX_LENGTH} "
+                f"(max {cls.MAX_RAW_DATA_HEX_LENGTH // 2} bytes)"
+            )
+            return False
+
+        return True
 
     @classmethod
     def parse_preserving_actions(cls, fdo_script: str) -> List[Dict[str, Any]]:
@@ -268,11 +395,15 @@ class FdoAtomParser:
                     })
                     i += 1
             else:
-                # Regular single atom
+                # Check if this is a raw_data atom
+                is_raw_data = cls._is_raw_data(line)
+
+                # Regular single atom (including raw_data)
                 atom_units.append({
                     'content': line,
                     'is_action': False,
-                    'type': 'single_atom',
+                    'is_raw_data': is_raw_data,
+                    'type': 'raw_data_atom' if is_raw_data else 'single_atom',
                     'line_start': i,
                     'line_end': i
                 })
@@ -321,11 +452,6 @@ class FdoAtomParser:
                     if curr_line == '<':
                         depth += 1
                     elif curr_line == '>':
-                        depth -= 1
-                    # Also track stream nesting
-                    elif 'uni_start_stream' in curr_line:
-                        depth += 1
-                    elif 'uni_end_stream' in curr_line:
                         depth -= 1
 
                     current_idx += 1

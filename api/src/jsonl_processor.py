@@ -13,6 +13,7 @@ from dataclasses import dataclass
 
 from fdo_detector import FdoDetector
 from fdo_daemon_client import FdoDaemonClient, FdoDaemonError
+from p3_payload_builder import P3PayloadBuilder
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +51,44 @@ class JsonlProcessor:
     MAX_MEMORY_MB = 4096               # Maximum memory usage in MB (4GB)
     MEMORY_CHECK_INTERVAL = 1000       # Check memory every N frames
     PROGRESS_LOG_INTERVAL = 10000      # Log progress every N frames
+
+    @staticmethod
+    def _hex_to_fdo_format(hex_string: str, remove_prefix_bytes: int = 0) -> str:
+        """
+        Convert hex string to FDO dod_data format.
+
+        Args:
+            hex_string: Raw hex string (e.g., "000576dc2ec929b2...")
+            remove_prefix_bytes: Number of bytes to skip from start (header size)
+
+        Returns:
+            Formatted hex for dod_data (e.g., "dcx,2ex,c9x,29x,b2x,...")
+
+        Example:
+            >>> _hex_to_fdo_format("000576dc2ec929", remove_prefix_bytes=3)
+            "dcx,2ex,c9x,29x"
+        """
+        # Remove prefix (each byte = 2 hex chars)
+        if remove_prefix_bytes > 0:
+            hex_string = hex_string[remove_prefix_bytes * 2:]
+
+        # Convert to lowercase and remove spaces
+        hex_clean = hex_string.lower().replace(' ', '').replace('\n', '')
+
+        # Handle empty or odd-length strings
+        if not hex_clean:
+            return ""
+
+        # Format as XXx with commas (each byte = 2 hex chars)
+        hex_pairs = []
+        for i in range(0, len(hex_clean), 2):
+            if i + 1 < len(hex_clean):
+                hex_pairs.append(hex_clean[i:i+2] + 'x')
+            else:
+                # Odd length - pad with 0
+                hex_pairs.append(hex_clean[i] + '0x')
+
+        return ','.join(hex_pairs)
 
     @classmethod
     def parse_jsonl_frames(cls, jsonl_content: str) -> List[P3Frame]:
@@ -654,15 +693,36 @@ class JsonlProcessor:
             if result['result_type'] == 'success':
                 # Include successful decompilation
                 reassembled_source += f"// Frame {result['index']}: Successfully decompiled (Token: {result['token']}, Stream ID: {result['stream_id']}, Size: {result['size_bytes']} bytes)\n"
-                reassembled_source += result['source'] + "\n\n"
+                # Unescape quotes that the FDO daemon may have escaped
+                source_clean = result['source'].replace('\\"', '"')
+                reassembled_source += source_clean + "\n\n"
             elif result['result_type'] == 'failure':
                 # Include clean failure comment with FDO hex data (not full P3 frame)
                 fdo_hex = result.get('full_hex', result.get('data_preview', ''))
                 reassembled_source += f"// FAILED [{result['index']}] {result['token']} stream:{result['stream_id']} {result['size_bytes']}b : {fdo_hex}\n\n"
             elif result['result_type'] == 'crash_handled':
-                # Non-FDO data (images, text, etc) - daemon returned HTTP 422/500
+                # Convert non-FDO data to raw_data format
                 fdo_hex = result.get('full_hex', result.get('data_preview', ''))
-                reassembled_source += f"// NON-FDO [{result['index']}] {result['token']} stream:{result['stream_id']} {result['size_bytes']}b : {fdo_hex}\n\n"
+                token = result.get('token', 'AT')
+                stream_id = result.get('stream_id', 0)
+
+                # For crash_handled frames, fdo_hex already has token/stream_id removed
+                # by the FDO detector. It should start directly with 000576 prefix.
+                hex_data = fdo_hex
+
+                # Check for and strip 00 05 76 prefix (NON-FDO marker)
+                if hex_data.lower().startswith('000576'):
+                    raw_hex = hex_data[6:]  # Skip 3 bytes (6 hex chars)
+                else:
+                    raw_hex = hex_data  # No prefix found, use as-is
+
+                # Clean hex (remove spaces, uppercase for consistency)
+                raw_hex_clean = raw_hex.replace(' ', '').replace('\n', '').upper()
+
+                # Output as raw_data atom
+                reassembled_source += f"// Frame {result['index']}: NON-FDO binary data (Token: {token}, Stream ID: {stream_id}, Size: {result['size_bytes']} bytes)\n"
+                reassembled_source += f"// Original hex: {fdo_hex}\n"
+                reassembled_source += f'raw_data <"{raw_hex_clean}">\n\n'
             elif result['result_type'] == 'process_crash':
                 # True daemon process crash (Wine/process failure - rare)
                 fdo_hex = result.get('full_hex', result.get('data_preview', ''))

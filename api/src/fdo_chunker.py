@@ -8,6 +8,7 @@ Based on reverse engineering of the actual AOLBUF.AOL module
 import asyncio
 from typing import List, Dict, Any, Tuple
 import logging
+import re
 
 from fdo_daemon_client import FdoDaemonClient, FdoDaemonError
 from fdo_atom_parser import FdoAtomParser
@@ -92,7 +93,39 @@ class FdoChunker:
         # Process each atom unit
         for i, unit in enumerate(atom_units):
             try:
-                # Compile the atom unit using the daemon
+                # Check if this is a raw_data atom (needs multi-frame splitting)
+                if unit.get('is_raw_data'):
+                    # Flush any pending data before adding raw_data packets
+                    if current_packet_data:
+                        packet = self.payload_builder.build_packet(
+                            bytes(current_packet_data), stream_id, token
+                        )
+                        packets.append(packet)
+                        chunk_info.append({
+                            'size': len(packet),
+                            'is_continuation': in_segmented_sequence,
+                            'sequence_index': len(packets) - 1
+                        })
+                        logger.debug(f"Flushed packet {len(packets)} before raw_data: {len(packet)} bytes")
+                        current_packet_data = bytearray()
+
+                    # raw_data atoms split into multiple independent frames
+                    # Each frame gets 000576 prefix
+                    raw_data_packets = self._compile_raw_data_to_chunks(unit, stream_id, token)
+
+                    # Add all packets (each is already complete with headers)
+                    for packet in raw_data_packets:
+                        packets.append(packet)
+                        chunk_info.append({
+                            'size': len(packet),
+                            'is_continuation': False,  # Independent frames
+                            'sequence_index': len(packets) - 1
+                        })
+
+                    # Skip normal processing for this unit
+                    continue
+
+                # Normal FDO atom processing - compile the atom unit using the daemon
                 compiled_data = await self._compile_unit(unit)
 
                 # Check if this atom is too large to ever fit (warn but continue)
@@ -212,6 +245,85 @@ class FdoChunker:
         except Exception as e:
             logger.error(f"Compilation failed for unit: {unit['content'][:100]}...")
             raise
+
+    def _compile_raw_data_to_chunks(self, unit: Dict[str, Any], stream_id: int, token: str) -> List[bytes]:
+        """
+        Compile raw_data atom into multiple P3 packets (≤128 bytes payload each).
+        Each packet independently has the 000576 NON-FDO prefix.
+
+        Based on wire format analysis:
+        - Max payload: 128 bytes
+        - Structure: Token(2) + StreamID(2) + 000576(3) + RawData(≤121)
+
+        Args:
+            unit: Atom unit with raw_data content
+            stream_id: Stream ID for P3 packets
+            token: Token type for P3 packets
+
+        Returns:
+            List of complete P3 packet bytes
+
+        Raises:
+            FdoChunkingError: If format is invalid
+        """
+        # Extract hex from raw_data <"hex"> format
+        match = re.search(r'raw_data\s*<\s*"([A-Fa-f0-9]+)"\s*>', unit['content'])
+        if not match:
+            raise FdoChunkingError(
+                f"Invalid raw_data format at line {unit['line_start']}: {unit['content'][:100]}"
+            )
+
+        hex_string = match.group(1)
+
+        # Convert hex to binary
+        try:
+            raw_binary = bytes.fromhex(hex_string)
+        except ValueError as e:
+            raise FdoChunkingError(
+                f"Invalid hex in raw_data at line {unit['line_start']}: {e}"
+            )
+
+        # Calculate max data per frame
+        # Max payload: 128 bytes (from wire format analysis)
+        MAX_PAYLOAD = 128
+        header_size = self.payload_builder.get_header_size(token)  # AT = 4 bytes
+        prefix_size = 3  # 000576
+        max_data_per_frame = MAX_PAYLOAD - header_size - prefix_size  # 121 bytes for AT
+
+        if max_data_per_frame <= 0:
+            raise FdoChunkingError(
+                f"Token '{token}' header too large for raw_data frames"
+            )
+
+        # Split raw_binary into chunks, each gets 000576 prefix
+        packets = []
+        offset = 0
+
+        while offset < len(raw_binary):
+            # Get chunk (max 121 bytes for AT token)
+            chunk_size = min(max_data_per_frame, len(raw_binary) - offset)
+            chunk = raw_binary[offset:offset + chunk_size]
+
+            # Add 000576 prefix to THIS chunk (each frame is independent)
+            prefixed_chunk = b'\x00\x05\x76' + chunk
+
+            # Build P3 packet (adds token + stream_id header)
+            packet = self.payload_builder.build_packet(prefixed_chunk, stream_id, token)
+            packets.append(packet)
+
+            offset += chunk_size
+
+            logger.debug(
+                f"raw_data frame {len(packets)}: {len(chunk)} bytes + 3-byte prefix "
+                f"= {len(prefixed_chunk)} bytes payload → {len(packet)} bytes packet"
+            )
+
+        logger.info(
+            f"Split raw_data at line {unit['line_start']}: {len(raw_binary)} bytes → "
+            f"{len(packets)} frames (max {max_data_per_frame} bytes/frame)"
+        )
+
+        return packets
 
     async def validate_script(self, fdo_script: str) -> Dict[str, Any]:
         """

@@ -27,6 +27,7 @@ class P3PayloadBuilder:
         'DD': 2,   # Data direct
         'Dd': 2,   # Data direct (case variant) - nested within ZD wrapper
         'D3': 2,   # Special data
+        'NX': 2,   # NX token with 2-byte stream ID
         'OT': 2,   # Alert message
         'XS': 2,   # Force off
         'Aa': 2,   # AOL frame type - extracted from reverse engineering examples
@@ -35,6 +36,7 @@ class P3PayloadBuilder:
         'ME': 2,   # AOL frame type - extracted from reverse engineering examples
         'fh': 2,   # AOL frame type with 2-byte stream ID
         'iS': 2,   # AOL frame type with 2-byte stream ID - extracted from protocol analysis
+        'CA': 2,   # CA frame type with 2-byte stream ID (little-endian)
     }
 
     # Protocol limits from AOLBUF

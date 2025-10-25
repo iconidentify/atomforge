@@ -521,7 +521,9 @@ async def decompile_fdo(request: DecompileRequest):
         # Decompile using daemon (octet-stream -> text/plain)
         start_time = time.time()
         try:
-            source_code = daemon_client.decompile_binary(binary_data)
+            source_code_raw = daemon_client.decompile_binary(binary_data)
+            # Unescape quotes that the FDO daemon may have escaped
+            source_code = source_code_raw.replace('\\"', '"')
         except FdoDaemonError as e:
             norm = _build_daemon_error_detail(e.content_type, e.text, e.json)
             raise HTTPException(

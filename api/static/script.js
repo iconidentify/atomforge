@@ -328,6 +328,12 @@ const App = (() => {
   async function compile() {
     const source = (el.fdoInput.value || '').trim();
     if (!source) return log('Enter FDO source to compile.', 'error');
+
+    // Check for raw_data atoms (informational only - advanced feature)
+    if (/raw_data\s*</.test(source)) {
+      log('Note: raw_data atoms are for advanced use (chunk-compile API). They may not work in the browser UI.', 'info');
+    }
+
     setBusy(true, 'Compiling…');
 
     try {
