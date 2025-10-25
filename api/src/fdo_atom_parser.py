@@ -121,9 +121,12 @@ class FdoAtomParser:
 
     @classmethod
     def _split_text_smartly(cls, text: str) -> List[str]:
-        """Split text at semantic boundaries (sentences, then words)."""
+        """
+        Split text at semantic boundaries (sentences, then words).
+        Preserves spaces at chunk boundaries to prevent word concatenation.
+        """
         chunks = []
-        remaining_text = text.strip()
+        remaining_text = text.strip()  # Only strip the original input
 
         while remaining_text:
             if len(remaining_text) <= cls.MAX_APPEND_DATA_TEXT_LENGTH:
@@ -133,12 +136,15 @@ class FdoAtomParser:
 
             # Find a good place to split within the limit
             chunk_end = cls._find_good_split_point(remaining_text, cls.MAX_APPEND_DATA_TEXT_LENGTH)
-            chunk = remaining_text[:chunk_end].strip()
+
+            # Extract chunk WITHOUT stripping to preserve boundary spaces
+            chunk = remaining_text[:chunk_end]
 
             if chunk:
                 chunks.append(chunk)
 
-            remaining_text = remaining_text[chunk_end:].strip()
+            # Continue from chunk_end WITHOUT stripping to preserve spaces
+            remaining_text = remaining_text[chunk_end:]
 
         return chunks
 
