@@ -28,6 +28,7 @@ class P3PayloadBuilder:
         'Dd': 2,   # Data direct (case variant) - nested within ZD wrapper
         'D3': 2,   # Special data
         'NX': 2,   # NX token with 2-byte stream ID
+        'm0': 2,   # m0 token with 2-byte stream ID
         'OT': 2,   # Alert message
         'XS': 2,   # Force off
         'Aa': 2,   # AOL frame type - extracted from reverse engineering examples
@@ -38,6 +39,9 @@ class P3PayloadBuilder:
         'iS': 2,   # AOL frame type with 2-byte stream ID - extracted from protocol analysis
         'CA': 2,   # CA frame type with 2-byte stream ID (little-endian)
     }
+
+    # Default stream_id size for unknown tokens (covers ~95% of cases)
+    DEFAULT_STREAM_ID_SIZE = 2
 
     # Protocol limits from AOLBUF
     MAX_SEGMENT_SIZE = 0xFF        # 255 bytes - hard limit
@@ -61,9 +65,11 @@ class P3PayloadBuilder:
             ValueError: If token is invalid or stream_id is out of range
         """
         if token not in cls.TOKEN_STREAM_ID_SIZES:
-            raise ValueError(f"Invalid token '{token}'. Valid tokens: {list(cls.TOKEN_STREAM_ID_SIZES.keys())}")
-
-        stream_id_size = cls.TOKEN_STREAM_ID_SIZES[token]
+            stream_id_size = cls.DEFAULT_STREAM_ID_SIZE
+            logger.info(f"Unknown token '{token}' - using default {stream_id_size}-byte stream ID. "
+                       f"Consider adding '{token}': {stream_id_size} to TOKEN_STREAM_ID_SIZES in p3_payload_builder.py")
+        else:
+            stream_id_size = cls.TOKEN_STREAM_ID_SIZES[token]
 
         # Validate stream_id fits in allocated bytes
         max_stream_id = (1 << (stream_id_size * 8)) - 1
@@ -98,7 +104,7 @@ class P3PayloadBuilder:
             Header size in bytes (token + stream_id)
         """
         if token not in cls.TOKEN_STREAM_ID_SIZES:
-            raise ValueError(f"Invalid token '{token}'")
+            return 2 + cls.DEFAULT_STREAM_ID_SIZE
 
         return 2 + cls.TOKEN_STREAM_ID_SIZES[token]
 
@@ -215,9 +221,12 @@ class P3PayloadBuilder:
         token = token_bytes.rstrip(b'\x00').decode('ascii', errors='ignore')
 
         if token not in cls.TOKEN_STREAM_ID_SIZES:
-            raise ValueError(f"Unknown token '{token}' in packet header")
+            stream_id_size = cls.DEFAULT_STREAM_ID_SIZE
+            logger.info(f"Parsing unknown token '{token}' - assuming {stream_id_size}-byte stream ID. "
+                       f"Consider adding '{token}': {stream_id_size} to TOKEN_STREAM_ID_SIZES in p3_payload_builder.py")
+        else:
+            stream_id_size = cls.TOKEN_STREAM_ID_SIZES[token]
 
-        stream_id_size = cls.TOKEN_STREAM_ID_SIZES[token]
         header_size = 2 + stream_id_size
 
         if len(packet) < header_size:
@@ -229,6 +238,12 @@ class P3PayloadBuilder:
 
         # Extract data
         data = packet[header_size:] if len(packet) > header_size else b''
+
+        # Sanity check: warn if assumption might be wrong
+        if token not in cls.TOKEN_STREAM_ID_SIZES:
+            if len(data) == 0 and len(packet) > cls.DEFAULT_STREAM_ID_SIZE + 2:
+                logger.warning(f"Token '{token}': No data after assumed {stream_id_size}-byte stream ID. "
+                             f"Stream ID size may be incorrect. Packet size: {len(packet)} bytes")
 
         return {
             'token': token,

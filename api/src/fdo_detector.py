@@ -216,7 +216,8 @@ class FdoDetector:
                 token_bytes = payload_data[:2]
                 try:
                     token = token_bytes.rstrip(b'\x00').decode('ascii', errors='ignore')
-                    return token in P3PayloadBuilder.TOKEN_STREAM_ID_SIZES
+                    # Accept any 2-char ASCII token (P3PayloadBuilder handles validation with fallback)
+                    return len(token) == 2 and token.isprintable()
                 except:
                     return False
 

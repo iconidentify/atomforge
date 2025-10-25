@@ -59,9 +59,7 @@ class FdoChunker:
         """
         logger.info(f"Processing FDO script for chunking: token={token}, stream_id={stream_id}")
 
-        # Validate inputs
-        if token not in P3PayloadBuilder.TOKEN_STREAM_ID_SIZES:
-            raise ValueError(f"Invalid token '{token}'")
+        # Token validation removed - P3PayloadBuilder handles unknown tokens with fallback
 
         # Parse FDO preserving action blocks as atomic units
         try:
