@@ -32,11 +32,24 @@ class FdoAtomParser:
     # Maximum text length before splitting man_append_data (conservative estimate for 255-byte limit)
     MAX_APPEND_DATA_TEXT_LENGTH = 200
 
+    # Maximum hex pairs before splitting man_append_data hex format
+    # Each pair compiles to 1 byte, so 150 pairs = 150 bytes compiled
+    # Conservative to stay under 255-byte limit with overhead
+    MAX_MAN_APPEND_DATA_HEX_PAIRS = 150
+
     # Maximum hex data length before splitting idb_append_data (hex chars are 2 per byte, so ~100 hex chars = 50 bytes)
     MAX_IDB_APPEND_DATA_HEX_LENGTH = 400
 
+    # Maximum hex pairs before splitting idb_append_data hex-pair format (PREFERRED over continuous hex)
+    # Each pair = 1 byte, so 200 pairs = 200 bytes compiled
+    MAX_IDB_APPEND_DATA_HEX_PAIRS = 200
+
     # Maximum hex data length before splitting dod_data (same as idb_append_data - ~200 bytes when compiled)
     MAX_DOD_DATA_HEX_LENGTH = 400
+
+    # Maximum hex pairs before splitting dod_data hex-pair format (PREFERRED over continuous hex)
+    # Each pair = 1 byte, so 200 pairs = 200 bytes compiled
+    MAX_DOD_DATA_HEX_PAIRS = 200
 
     # Maximum hex data length for raw_data (112 bytes = 224 hex chars, max for AT token NON-FDO frames)
     MAX_RAW_DATA_HEX_LENGTH = 224
@@ -57,20 +70,35 @@ class FdoAtomParser:
 
         for line in lines:
             if cls._is_long_append_data(line):
-                # Split this line into multiple man_append_data statements
+                # Split quoted text format: man_append_data <"text">
                 split_lines = cls._split_append_data_line(line)
                 processed_lines.extend(split_lines)
-                logger.debug(f"Split long man_append_data into {len(split_lines)} parts")
+                logger.debug(f"Split long man_append_data (quoted) into {len(split_lines)} parts")
+            elif cls._is_long_append_data_hex(line):
+                # Split hex-pair format: man_append_data <2Ax, 3Bx, ...>
+                split_lines = cls._split_append_data_hex_line(line)
+                processed_lines.extend(split_lines)
+                logger.debug(f"Split long man_append_data (hex) into {len(split_lines)} parts")
             elif cls._is_long_idb_append_data(line):
-                # Split this line into multiple idb_append_data statements
+                # Split continuous hex format: idb_append_data <AABBCC...> (LEGACY)
                 split_lines = cls._split_idb_append_data_line(line)
                 processed_lines.extend(split_lines)
-                logger.debug(f"Split long idb_append_data into {len(split_lines)} parts")
+                logger.debug(f"Split long idb_append_data (continuous hex - legacy) into {len(split_lines)} parts")
+            elif cls._is_long_idb_append_data_hex(line):
+                # Split hex-pair format: idb_append_data <2Ax, 3Bx, ...> (PREFERRED)
+                split_lines = cls._split_idb_append_data_hex_line(line)
+                processed_lines.extend(split_lines)
+                logger.debug(f"Split long idb_append_data (hex pairs) into {len(split_lines)} parts")
             elif cls._is_long_dod_data(line):
-                # Split this line into multiple dod_data statements
+                # Split continuous hex format: dod_data <AABBCC...> (LEGACY)
                 split_lines = cls._split_dod_data_line(line)
                 processed_lines.extend(split_lines)
-                logger.debug(f"Split long dod_data into {len(split_lines)} parts")
+                logger.debug(f"Split long dod_data (continuous hex - legacy) into {len(split_lines)} parts")
+            elif cls._is_long_dod_data_hex(line):
+                # Split hex-pair format: dod_data <2Ax, 3Bx, ...> (PREFERRED)
+                split_lines = cls._split_dod_data_hex_line(line)
+                processed_lines.extend(split_lines)
+                logger.debug(f"Split long dod_data (hex pairs) into {len(split_lines)} parts")
             else:
                 processed_lines.append(line)
 
@@ -88,11 +116,39 @@ class FdoAtomParser:
         return text_content and len(text_content) > cls.MAX_APPEND_DATA_TEXT_LENGTH
 
     @classmethod
+    def _is_long_append_data_hex(cls, line: str) -> bool:
+        """Check if a line contains man_append_data with long hex pairs."""
+        line_clean = line.strip()
+        if not line_clean.startswith('man_append_data'):
+            return False
+
+        # Check for hex-pair format: <2Ax, 3Bx, ...>
+        hex_content = cls._extract_hex_from_man_append_data(line_clean)
+        if not hex_content:
+            return False
+
+        # Count comma-separated hex pairs
+        pairs = [p.strip() for p in hex_content.split(',') if p.strip()]
+        return len(pairs) > cls.MAX_MAN_APPEND_DATA_HEX_PAIRS
+
+    @classmethod
     def _extract_text_from_append_data(cls, line: str) -> str:
         """Extract text content from man_append_data <"text"> format."""
         match = re.search(r'man_append_data\s*<\s*"([^"]*)"', line)
         if match:
             return match.group(1)
+        return ""
+
+    @classmethod
+    def _extract_hex_from_man_append_data(cls, line: str) -> str:
+        """Extract hex content from man_append_data <hex> format (no quotes)."""
+        # Match hex-pair format: <2Ax, 3Bx, ...> (no quotes)
+        match = re.search(r'man_append_data\s*<\s*([0-9A-Fa-fx, ]+)\s*>', line)
+        if match:
+            content = match.group(1)
+            # Verify it looks like hex pairs (contains 'x')
+            if 'x' in content.lower():
+                return content
         return ""
 
     @classmethod
@@ -115,6 +171,30 @@ class FdoAtomParser:
             # Escape quotes in the chunk text
             escaped_chunk = chunk.replace('"', '\\"')
             split_line = f'{indent}man_append_data <"{escaped_chunk}">'
+            split_lines.append(split_line)
+
+        return split_lines
+
+    @classmethod
+    def _split_append_data_hex_line(cls, line: str) -> List[str]:
+        """Split a long man_append_data hex-pair line into multiple smaller ones."""
+        # Extract indentation and hex content
+        indent_match = re.match(r'^(\s*)', line)
+        indent = indent_match.group(1) if indent_match else ""
+
+        hex_content = cls._extract_hex_from_man_append_data(line)
+        if not hex_content:
+            return [line]  # Fallback
+
+        # Split into individual hex pairs
+        pairs = [p.strip() for p in hex_content.split(',') if p.strip()]
+
+        # Chunk into groups of MAX_MAN_APPEND_DATA_HEX_PAIRS
+        split_lines = []
+        for i in range(0, len(pairs), cls.MAX_MAN_APPEND_DATA_HEX_PAIRS):
+            chunk = pairs[i:i + cls.MAX_MAN_APPEND_DATA_HEX_PAIRS]
+            chunk_str = ', '.join(chunk)
+            split_line = f'{indent}man_append_data <{chunk_str}>'
             split_lines.append(split_line)
 
         return split_lines
@@ -180,12 +260,42 @@ class FdoAtomParser:
         return hex_content and len(hex_content) > cls.MAX_IDB_APPEND_DATA_HEX_LENGTH
 
     @classmethod
+    def _is_long_idb_append_data_hex(cls, line: str) -> bool:
+        """Check if line contains idb_append_data with long hex pairs."""
+        line_clean = line.strip()
+        if not line_clean.startswith('idb_append_data'):
+            return False
+
+        # Check for hex-pair format: <2Ax, 3Bx, ...>
+        hex_content = cls._extract_hex_pairs_from_idb_append_data(line_clean)
+        if not hex_content:
+            return False
+
+        # Count comma-separated hex pairs
+        pairs = [p.strip() for p in hex_content.split(',') if p.strip()]
+        return len(pairs) > cls.MAX_IDB_APPEND_DATA_HEX_PAIRS
+
+    @classmethod
     def _extract_hex_from_idb_append_data(cls, line: str) -> str:
-        """Extract hex content from idb_append_data <hex_data> format."""
-        # Look for hex data in angle brackets (supports comma-separated hex)
-        match = re.search(r'idb_append_data\s*<\s*([^>]+)\s*>', line)
+        """Extract hex content from idb_append_data <hex_data> format (continuous hex only, LEGACY)."""
+        # Look for continuous hex data (no commas, no 'x' suffix - legacy format)
+        match = re.search(r'idb_append_data\s*<\s*([0-9A-Fa-f\s]+)\s*>', line)
         if match:
-            return match.group(1)
+            content = match.group(1)
+            # Verify it's continuous hex (no 'x' or commas)
+            if 'x' not in content.lower() and ',' not in content:
+                return content
+        return ""
+
+    @classmethod
+    def _extract_hex_pairs_from_idb_append_data(cls, line: str) -> str:
+        """Extract hex-pair content from idb_append_data <2Ax, 3Bx, ...> format."""
+        match = re.search(r'idb_append_data\s*<\s*([0-9A-Fa-fx, ]+)\s*>', line)
+        if match:
+            content = match.group(1)
+            # Verify it looks like hex pairs (contains 'x' and commas)
+            if 'x' in content.lower() and ',' in content:
+                return content
         return ""
 
     @classmethod
@@ -209,6 +319,29 @@ class FdoAtomParser:
         split_lines = []
         for chunk in hex_chunks:
             split_line = f'{indent}idb_append_data <{chunk}>'
+            split_lines.append(split_line)
+
+        return split_lines
+
+    @classmethod
+    def _split_idb_append_data_hex_line(cls, line: str) -> List[str]:
+        """Split a long idb_append_data hex-pair line into multiple smaller ones."""
+        indent_match = re.match(r'^(\s*)', line)
+        indent = indent_match.group(1) if indent_match else ""
+
+        hex_content = cls._extract_hex_pairs_from_idb_append_data(line)
+        if not hex_content:
+            return [line]  # Fallback
+
+        # Split into individual hex pairs
+        pairs = [p.strip() for p in hex_content.split(',') if p.strip()]
+
+        # Chunk into groups
+        split_lines = []
+        for i in range(0, len(pairs), cls.MAX_IDB_APPEND_DATA_HEX_PAIRS):
+            chunk = pairs[i:i + cls.MAX_IDB_APPEND_DATA_HEX_PAIRS]
+            chunk_str = ', '.join(chunk)
+            split_line = f'{indent}idb_append_data <{chunk_str}>'
             split_lines.append(split_line)
 
         return split_lines
@@ -256,12 +389,42 @@ class FdoAtomParser:
         return hex_content and len(hex_content) > cls.MAX_DOD_DATA_HEX_LENGTH
 
     @classmethod
+    def _is_long_dod_data_hex(cls, line: str) -> bool:
+        """Check if line contains dod_data with long hex pairs."""
+        line_clean = line.strip()
+        if not line_clean.startswith('dod_data'):
+            return False
+
+        # Check for hex-pair format: <2Ax, 3Bx, ...>
+        hex_content = cls._extract_hex_pairs_from_dod_data(line_clean)
+        if not hex_content:
+            return False
+
+        # Count comma-separated hex pairs
+        pairs = [p.strip() for p in hex_content.split(',') if p.strip()]
+        return len(pairs) > cls.MAX_DOD_DATA_HEX_PAIRS
+
+    @classmethod
     def _extract_hex_from_dod_data(cls, line: str) -> str:
-        """Extract hex content from dod_data <hex_data> format."""
-        # Look for hex data in angle brackets (supports comma-separated hex)
-        match = re.search(r'dod_data\s*<\s*([^>]+)\s*>', line)
+        """Extract hex content from dod_data <hex_data> format (continuous hex only, LEGACY)."""
+        # Look for continuous hex data (no commas, no 'x' suffix - legacy format)
+        match = re.search(r'dod_data\s*<\s*([0-9A-Fa-f\s]+)\s*>', line)
         if match:
-            return match.group(1)
+            content = match.group(1)
+            # Verify it's continuous hex (no 'x' or commas)
+            if 'x' not in content.lower() and ',' not in content:
+                return content
+        return ""
+
+    @classmethod
+    def _extract_hex_pairs_from_dod_data(cls, line: str) -> str:
+        """Extract hex-pair content from dod_data <2Ax, 3Bx, ...> format."""
+        match = re.search(r'dod_data\s*<\s*([0-9A-Fa-fx, ]+)\s*>', line)
+        if match:
+            content = match.group(1)
+            # Verify it looks like hex pairs (contains 'x' and commas)
+            if 'x' in content.lower() and ',' in content:
+                return content
         return ""
 
     @classmethod
@@ -309,6 +472,29 @@ class FdoAtomParser:
         split_lines = []
         for chunk in hex_chunks:
             split_line = f'{indent}dod_data <{chunk}>'
+            split_lines.append(split_line)
+
+        return split_lines
+
+    @classmethod
+    def _split_dod_data_hex_line(cls, line: str) -> List[str]:
+        """Split a long dod_data hex-pair line into multiple smaller ones."""
+        indent_match = re.match(r'^(\s*)', line)
+        indent = indent_match.group(1) if indent_match else ""
+
+        hex_content = cls._extract_hex_pairs_from_dod_data(line)
+        if not hex_content:
+            return [line]  # Fallback
+
+        # Split into individual hex pairs
+        pairs = [p.strip() for p in hex_content.split(',') if p.strip()]
+
+        # Chunk into groups
+        split_lines = []
+        for i in range(0, len(pairs), cls.MAX_DOD_DATA_HEX_PAIRS):
+            chunk = pairs[i:i + cls.MAX_DOD_DATA_HEX_PAIRS]
+            chunk_str = ', '.join(chunk)
+            split_line = f'{indent}dod_data <{chunk_str}>'
             split_lines.append(split_line)
 
         return split_lines
