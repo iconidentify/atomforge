@@ -13,6 +13,7 @@ import re
 from fdo_daemon_client import FdoDaemonClient, FdoDaemonError
 from fdo_atom_parser import FdoAtomParser
 from p3_payload_builder import P3PayloadBuilder
+from fdo_manual_compiler import FdoManualCompiler
 
 logger = logging.getLogger(__name__)
 
@@ -219,7 +220,7 @@ class FdoChunker:
 
     async def _compile_unit(self, unit: Dict[str, Any]) -> bytes:
         """
-        Compile atom unit using FDO daemon.
+        Compile atom unit using manual compiler or FDO daemon fallback.
 
         Args:
             unit: Atom unit from parser
@@ -231,13 +232,22 @@ class FdoChunker:
             FdoDaemonError: If compilation fails
         """
         try:
-            # Use daemon to compile the atom content
+            # Try manual compilation first (400x faster for hex-pair atoms)
+            if FdoManualCompiler.can_compile_manually(unit['content']):
+                manual_result = FdoManualCompiler.compile_line(unit['content'])
+                if manual_result is not None:
+                    logger.debug(f"Manually compiled unit at line {unit['line_start']}: {len(manual_result)} bytes")
+                    return manual_result
+                else:
+                    logger.warning(f"Manual compilation returned None, falling back to daemon for line {unit['line_start']}")
+
+            # Fallback to daemon compilation
             result = await asyncio.to_thread(
                 self.daemon_client.compile_source,
                 unit['content']
             )
 
-            logger.debug(f"Compiled unit at line {unit['line_start']}: {len(result)} bytes")
+            logger.debug(f"Daemon compiled unit at line {unit['line_start']}: {len(result)} bytes")
             return result
 
         except Exception as e:
