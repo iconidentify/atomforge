@@ -73,7 +73,7 @@ class FdoDaemonPoolManager:
 
         Args:
             exe_path: Path to fdo_daemon.exe
-            pool_size: Number of daemon instances (1-20)
+            pool_size: Number of daemon instances (1-100 by default, configurable via FDO_DAEMON_POOL_MAX_SIZE)
             base_port: Starting port number
             bind_host: Host address to bind daemons
             restart_delay: Delay before restarting crashed daemon (seconds)
@@ -85,8 +85,10 @@ class FdoDaemonPoolManager:
         if not os.path.exists(exe_path):
             raise ValueError(f"Daemon executable not found: {exe_path}")
 
-        if not (1 <= pool_size <= 20):
-            raise ValueError(f"Pool size must be 1-20, got: {pool_size}")
+        # Configurable pool size limit (default: 100, can be overridden via FDO_DAEMON_POOL_MAX_SIZE)
+        max_pool_size = int(os.getenv("FDO_DAEMON_POOL_MAX_SIZE", "100"))
+        if not (1 <= pool_size <= max_pool_size):
+            raise ValueError(f"Pool size must be 1-{max_pool_size}, got: {pool_size}")
 
         if base_port + pool_size > 65535:
             raise ValueError(f"Port range exceeds maximum (base={base_port}, size={pool_size})")
@@ -225,6 +227,50 @@ class FdoDaemonPoolManager:
 
             # No idle daemon available
             return None
+
+    async def get_healthy_instance_async(self, timeout: float = 5.0) -> Optional[DaemonInstance]:
+        """
+        Get next idle daemon, waiting if all are busy.
+
+        This method polls for available daemons with a brief sleep between attempts,
+        allowing requests to queue gracefully when the pool is temporarily saturated.
+
+        Args:
+            timeout: Maximum time to wait for an available daemon (seconds)
+
+        Returns:
+            DaemonInstance if available within timeout, None otherwise
+        """
+        import asyncio
+
+        start_time = time.time()
+        poll_interval = 0.05  # 50ms between checks
+        attempts = 0
+
+        while time.time() - start_time < timeout:
+            attempts += 1
+
+            # Try to get an idle daemon
+            instance = self.get_healthy_instance()
+            if instance:
+                elapsed = time.time() - start_time
+                if elapsed > 0.1:  # Log if we had to wait
+                    logger.info(
+                        f"Daemon {instance.id} available after {elapsed:.2f}s wait "
+                        f"({attempts} attempts)"
+                    )
+                return instance
+
+            # No daemon available - wait briefly before retrying
+            await asyncio.sleep(poll_interval)
+
+        # Timeout reached
+        elapsed = time.time() - start_time
+        logger.warning(
+            f"No healthy daemon available after {elapsed:.2f}s timeout "
+            f"({attempts} attempts, pool_size={len(self.instances)})"
+        )
+        return None
 
     def restart_instance(self, instance: DaemonInstance) -> bool:
         """

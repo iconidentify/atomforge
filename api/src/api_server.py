@@ -639,7 +639,7 @@ async def compile_fdo(request: CompileRequest):
         # Compile using daemon (text/plain -> octet-stream)
         start_time = time.time()
         try:
-            binary_data = daemon_client.compile_source(sanitize_fdo_source(source))
+            binary_data = await daemon_client.compile_source(sanitize_fdo_source(source))
         except FdoDaemonError as e:
             # Single daemon error details with normalized error payload
             norm = _build_daemon_error_detail(e.content_type, e.text, e.json)
@@ -727,7 +727,7 @@ async def decompile_fdo(request: DecompileRequest):
         # Decompile using daemon (octet-stream -> text/plain)
         start_time = time.time()
         try:
-            source_code_raw = daemon_client.decompile_binary(binary_data)
+            source_code_raw = await daemon_client.decompile_binary(binary_data)
             # Unescape quotes that the FDO daemon may have escaped
             source_code = source_code_raw.replace('\\"', '"')
         except FdoDaemonError as e:
@@ -895,7 +895,7 @@ async def decompile_jsonl_file(file: UploadFile = File(...)):
         decompile_start = time.time()
         try:
             # Pass daemon_manager for restart capability during crashes
-            decompilation_result = JsonlProcessor._decompile_frames_individually(fdo_frames, daemon_client, daemon_manager)
+            decompilation_result = await JsonlProcessor._decompile_frames_individually(fdo_frames, daemon_client, daemon_manager)
             source_code = decompilation_result['source']
             frames_decompiled_successfully = decompilation_result['frames_decompiled_successfully']
             frames_failed_decompilation = decompilation_result['frames_failed_decompilation']

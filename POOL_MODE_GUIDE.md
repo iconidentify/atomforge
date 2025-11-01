@@ -65,7 +65,8 @@ curl http://localhost:8000/health/pool
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `FDO_DAEMON_POOL_ENABLED` | `false` | Enable pool mode |
-| `FDO_DAEMON_POOL_SIZE` | `5` | Number of daemon instances (1-20) |
+| `FDO_DAEMON_POOL_SIZE` | `5` | Number of daemon instances (1-MAX_SIZE) |
+| `FDO_DAEMON_POOL_MAX_SIZE` | `100` | Maximum allowed pool size (configurable upper limit) |
 | `FDO_DAEMON_POOL_BASE_PORT` | `8080` | Starting port (uses BASE_PORT + 0, 1, 2...) |
 | `FDO_DAEMON_HEALTH_INTERVAL` | `10.0` | Health check frequency (seconds) |
 | `FDO_DAEMON_RESTART_DELAY` | `2.0` | Delay before restart (seconds) |

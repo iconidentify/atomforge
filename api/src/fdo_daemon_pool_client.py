@@ -68,7 +68,7 @@ class FdoDaemonPoolClient:
         """Alias for health() for compatibility."""
         return self.health()
 
-    def compile_source(self, source_text: str) -> bytes:
+    async def compile_source(self, source_text: str) -> bytes:
         """
         Compile FDO source with automatic failover.
 
@@ -91,9 +91,9 @@ class FdoDaemonPoolClient:
             else:
                 raise FdoDaemonError(f"Unexpected compile response: {type(result)}")
 
-        return self._execute_with_retry(operation)
+        return await self._execute_with_retry(operation)
 
-    def decompile_binary(self, binary_data: bytes) -> str:
+    async def decompile_binary(self, binary_data: bytes) -> str:
         """
         Decompile FDO binary with automatic failover.
 
@@ -115,9 +115,9 @@ class FdoDaemonPoolClient:
             else:
                 raise FdoDaemonError(f"Unexpected decompile response: {type(result)}")
 
-        return self._execute_with_retry(operation)
+        return await self._execute_with_retry(operation)
 
-    def _execute_with_retry(self, operation: Callable[[FdoDaemonClient], Any]) -> Any:
+    async def _execute_with_retry(self, operation: Callable[[FdoDaemonClient], Any]) -> Any:
         """
         Execute operation with automatic retry and failover.
 
@@ -135,12 +135,13 @@ class FdoDaemonPoolClient:
         attempted_instances = set()
 
         while attempts < self.max_retries:
-            # Get next healthy daemon instance
-            instance = self.pool_manager.get_healthy_instance()
+            # Get next healthy daemon instance (wait up to 5 seconds if pool is busy)
+            instance = await self.pool_manager.get_healthy_instance_async(timeout=5.0)
 
             if not instance:
                 raise RuntimeError(
-                    f"No healthy daemon instances available (attempted {len(attempted_instances)} instances)"
+                    f"No healthy daemon instances available after 5s wait "
+                    f"(attempted {len(attempted_instances)} instances, pool exhausted)"
                 )
 
             # Skip if we've already tried this instance
@@ -199,9 +200,10 @@ class FdoDaemonPoolClient:
 
                     # Exponential backoff before retry (except on last attempt)
                     if attempts < self.max_retries:
+                        import asyncio
                         backoff_delay = 0.1 * (2 ** attempts)
                         logger.debug(f"Retry backoff: {backoff_delay:.2f}s")
-                        time.sleep(backoff_delay)
+                        await asyncio.sleep(backoff_delay)
 
                 finally:
                     # Always clear processing flag when done (success or failure)

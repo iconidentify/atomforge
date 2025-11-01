@@ -26,17 +26,26 @@ class FdoChunker:
     Leverages AtomForge's FDO daemon for high-performance per-atom compilation.
     """
 
-    def __init__(self, daemon_client):
+    def __init__(self, daemon_client, enable_parallel: bool = None):
         """
         Initialize chunker with FDO daemon client.
 
         Args:
             daemon_client: Client for communicating with FDO compilation daemon
                           (FdoDaemonClient or FdoDaemonPoolClient)
+            enable_parallel: Enable parallel atom compilation (default: from env var or True)
         """
         self.daemon_client = daemon_client
         self.parser = FdoAtomParser()
         self.payload_builder = P3PayloadBuilder()
+
+        # Configure parallel compilation (default: enabled)
+        if enable_parallel is None:
+            import os
+            enable_parallel = os.getenv('FDO_CHUNKER_PARALLEL_ENABLED', 'true').lower() == 'true'
+
+        self.enable_parallel = enable_parallel
+        logger.info(f"FDO Chunker initialized: parallel_compilation={'enabled' if self.enable_parallel else 'disabled'}")
 
     async def process_fdo_script(self, fdo_script: str, stream_id: int = 0, token: str = 'AT') -> Dict[str, Any]:
         """
@@ -88,7 +97,36 @@ class FdoChunker:
         # Track sequence state for continuation detection
         in_segmented_sequence = False
 
-        # Process each atom unit
+        # PHASE 1: Pre-compile all units in parallel (if enabled)
+        compiled_results = {}  # Map unit index -> compiled bytes
+
+        if self.enable_parallel:
+            # Identify units that need compilation (exclude raw_data)
+            units_to_compile = []
+            compile_indices = []
+
+            for i, unit in enumerate(atom_units):
+                if not unit.get('is_raw_data'):
+                    units_to_compile.append(unit)
+                    compile_indices.append(i)
+
+            # Compile all units in parallel
+            if units_to_compile:
+                try:
+                    compiled_list = await self._compile_units_parallel(units_to_compile)
+
+                    # Map results back to unit indices
+                    for idx, compiled_data in zip(compile_indices, compiled_list):
+                        compiled_results[idx] = compiled_data
+
+                    logger.info(f"Pre-compiled {len(compiled_list)} units in parallel")
+
+                except Exception as e:
+                    logger.error(f"Parallel compilation failed, falling back to sequential: {e}")
+                    # Fall back to sequential compilation
+                    compiled_results = {}
+
+        # PHASE 2: Process each atom unit (using pre-compiled results or compiling sequentially)
         for i, unit in enumerate(atom_units):
             try:
                 # Check if this is a raw_data atom (needs multi-frame splitting)
@@ -123,8 +161,14 @@ class FdoChunker:
                     # Skip normal processing for this unit
                     continue
 
-                # Normal FDO atom processing - compile the atom unit using the daemon
-                compiled_data = await self._compile_unit(unit)
+                # Normal FDO atom processing - use pre-compiled result or compile now
+                if i in compiled_results:
+                    # Use pre-compiled result from parallel compilation
+                    compiled_data = compiled_results[i]
+                    logger.debug(f"Using pre-compiled result for unit {i}")
+                else:
+                    # Sequential compilation (fallback or parallel disabled)
+                    compiled_data = await self._compile_unit(unit)
 
                 # Check if this atom is too large to ever fit (warn but continue)
                 if unit['is_action'] and len(compiled_data) > P3PayloadBuilder.MAX_SEGMENT_SIZE:
@@ -231,11 +275,8 @@ class FdoChunker:
             FdoDaemonError: If compilation fails
         """
         try:
-            # Use daemon to compile the atom content
-            result = await asyncio.to_thread(
-                self.daemon_client.compile_source,
-                unit['content']
-            )
+            # Use daemon to compile the atom content (now async)
+            result = await self.daemon_client.compile_source(unit['content'])
 
             logger.debug(f"Compiled unit at line {unit['line_start']}: {len(result)} bytes")
             return result
@@ -243,6 +284,51 @@ class FdoChunker:
         except Exception as e:
             logger.error(f"Compilation failed for unit: {unit['content'][:100]}...")
             raise
+
+    async def _compile_units_parallel(self, units: List[Dict[str, Any]], batch_size: int = 5) -> List[bytes]:
+        """
+        Compile multiple atom units in parallel using daemon pool.
+
+        Args:
+            units: List of atom units to compile
+            batch_size: Number of units to compile concurrently (default: 5 for pool size)
+
+        Returns:
+            List of compiled binary data in same order as input units
+
+        Raises:
+            FdoDaemonError: If any compilation fails
+        """
+        if not units:
+            return []
+
+        logger.info(f"Parallel compilation: {len(units)} units in batches of {batch_size}")
+
+        results = []
+
+        # Process in batches to avoid overwhelming the pool
+        for i in range(0, len(units), batch_size):
+            batch = units[i:i+batch_size]
+
+            # Compile batch concurrently using asyncio.gather()
+            # gather() maintains order and waits for all tasks
+            try:
+                batch_results = await asyncio.gather(
+                    *[self._compile_unit(unit) for unit in batch],
+                    return_exceptions=False  # Raise first exception immediately
+                )
+                results.extend(batch_results)
+
+                logger.debug(f"Compiled batch {i//batch_size + 1}: {len(batch)} units")
+
+            except Exception as e:
+                # If any unit in batch fails, re-raise with context
+                failed_unit = batch[0]  # Approximate - gather doesn't tell us which failed
+                logger.error(f"Parallel compilation failed in batch starting at line {failed_unit['line_start']}")
+                raise
+
+        logger.info(f"Parallel compilation complete: {len(results)} units compiled")
+        return results
 
     def _compile_raw_data_to_chunks(self, unit: Dict[str, Any], stream_id: int, token: str) -> List[bytes]:
         """
@@ -341,10 +427,7 @@ class FdoChunker:
         # Then try full compilation
         compilation_result = {'success': False, 'error': None, 'size': 0}
         try:
-            compiled_data = await asyncio.to_thread(
-                self.daemon_client.compile_source,
-                fdo_script
-            )
+            compiled_data = await self.daemon_client.compile_source(fdo_script)
             compilation_result = {
                 'success': True,
                 'error': None,

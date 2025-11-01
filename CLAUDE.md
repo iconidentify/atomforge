@@ -124,7 +124,8 @@ The service includes a complete pipeline for processing binary data:
 - `FDO_DAEMON_PORT` - Daemon port (default: `8080`)
 
 ### Pool Mode (FDO_DAEMON_POOL_ENABLED=true)
-- `FDO_DAEMON_POOL_SIZE` - Number of daemon instances (default: `5`, range: 1-20)
+- `FDO_DAEMON_POOL_SIZE` - Number of daemon instances (default: `5`, range: 1-MAX_SIZE)
+- `FDO_DAEMON_POOL_MAX_SIZE` - Maximum allowed pool size (default: `100`, configurable upper limit)
 - `FDO_DAEMON_POOL_BASE_PORT` - Starting port for pool (default: `8080`)
 - `FDO_DAEMON_RESTART_DELAY` - Delay before restart in seconds (default: `2.0`)
 - `FDO_DAEMON_HEALTH_INTERVAL` - Health check frequency in seconds (default: `10.0`)

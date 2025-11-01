@@ -555,7 +555,7 @@ class JsonlProcessor:
 
 
     @classmethod
-    def _decompile_frames_individually(cls, fdo_frames: list, daemon_client, daemon_manager=None) -> Dict[str, Any]:
+    async def _decompile_frames_individually(cls, fdo_frames: list, daemon_client, daemon_manager=None) -> Dict[str, Any]:
         """
         Decompile FDO frames individually with enhanced crash detection and forensics.
 
@@ -596,7 +596,7 @@ class JsonlProcessor:
 
             try:
                 # Call daemon with individual frame
-                source_code = daemon_client.decompile_binary(fdo_data)
+                source_code = await daemon_client.decompile_binary(fdo_data)
 
                 frame_results.append({
                     'result_type': 'success',
