@@ -18,10 +18,17 @@ services:
       - LOGLEVEL=INFO
       - HOST=0.0.0.0
       - PORT=8000
-      # Single Daemon Configuration
-      - FDO_DAEMON_POOL_ENABLED=false
+      # Daemon Configuration
+      # Single Daemon Mode (default, set POOL_ENABLED=false)
+      - FDO_DAEMON_POOL_ENABLED=true
       - FDO_DAEMON_BIND=127.0.0.1
       - FDO_DAEMON_PORT=8080
+      - FDO_DAEMON_POOL_SIZE=5
+      - FDO_DAEMON_POOL_BASE_PORT=8080
+      - FDO_DAEMON_HEALTH_INTERVAL=10.0
+      - FDO_DAEMON_MAX_RESTART_ATTEMPTS=5
+      - FDO_DAEMON_MAX_RETRIES=3
+      - FDO_DAEMON_CIRCUIT_BREAKER_THRESHOLD=3
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -34,14 +41,16 @@ services:
       # Mount validation results for analysis
       - ./validation_results:/atomforge/validation_results
     # Resource limits for production deployment
+    # Single daemon mode: 256M is sufficient
+    # Pool mode (5 daemons): Increase to 1G for stability
     deploy:
       resources:
         limits:
+          memory: 1G  # Increased from 256M to support pool mode
+          cpus: '1.0'  # Increased from 0.5 to support pool mode
+        reservations:
           memory: 256M
           cpus: '0.5'
-        reservations:
-          memory: 128M
-          cpus: '0.25'
     # Labels for monitoring and management
     labels:
       - "com.atomforge.service=api"

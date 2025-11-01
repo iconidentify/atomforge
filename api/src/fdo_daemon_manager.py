@@ -46,6 +46,18 @@ class FdoDaemonManager:
     def base_url(self) -> str:
         return f"http://{self.bind_host}:{self.port}"
 
+    def health_check(self) -> bool:
+        """
+        Perform a health check on the daemon.
+        Returns True if daemon is healthy, False otherwise.
+        """
+        try:
+            r = httpx.get(f"{self.base_url}/health", timeout=1.0)
+            return r.status_code == 200
+        except Exception as e:
+            logger.debug(f"Health check failed for {self.base_url}: {e}")
+            return False
+
     def start(self) -> None:
         if self._proc is not None and self._proc.poll() is None:
             return  # already running

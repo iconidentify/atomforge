@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 
 from fastapi import FastAPI, HTTPException, File, UploadFile, Request, WebSocket, WebSocketDisconnect
-from fastapi.responses import Response, JSONResponse, StreamingResponse
+from fastapi.responses import Response, JSONResponse, StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -29,6 +29,8 @@ sys.path.insert(0, os.path.dirname(__file__))
 from fdo_tools_manager import get_fdo_tools_manager
 from fdo_daemon_manager import FdoDaemonManager
 from fdo_daemon_client import FdoDaemonClient, FdoDaemonError
+from fdo_daemon_pool_manager import FdoDaemonPoolManager
+from fdo_daemon_pool_client import FdoDaemonPoolClient
 
 # Import file management
 from database import init_database, test_database_connection
@@ -68,6 +70,8 @@ app.add_middleware(
 fdo_tools_manager = None
 daemon_manager = None
 daemon_client = None
+pool_manager = None  # For pool mode
+execution_mode = "single_daemon"  # "single_daemon" or "daemon_pool"
 
 
 # Pydantic models
@@ -300,9 +304,13 @@ def _build_daemon_error_detail(daemon_content_type: str, daemon_text: str, daemo
 @app.on_event("startup")
 async def startup_event():
     """Initialize FDO Tools on startup"""
-    global fdo_tools_manager, daemon_manager, daemon_client
+    global fdo_tools_manager, daemon_manager, daemon_client, pool_manager, execution_mode
 
-    logger.info(f"🚀 Starting AtomForge API Server v2.0 (single daemon)")
+    # Detect pool mode from environment
+    pool_enabled = os.getenv("FDO_DAEMON_POOL_ENABLED", "false").lower() == "true"
+    execution_mode = "daemon_pool" if pool_enabled else "single_daemon"
+
+    logger.info(f"🚀 Starting AtomForge API Server v2.0 (mode: {execution_mode})")
 
     try:
         # Initialize database
@@ -323,28 +331,66 @@ async def startup_event():
         if not selected_release:
             raise RuntimeError("No FDO releases/backends found")
 
-        # Start single daemon
+        # Get daemon executable path
         daemon_exe = fdo_tools_manager.get_daemon_exe_path()
         if not daemon_exe:
             raise RuntimeError("fdo_daemon.exe not found in selected release or backend drop")
 
         bind = os.getenv("FDO_DAEMON_BIND", "127.0.0.1")
         token = os.getenv("FDO_DAEMON_TOKEN")
-        port_env = os.getenv("FDO_DAEMON_PORT", "0")
-        port = int(port_env) if port_env.isdigit() else 0
 
-        daemon_manager = FdoDaemonManager(
-            exe_path=daemon_exe,
-            bind_host=bind,
-            port=(port or None),
-        )
-        daemon_manager.start()
+        if pool_enabled:
+            # Pool mode - start multiple daemons
+            pool_size = int(os.getenv("FDO_DAEMON_POOL_SIZE", "5"))
+            base_port = int(os.getenv("FDO_DAEMON_POOL_BASE_PORT", "8080"))
+            health_interval = float(os.getenv("FDO_DAEMON_HEALTH_INTERVAL", "10.0"))
+            restart_delay = float(os.getenv("FDO_DAEMON_RESTART_DELAY", "2.0"))
+            max_restart_attempts = int(os.getenv("FDO_DAEMON_MAX_RESTART_ATTEMPTS", "5"))
+            max_retries = int(os.getenv("FDO_DAEMON_MAX_RETRIES", "3"))
+            request_timeout = float(os.getenv("FDO_DAEMON_REQUEST_TIMEOUT", "10.0"))
+            circuit_breaker_threshold = int(os.getenv("FDO_DAEMON_CIRCUIT_BREAKER_THRESHOLD", "3"))
 
-        daemon_client = FdoDaemonClient(base_url=daemon_manager.base_url, token=token)
+            logger.info(f"🔧 Pool configuration: size={pool_size}, ports={base_port}-{base_port + pool_size - 1}")
 
-        # Confirm health
-        health = daemon_client.health()
-        logger.info(f"📡 Single daemon health: {health}")
+            pool_manager = FdoDaemonPoolManager(
+                exe_path=daemon_exe,
+                pool_size=pool_size,
+                base_port=base_port,
+                bind_host=bind,
+                restart_delay=restart_delay,
+                health_interval=health_interval,
+                max_restart_attempts=max_restart_attempts,
+                circuit_breaker_threshold=circuit_breaker_threshold
+            )
+            pool_manager.start()
+
+            daemon_client = FdoDaemonPoolClient(
+                pool_manager=pool_manager,
+                max_retries=max_retries,
+                timeout_seconds=request_timeout
+            )
+
+            # Confirm pool health
+            health = daemon_client.health()
+            logger.info(f"📡 Daemon pool health: {health}")
+
+        else:
+            # Single daemon mode (backward compatible)
+            port_env = os.getenv("FDO_DAEMON_PORT", "0")
+            port = int(port_env) if port_env.isdigit() else 0
+
+            daemon_manager = FdoDaemonManager(
+                exe_path=daemon_exe,
+                bind_host=bind,
+                port=(port or None),
+            )
+            daemon_manager.start()
+
+            daemon_client = FdoDaemonClient(base_url=daemon_manager.base_url, token=token)
+
+            # Confirm health
+            health = daemon_client.health()
+            logger.info(f"📡 Single daemon health: {health}")
 
     except Exception as e:
         logger.error(f"Failed to initialize FDO Tools: {e}")
@@ -355,37 +401,54 @@ async def startup_event():
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint with enhanced crash monitoring"""
+    """Health check endpoint with pool mode support"""
     try:
         release_info = fdo_tools_manager.get_release_info()
         health = daemon_client.health()
 
-        # Extract crash count and readiness from new daemon health response
-        crash_count = health.get("crash_count", 0) if isinstance(health, dict) else 0
-        readiness = health.get("ready", True) if isinstance(health, dict) else True
-
-        return {
-            "status": "healthy" if health and readiness else "degraded",
+        response = {
             "service": "atomforge-fdo-api",
             "version": "2.0.0",
             "features": [
                 "compilation",
                 "decompilation"
             ],
-            "daemon": {
+            "execution_mode": execution_mode,
+            "release": {
+                "path": release_info.get("path"),
+                "bin_dir": release_info.get("bin_dir"),
+            }
+        }
+
+        if execution_mode == "daemon_pool":
+            # Pool mode health
+            pool_healthy = health.get("healthy", False)
+            instances_healthy = health.get("instances_healthy", 0)
+            pool_size = health.get("pool_size", 0)
+
+            response["status"] = "healthy" if pool_healthy else "degraded"
+            response["pool"] = {
+                "enabled": True,
+                "size": pool_size,
+                "healthy_instances": instances_healthy,
+                "health_percentage": health.get("pool_health_percentage", 0)
+            }
+        else:
+            # Single daemon mode
+            crash_count = health.get("crash_count", 0) if isinstance(health, dict) else 0
+            readiness = health.get("ready", True) if isinstance(health, dict) else True
+
+            response["status"] = "healthy" if health and readiness else "degraded"
+            response["daemon"] = {
                 "base_url": daemon_manager.base_url,
                 "bind": daemon_manager.bind_host,
                 "port": daemon_manager.port,
                 "health": health,
-                "crash_count": crash_count,  # New: Ada32 crashes handled gracefully
-                "ready": readiness,  # New: Daemon readiness status
-            },
-            "release": {
-                "path": release_info.get("path"),
-                "bin_dir": release_info.get("bin_dir"),
-            },
-            "execution_mode": "single_daemon"
-        }
+                "crash_count": crash_count,
+                "ready": readiness,
+            }
+
+        return response
 
     except Exception as e:
         logger.error(f"Health check failed: {e}")
@@ -399,6 +462,57 @@ async def health_check():
             }
         )
 
+
+@app.get("/health/pool")
+async def pool_health_check():
+    """Get detailed pool status and metrics (pool mode only)"""
+    if execution_mode != "daemon_pool":
+        return JSONResponse(
+            status_code=400,
+            content={
+                "error": "Pool mode not enabled",
+                "execution_mode": execution_mode
+            }
+        )
+
+    try:
+        pool_status = pool_manager.get_pool_status()
+        return pool_status
+
+    except Exception as e:
+        logger.error(f"Pool health check failed: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"error": str(e)}
+        )
+
+
+@app.post("/pool/reset-circuit-breakers")
+async def reset_circuit_breakers():
+    """Reset all circuit breakers in the pool"""
+    if execution_mode != "daemon_pool":
+        return JSONResponse(
+            status_code=400,
+            content={
+                "error": "Pool mode not enabled",
+                "execution_mode": execution_mode
+            }
+        )
+
+    try:
+        count = pool_manager.reset_circuit_breakers()
+        return {
+            "success": True,
+            "circuit_breakers_reset": count,
+            "message": f"Reset circuit breakers for {count} instance(s)"
+        }
+
+    except Exception as e:
+        logger.error(f"Failed to reset circuit breakers: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"error": str(e)}
+        )
 
 
 
@@ -1181,6 +1295,19 @@ async def toggle_favorite(script_id: int):
     except Exception as e:
         logger.error(f"Failed to toggle favorite for script {script_id}: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to toggle favorite: {str(e)}")
+
+
+# Pool monitoring UI endpoint
+@app.get("/pool")
+async def get_pool_ui():
+    """Serve the pool monitoring UI"""
+    static_dir = Path(__file__).parent.parent / "static"
+    pool_html = static_dir / "pool.html"
+
+    if not pool_html.exists():
+        raise HTTPException(status_code=404, detail="Pool monitoring UI not found")
+
+    return FileResponse(pool_html)
 
 
 # Mount static files (web interface)

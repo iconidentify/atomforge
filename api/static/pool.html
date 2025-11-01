@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daemon Pool Status - AtomForge</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .header .nav {
+            margin-top: 10px;
+        }
+
+        .header .nav a {
+            color: #0066cc;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+
+        .header .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .pool-summary {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .pool-summary .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .pool-summary .metric {
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            border-left: 4px solid #0066cc;
+        }
+
+        .pool-summary .metric h3 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .pool-summary .metric .value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .health-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .health-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .health-bar-fill.warning {
+            background: linear-gradient(90deg, #FF9800, #FFC107);
+        }
+
+        .health-bar-fill.critical {
+            background: linear-gradient(90deg, #F44336, #E91E63);
+        }
+
+        .instances-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .instances-table h2 {
+            padding: 20px;
+            margin: 0;
+            background: #f9f9f9;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 20px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #f9f9f9;
+            font-weight: 600;
+            color: #666;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-badge.healthy {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .status-badge.unhealthy {
+            background: #FFF3E0;
+            color: #E65100;
+        }
+
+        .status-badge.crashed {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .status-badge.restarting {
+            background: #E3F2FD;
+            color: #1565C0;
+        }
+
+        .circuit-breaker {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 8px;
+            background: #FFEBEE;
+            color: #C62828;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .actions {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button.primary {
+            background: #0066cc;
+            color: white;
+        }
+
+        button.primary:hover {
+            background: #0052a3;
+        }
+
+        button.secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        button.secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .error-message {
+            padding: 15px;
+            background: #FFEBEE;
+            color: #C62828;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Daemon Pool Status</h1>
+        <div class="nav">
+            <a href="/">&larr; Back to Main</a>
+            <span id="last-update"></span>
+        </div>
+    </div>
+
+    <div id="error-container"></div>
+
+    <div class="pool-summary" id="pool-summary">
+        <h2>Pool Health</h2>
+        <div class="health-bar">
+            <div class="health-bar-fill" id="health-bar" style="width: 0%">
+                <span id="health-percentage">0%</span>
+            </div>
+        </div>
+        <div class="metrics">
+            <div class="metric">
+                <h3>Healthy Instances</h3>
+                <div class="value" id="healthy-count">-</div>
+            </div>
+            <div class="metric">
+                <h3>Total Requests</h3>
+                <div class="value" id="total-requests">-</div>
+            </div>
+            <div class="metric">
+                <h3>Failed Requests</h3>
+                <div class="value" id="failed-requests">-</div>
+            </div>
+            <div class="metric">
+                <h3>Total Restarts</h3>
+                <div class="value" id="total-restarts">-</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="instances-table">
+        <h2>Daemon Instances</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Port</th>
+                    <th>State</th>
+                    <th>Requests</th>
+                    <th>Failures</th>
+                    <th>Restarts</th>
+                    <th>Circuit Breaker</th>
+                </tr>
+            </thead>
+            <tbody id="instances-tbody">
+                <tr>
+                    <td colspan="7" class="loading">Loading pool status...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="actions">
+        <button class="primary" onclick="refreshStatus()">Refresh Status</button>
+        <button class="secondary" onclick="resetCircuitBreakers()">Reset All Circuit Breakers</button>
+    </div>
+
+    <script>
+        let autoRefreshInterval;
+
+        async function fetchPoolStatus() {
+            try {
+                const response = await fetch('/health/pool');
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to fetch pool status');
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching pool status:', error);
+                throw error;
+            }
+        }
+
+        function updateUI(data) {
+            // Clear any error messages
+            document.getElementById('error-container').innerHTML = '';
+
+            // Update health bar
+            const healthPercentage = data.pool_health_percentage || 0;
+            const healthBar = document.getElementById('health-bar');
+            const healthText = document.getElementById('health-percentage');
+
+            healthBar.style.width = healthPercentage + '%';
+            healthText.textContent = healthPercentage.toFixed(0) + '%';
+
+            // Update health bar color based on percentage
+            healthBar.className = 'health-bar-fill';
+            if (healthPercentage < 50) {
+                healthBar.classList.add('critical');
+            } else if (healthPercentage < 80) {
+                healthBar.classList.add('warning');
+            }
+
+            // Update metrics
+            document.getElementById('healthy-count').textContent =
+                `${data.instances_healthy}/${data.pool_size}`;
+            document.getElementById('total-requests').textContent =
+                data.total_requests.toLocaleString();
+            document.getElementById('failed-requests').textContent =
+                data.failed_requests.toLocaleString();
+            document.getElementById('total-restarts').textContent =
+                data.daemon_restarts;
+
+            // Update instances table
+            const tbody = document.getElementById('instances-tbody');
+            tbody.innerHTML = data.instances.map(instance => `
+                <tr>
+                    <td>${instance.id}</td>
+                    <td>${instance.port}</td>
+                    <td>
+                        <span class="status-badge ${instance.state}">
+                            ${instance.state}
+                        </span>
+                    </td>
+                    <td>${instance.total_requests.toLocaleString()}</td>
+                    <td>${instance.failed_requests} ${instance.consecutive_failures > 0 ? `(${instance.consecutive_failures} consecutive)` : ''}</td>
+                    <td>${instance.restart_count}</td>
+                    <td>
+                        ${instance.circuit_breaker_open ?
+                            '<span class="circuit-breaker">⚠ OPEN</span>' :
+                            '<span style="color: #4CAF50;">✓ CLOSED</span>'
+                        }
+                    </td>
+                </tr>
+            `).join('');
+
+            // Update last refresh time
+            const now = new Date();
+            document.getElementById('last-update').textContent =
+                `Last updated: ${now.toLocaleTimeString()}`;
+        }
+
+        function showError(message) {
+            const errorContainer = document.getElementById('error-container');
+            errorContainer.innerHTML = `
+                <div class="error-message">
+                    <strong>Error:</strong> ${message}
+                </div>
+            `;
+        }
+
+        async function refreshStatus() {
+            try {
+                const data = await fetchPoolStatus();
+                updateUI(data);
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        async function resetCircuitBreakers() {
+            if (!confirm('Reset all circuit breakers?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/pool/reset-circuit-breakers', {
+                    method: 'POST'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to reset circuit breakers');
+                }
+
+                const result = await response.json();
+                alert(result.message);
+
+                // Refresh status immediately
+                await refreshStatus();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Initial load
+        refreshStatus();
+
+        // Auto-refresh every 5 seconds
+        autoRefreshInterval = setInterval(refreshStatus, 5000);
+    </script>
+</body>
+</html>
