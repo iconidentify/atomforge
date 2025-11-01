@@ -1,53 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daemon Pool Status - AtomForge</title>
-    <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            max-width: 1200px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
-            background: #f5f5f5;
+            background: #0d1117;
+            color: #f0f6fc;
         }
 
         .header {
-            background: white;
+            background: #161b22;
             padding: 20px;
             border-radius: 8px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #30363d;
         }
 
         .header h1 {
             margin: 0 0 10px 0;
             font-size: 24px;
-            color: #333;
+            color: #f0f6fc;
+            font-weight: 600;
         }
 
         .header .nav {
             margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .header .nav a {
-            color: #0066cc;
+            color: #388bfd;
             text-decoration: none;
-            margin-right: 15px;
         }
 
         .header .nav a:hover {
+            color: #4c9aff;
             text-decoration: underline;
         }
 
+        .header .nav #last-update {
+            color: #8b949e;
+            font-size: 13px;
+        }
+
         .pool-summary {
-            background: white;
+            background: #161b22;
             padding: 20px;
             border-radius: 8px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #30363d;
+        }
+
+        .pool-summary h2 {
+            color: #f0f6fc;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
         }
 
         .pool-summary .metrics {
@@ -59,64 +82,71 @@
 
         .pool-summary .metric {
             padding: 15px;
-            background: #f9f9f9;
-            border-radius: 4px;
-            border-left: 4px solid #0066cc;
+            background: #21262d;
+            border-radius: 6px;
+            border-left: 3px solid #388bfd;
         }
 
         .pool-summary .metric h3 {
-            margin: 0 0 5px 0;
-            font-size: 14px;
-            color: #666;
+            margin: 0 0 8px 0;
+            font-size: 12px;
+            color: #8b949e;
             text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
 
         .pool-summary .metric .value {
             font-size: 28px;
-            font-weight: bold;
-            color: #333;
+            font-weight: 600;
+            color: #f0f6fc;
         }
 
         .health-bar {
             width: 100%;
-            height: 30px;
-            background: #e0e0e0;
-            border-radius: 4px;
+            height: 32px;
+            background: #21262d;
+            border-radius: 6px;
             overflow: hidden;
             margin: 15px 0;
+            border: 1px solid #30363d;
         }
 
         .health-bar-fill {
             height: 100%;
-            background: linear-gradient(90deg, #4CAF50, #8BC34A);
-            transition: width 0.3s ease;
+            background: linear-gradient(90deg, #3fb950, #56d364);
+            transition: width 0.3s ease, background 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-weight: bold;
+            color: #0d1117;
+            font-weight: 600;
+            font-size: 14px;
         }
 
         .health-bar-fill.warning {
-            background: linear-gradient(90deg, #FF9800, #FFC107);
+            background: linear-gradient(90deg, #d29922, #f0b72f);
         }
 
         .health-bar-fill.critical {
-            background: linear-gradient(90deg, #F44336, #E91E63);
+            background: linear-gradient(90deg, #da3633, #f85149);
         }
 
         .instances-table {
-            background: white;
+            background: #161b22;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #30363d;
         }
 
         .instances-table h2 {
             padding: 20px;
             margin: 0;
-            background: #f9f9f9;
-            border-bottom: 1px solid #e0e0e0;
+            background: #21262d;
+            border-bottom: 1px solid #30363d;
+            color: #f0f6fc;
+            font-size: 18px;
+            font-weight: 600;
         }
 
         table {
@@ -125,50 +155,57 @@
         }
 
         th, td {
-            padding: 12px 20px;
+            padding: 12px 16px;
             text-align: left;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid #30363d;
         }
 
         th {
-            background: #f9f9f9;
+            background: #21262d;
             font-weight: 600;
-            color: #666;
-            font-size: 14px;
+            color: #8b949e;
+            font-size: 12px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            color: #f0f6fc;
+            font-size: 14px;
         }
 
         tr:hover {
-            background: #f9f9f9;
+            background: #21262d;
         }
 
         .status-badge {
             display: inline-block;
-            padding: 4px 12px;
+            padding: 4px 10px;
             border-radius: 12px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
         .status-badge.healthy {
-            background: #E8F5E9;
-            color: #2E7D32;
+            background: rgba(63, 185, 80, 0.15);
+            color: #3fb950;
         }
 
         .status-badge.unhealthy {
-            background: #FFF3E0;
-            color: #E65100;
+            background: rgba(210, 153, 34, 0.15);
+            color: #d29922;
         }
 
         .status-badge.crashed {
-            background: #FFEBEE;
-            color: #C62828;
+            background: rgba(218, 54, 51, 0.15);
+            color: #da3633;
         }
 
         .status-badge.restarting {
-            background: #E3F2FD;
-            color: #1565C0;
+            background: rgba(56, 139, 253, 0.15);
+            color: #388bfd;
         }
 
         .circuit-breaker {
@@ -176,63 +213,76 @@
             align-items: center;
             gap: 5px;
             padding: 4px 8px;
-            background: #FFEBEE;
-            color: #C62828;
+            background: rgba(218, 54, 51, 0.15);
+            color: #da3633;
             border-radius: 4px;
             font-size: 12px;
             font-weight: 600;
         }
 
+        .circuit-closed {
+            color: #3fb950;
+        }
+
         .actions {
             display: flex;
-            gap: 20px;
+            gap: 12px;
             padding: 20px;
-            background: white;
+            background: #161b22;
             border-radius: 8px;
             margin-top: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #30363d;
         }
 
         button {
             padding: 10px 20px;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
         }
 
         button.primary {
-            background: #0066cc;
-            color: white;
+            background: #388bfd;
+            color: #ffffff;
         }
 
         button.primary:hover {
-            background: #0052a3;
+            background: #4c9aff;
         }
 
         button.secondary {
-            background: #f0f0f0;
-            color: #333;
+            background: #21262d;
+            color: #f0f6fc;
+            border: 1px solid #30363d;
         }
 
         button.secondary:hover {
-            background: #e0e0e0;
+            background: #30363d;
         }
 
         .error-message {
             padding: 15px;
-            background: #FFEBEE;
-            color: #C62828;
-            border-radius: 4px;
+            background: rgba(218, 54, 51, 0.1);
+            color: #da3633;
+            border-radius: 6px;
             margin-bottom: 20px;
+            border: 1px solid rgba(218, 54, 51, 0.3);
         }
 
         .loading {
             text-align: center;
             padding: 40px;
-            color: #666;
+            color: #8b949e;
+        }
+
+        .memory-cell {
+            font-family: 'SF Mono', Consolas, 'Liberation Mono', monospace;
+            color: #8b5cf6;
+            font-size: 13px;
         }
     </style>
 </head>
@@ -282,6 +332,7 @@
                     <th>ID</th>
                     <th>Port</th>
                     <th>State</th>
+                    <th>Memory</th>
                     <th>Requests</th>
                     <th>Failures</th>
                     <th>Restarts</th>
@@ -290,7 +341,7 @@
             </thead>
             <tbody id="instances-tbody">
                 <tr>
-                    <td colspan="7" class="loading">Loading pool status...</td>
+                    <td colspan="8" class="loading">Loading pool status...</td>
                 </tr>
             </tbody>
         </table>
@@ -303,6 +354,7 @@
 
     <script>
         let autoRefreshInterval;
+        let memoryData = {};
 
         async function fetchPoolStatus() {
             try {
@@ -315,6 +367,20 @@
             } catch (error) {
                 console.error('Error fetching pool status:', error);
                 throw error;
+            }
+        }
+
+        async function fetchMemoryMetrics() {
+            try {
+                const response = await fetch('/health/pool/memory');
+                if (!response.ok) {
+                    console.warn('Memory metrics not available');
+                    return null;
+                }
+                return await response.json();
+            } catch (error) {
+                console.warn('Error fetching memory metrics:', error);
+                return null;
             }
         }
 
@@ -350,7 +416,14 @@
 
             // Update instances table
             const tbody = document.getElementById('instances-tbody');
-            tbody.innerHTML = data.instances.map(instance => `
+            tbody.innerHTML = data.instances.map(instance => {
+                // Get memory data for this instance
+                const memInfo = memoryData.instances?.find(m => m.id === instance.id);
+                const memDisplay = memInfo ?
+                    `<span class="memory-cell">${memInfo.total_memory_mb} MB</span>` :
+                    '<span style="color: #6e7681;">-</span>';
+
+                return `
                 <tr>
                     <td>${instance.id}</td>
                     <td>${instance.port}</td>
@@ -359,17 +432,19 @@
                             ${instance.state}
                         </span>
                     </td>
+                    <td>${memDisplay}</td>
                     <td>${instance.total_requests.toLocaleString()}</td>
                     <td>${instance.failed_requests} ${instance.consecutive_failures > 0 ? `(${instance.consecutive_failures} consecutive)` : ''}</td>
                     <td>${instance.restart_count}</td>
                     <td>
                         ${instance.circuit_breaker_open ?
                             '<span class="circuit-breaker">⚠ OPEN</span>' :
-                            '<span style="color: #4CAF50;">✓ CLOSED</span>'
+                            '<span class="circuit-closed">✓ CLOSED</span>'
                         }
                     </td>
                 </tr>
-            `).join('');
+                `;
+            }).join('');
 
             // Update last refresh time
             const now = new Date();
@@ -388,8 +463,17 @@
 
         async function refreshStatus() {
             try {
-                const data = await fetchPoolStatus();
-                updateUI(data);
+                // Fetch both pool status and memory metrics in parallel
+                const [poolData, memData] = await Promise.all([
+                    fetchPoolStatus(),
+                    fetchMemoryMetrics()
+                ]);
+
+                if (memData) {
+                    memoryData = memData;
+                }
+
+                updateUI(poolData);
             } catch (error) {
                 showError(error.message);
             }

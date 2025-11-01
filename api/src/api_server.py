@@ -487,6 +487,98 @@ async def pool_health_check():
         )
 
 
+@app.get("/health/pool/memory")
+async def pool_memory_metrics():
+    """Get per-daemon memory usage metrics"""
+    if execution_mode != "daemon_pool":
+        return JSONResponse(
+            status_code=400,
+            content={
+                "error": "Pool mode not enabled",
+                "execution_mode": execution_mode
+            }
+        )
+
+    try:
+        import psutil
+
+        # Collect daemon processes
+        daemon_procs = {}
+        starter_procs = {}
+        wine_infra = []
+
+        for proc in psutil.process_iter(['pid', 'name', 'memory_info', 'cmdline']):
+            try:
+                rss_mb = proc.info['memory_info'].rss / 1024 / 1024
+                name = proc.info['name']
+                cmdline = ' '.join(proc.info['cmdline']) if proc.info['cmdline'] else ''
+
+                # Match daemon processes by port
+                if 'fdo_daemon.exe' in cmdline:
+                    # Extract port from command line
+                    for i, arg in enumerate(proc.info['cmdline']):
+                        if arg == '--port' and i + 1 < len(proc.info['cmdline']):
+                            port = int(proc.info['cmdline'][i + 1])
+                            daemon_procs[port] = rss_mb
+                            break
+
+                # Match launcher processes (start.exe with significant memory)
+                elif name == 'start.exe' and rss_mb > 20:
+                    # Associate with closest daemon (approximate by PID proximity)
+                    starter_procs[proc.info['pid']] = rss_mb
+
+                # Wine infrastructure
+                elif 'wine' in name.lower() or name in ['services.exe', 'winedevice.exe', 'explorer.exe', 'plugplay.exe', 'svchost.exe', 'rpcss.exe']:
+                    wine_infra.append(rss_mb)
+
+            except (psutil.NoSuchProcess, psutil.AccessDenied, ValueError):
+                pass
+
+        # Calculate averages
+        avg_daemon_mem = sum(daemon_procs.values()) / len(daemon_procs) if daemon_procs else 0
+        avg_starter_mem = sum(starter_procs.values()) / len(starter_procs) if starter_procs else 0
+        total_wine_infra = sum(wine_infra)
+
+        # Get pool size
+        pool_size = pool_manager.pool_size
+        wine_infra_per_daemon = total_wine_infra / pool_size if pool_size > 0 else 0
+
+        # Calculate per-daemon total
+        per_daemon_total = avg_daemon_mem + avg_starter_mem + wine_infra_per_daemon
+
+        # Build per-instance metrics
+        pool_status = pool_manager.get_pool_status()
+        instances_memory = []
+        for instance in pool_status['instances']:
+            port = instance['port']
+            daemon_mem = daemon_procs.get(port, avg_daemon_mem)
+            instances_memory.append({
+                'id': instance['id'],
+                'port': port,
+                'daemon_memory_mb': round(daemon_mem, 1),
+                'launcher_memory_mb': round(avg_starter_mem, 1),
+                'wine_infra_share_mb': round(wine_infra_per_daemon, 1),
+                'total_memory_mb': round(daemon_mem + avg_starter_mem + wine_infra_per_daemon, 1)
+            })
+
+        return {
+            'pool_size': pool_size,
+            'avg_daemon_memory_mb': round(avg_daemon_mem, 1),
+            'avg_launcher_memory_mb': round(avg_starter_mem, 1),
+            'wine_infra_total_mb': round(total_wine_infra, 1),
+            'wine_infra_per_daemon_mb': round(wine_infra_per_daemon, 1),
+            'per_daemon_total_mb': round(per_daemon_total, 1),
+            'instances': instances_memory
+        }
+
+    except Exception as e:
+        logger.error(f"Failed to get pool memory metrics: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"error": str(e)}
+        )
+
+
 @app.post("/pool/reset-circuit-breakers")
 async def reset_circuit_breakers():
     """Reset all circuit breakers in the pool"""
