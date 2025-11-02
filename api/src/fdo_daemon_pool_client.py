@@ -8,7 +8,7 @@ Provides same interface as FdoDaemonClient for backward compatibility.
 
 import time
 import logging
-from typing import Dict, Any, Callable, Optional
+from typing import Dict, Any, Callable, Optional, Awaitable
 
 from fdo_daemon_client import FdoDaemonClient, FdoDaemonError
 from fdo_daemon_pool_manager import FdoDaemonPoolManager, DaemonInstance
@@ -42,9 +42,47 @@ class FdoDaemonPoolClient:
         self.max_retries = max_retries
         self.timeout_seconds = timeout_seconds
 
+        # Cache of FdoDaemonClient instances (one per daemon) to reuse connections
+        # Key: daemon_id, Value: FdoDaemonClient instance
+        self._client_cache: Dict[str, FdoDaemonClient] = {}
+
         logger.info(f"Initialized FdoDaemonPoolClient: max_retries={max_retries}, timeout={timeout_seconds}s")
 
-    def health(self) -> Dict[str, Any]:
+    def _get_or_create_client(self, instance: DaemonInstance) -> FdoDaemonClient:
+        """
+        Get cached client for daemon instance, or create new one if not cached.
+
+        This ensures we reuse HTTP connections for each daemon, dramatically
+        improving performance by avoiding TCP handshake overhead.
+
+        Args:
+            instance: DaemonInstance to get client for
+
+        Returns:
+            FdoDaemonClient for this daemon instance
+        """
+        if instance.id not in self._client_cache:
+            # Create new client with connection pooling
+            self._client_cache[instance.id] = FdoDaemonClient(
+                base_url=f"http://{instance.bind_host}:{instance.port}",
+                timeout_seconds=self.timeout_seconds
+            )
+            logger.debug(f"Created new client for {instance.id}")
+
+        return self._client_cache[instance.id]
+
+    async def close(self) -> None:
+        """Close all cached HTTP clients and clean up resources."""
+        for daemon_id, client in self._client_cache.items():
+            try:
+                await client.close()
+                logger.debug(f"Closed client for {daemon_id}")
+            except Exception as e:
+                logger.warning(f"Error closing client for {daemon_id}: {e}")
+
+        self._client_cache.clear()
+
+    async def health(self) -> Dict[str, Any]:
         """
         Get aggregate health from all daemon instances.
 
@@ -64,9 +102,9 @@ class FdoDaemonPoolClient:
             "pool_health_percentage": pool_status["pool_health_percentage"]
         }
 
-    def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> Dict[str, Any]:
         """Alias for health() for compatibility."""
-        return self.health()
+        return await self.health()
 
     async def compile_source(self, source_text: str) -> bytes:
         """
@@ -81,15 +119,15 @@ class FdoDaemonPoolClient:
         Raises:
             RuntimeError: If all retry attempts fail
         """
-        def operation(client: FdoDaemonClient) -> bytes:
-            result = client.compile_source(source_text)
+        async def operation(client: FdoDaemonClient) -> bytes:
+            result = await client.compile_source(source_text)
             if isinstance(result, dict) and result.get('success'):
                 # Convert from dict response to bytes
                 return bytes.fromhex(result['binary_data'])
             elif isinstance(result, bytes):
                 return result
             else:
-                raise FdoDaemonError(f"Unexpected compile response: {type(result)}")
+                raise FdoDaemonError(500, "application/json", f"Unexpected compile response: {type(result)}", b"", None)
 
         return await self._execute_with_retry(operation)
 
@@ -106,23 +144,23 @@ class FdoDaemonPoolClient:
         Raises:
             RuntimeError: If all retry attempts fail
         """
-        def operation(client: FdoDaemonClient) -> str:
-            result = client.decompile_binary(binary_data)
+        async def operation(client: FdoDaemonClient) -> str:
+            result = await client.decompile_binary(binary_data)
             if isinstance(result, dict) and result.get('success'):
                 return result['source_text']
             elif isinstance(result, str):
                 return result
             else:
-                raise FdoDaemonError(f"Unexpected decompile response: {type(result)}")
+                raise FdoDaemonError(500, "application/json", f"Unexpected decompile response: {type(result)}", b"", None)
 
         return await self._execute_with_retry(operation)
 
-    async def _execute_with_retry(self, operation: Callable[[FdoDaemonClient], Any]) -> Any:
+    async def _execute_with_retry(self, operation: Callable[[FdoDaemonClient], Awaitable[Any]]) -> Any:
         """
         Execute operation with automatic retry and failover.
 
         Args:
-            operation: Function that takes FdoDaemonClient and returns result
+            operation: Async function that takes FdoDaemonClient and returns result
 
         Returns:
             Result from successful operation
@@ -151,21 +189,18 @@ class FdoDaemonPoolClient:
 
             attempted_instances.add(instance.id)
 
-            # Create client for this daemon instance
-            client = FdoDaemonClient(
-                base_url=f"http://{instance.bind_host}:{instance.port}",
-                timeout_seconds=self.timeout_seconds
-            )
+            # Get cached client for this daemon instance (reuses HTTP connections)
+            client = self._get_or_create_client(instance)
 
             try:
                 # Execute operation
                 logger.debug(f"Executing operation on {instance.id} (attempt {attempts + 1}/{self.max_retries})")
 
                 try:
-                    result = operation(client)
+                    result = await operation(client)
 
                     # Success - update metrics
-                    with self.pool_manager.lock:
+                    async with self.pool_manager.async_lock:
                         instance.total_requests += 1
                         instance.consecutive_failures = 0
 
@@ -179,7 +214,7 @@ class FdoDaemonPoolClient:
 
                 except Exception as e:
                     # Failure - update metrics and circuit breaker
-                    with self.pool_manager.lock:
+                    async with self.pool_manager.async_lock:
                         instance.total_requests += 1
                         instance.failed_requests += 1
                         instance.consecutive_failures += 1
@@ -207,7 +242,7 @@ class FdoDaemonPoolClient:
 
                 finally:
                     # Always clear processing flag when done (success or failure)
-                    with self.pool_manager.lock:
+                    async with self.pool_manager.async_lock:
                         instance.is_processing = False
                         instance.request_started_at = None
 

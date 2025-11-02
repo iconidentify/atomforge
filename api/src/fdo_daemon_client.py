@@ -27,7 +27,7 @@ class FdoDaemonError(Exception):
 
 
 class FdoDaemonClient:
-    """Thin synchronous client for the FDO daemon HTTP API."""
+    """Async client for the FDO daemon HTTP API."""
 
     def __init__(
         self,
@@ -41,52 +41,64 @@ class FdoDaemonClient:
         if token:
             self.headers["Authorization"] = f"Bearer {token}"
 
-    def health(self) -> Dict[str, Any]:
-        with httpx.Client(timeout=self.timeout_seconds) as client:
-            r = client.get(f"{self.base_url}/health", headers=self.headers)
-            r.raise_for_status()
-            return r.json()
+        # Create a shared HTTP client with connection pooling
+        # This dramatically improves performance by reusing TCP connections
+        self._client = httpx.AsyncClient(
+            timeout=timeout_seconds,
+            limits=httpx.Limits(
+                max_keepalive_connections=20,  # Keep connections alive for reuse
+                max_connections=50,  # Allow multiple concurrent requests
+                keepalive_expiry=30.0,  # Keep connections alive for 30 seconds
+            ),
+        )
 
-    def compile_source(self, source_text: str) -> bytes:
+    async def close(self) -> None:
+        """Close the HTTP client and clean up resources."""
+        await self._client.aclose()
+
+    async def health(self) -> Dict[str, Any]:
+        r = await self._client.get(f"{self.base_url}/health", headers=self.headers)
+        r.raise_for_status()
+        return r.json()
+
+    async def compile_source(self, source_text: str) -> bytes:
         """Compile FDO source text to binary via daemon.
 
         Daemon expects raw text/plain body, returns application/octet-stream.
         """
         headers = {"Content-Type": "text/plain", **self.headers}
         data = source_text.encode("utf-8")
-        with httpx.Client(timeout=self.timeout_seconds) as client:
-            r = client.post(f"{self.base_url}/compile", headers=headers, content=data)
-            if r.status_code >= 400:
-                json_obj: Optional[Dict[str, Any]] = None
+        r = await self._client.post(f"{self.base_url}/compile", headers=headers, content=data)
+        if r.status_code >= 400:
+            json_obj: Optional[Dict[str, Any]] = None
+            try:
+                json_obj = r.json()
+            except Exception:
+                # Fallback: attempt to parse text as JSON
                 try:
-                    json_obj = r.json()
+                    json_obj = json.loads(r.text)
                 except Exception:
-                    # Fallback: attempt to parse text as JSON
-                    try:
-                        json_obj = json.loads(r.text)
-                    except Exception:
-                        json_obj = None
-                raise FdoDaemonError(r.status_code, r.headers.get("Content-Type", ""), r.text, r.content, json_obj)
-            return r.content
+                    json_obj = None
+            raise FdoDaemonError(r.status_code, r.headers.get("Content-Type", ""), r.text, r.content, json_obj)
+        return r.content
 
-    def decompile_binary(self, binary_data: bytes) -> str:
+    async def decompile_binary(self, binary_data: bytes) -> str:
         """Decompile binary to source via daemon.
 
         Daemon expects application/octet-stream body, returns text/plain.
         """
         headers = {"Content-Type": "application/octet-stream", **self.headers}
-        with httpx.Client(timeout=self.timeout_seconds) as client:
-            r = client.post(f"{self.base_url}/decompile", headers=headers, content=binary_data)
-            if r.status_code >= 400:
-                json_obj: Optional[Dict[str, Any]] = None
+        r = await self._client.post(f"{self.base_url}/decompile", headers=headers, content=binary_data)
+        if r.status_code >= 400:
+            json_obj: Optional[Dict[str, Any]] = None
+            try:
+                json_obj = r.json()
+            except Exception:
                 try:
-                    json_obj = r.json()
+                    json_obj = json.loads(r.text)
                 except Exception:
-                    try:
-                        json_obj = json.loads(r.text)
-                    except Exception:
-                        json_obj = None
-                raise FdoDaemonError(r.status_code, r.headers.get("Content-Type", ""), r.text, r.content, json_obj)
-            return r.text
+                    json_obj = None
+            raise FdoDaemonError(r.status_code, r.headers.get("Content-Type", ""), r.text, r.content, json_obj)
+        return r.text
 
 

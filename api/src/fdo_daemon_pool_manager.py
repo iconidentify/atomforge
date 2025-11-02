@@ -9,6 +9,7 @@ Each daemon runs in an isolated working directory with symlinked DLL files.
 import os
 import time
 import threading
+import asyncio
 import logging
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
@@ -106,7 +107,11 @@ class FdoDaemonPoolManager:
         # Pool state
         self.instances: List[DaemonInstance] = []
         self.current_index = 0  # Round-robin counter
-        self.lock = threading.RLock()  # Thread-safe pool access
+
+        # Dual-lock system to handle both threaded health checks and async requests
+        self.sync_lock = threading.RLock()  # For health monitor thread
+        self.async_lock = asyncio.Lock()     # For async request path (prevents serialization)
+        self.lock = self.sync_lock  # Backward compatibility alias for health monitor
 
         # Health monitoring
         self.health_monitor_thread: Optional[threading.Thread] = None
@@ -196,17 +201,19 @@ class FdoDaemonPoolManager:
 
         logger.info("Daemon pool stopped")
 
-    def get_healthy_instance(self) -> Optional[DaemonInstance]:
+    async def get_healthy_instance(self) -> Optional[DaemonInstance]:
         """
         Get next idle daemon, preferring daemons not currently processing requests.
 
         This ensures requests are distributed to idle daemons when available,
         preventing queue buildup on busy daemons.
 
+        Uses async lock to prevent event loop blocking and enable true parallelization.
+
         Returns:
             DaemonInstance if idle daemon available, None otherwise
         """
-        with self.lock:
+        async with self.async_lock:
             if not self.instances:
                 return None
 
@@ -244,14 +251,14 @@ class FdoDaemonPoolManager:
         import asyncio
 
         start_time = time.time()
-        poll_interval = 0.05  # 50ms between checks
+        poll_interval = 0.01  # 10ms between checks (reduced from 50ms for faster batch transitions)
         attempts = 0
 
         while time.time() - start_time < timeout:
             attempts += 1
 
             # Try to get an idle daemon
-            instance = self.get_healthy_instance()
+            instance = await self.get_healthy_instance()
             if instance:
                 elapsed = time.time() - start_time
                 if elapsed > 0.1:  # Log if we had to wait

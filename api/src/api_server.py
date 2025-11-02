@@ -371,7 +371,7 @@ async def startup_event():
             )
 
             # Confirm pool health
-            health = daemon_client.health()
+            health = await daemon_client.health()
             logger.info(f"📡 Daemon pool health: {health}")
 
         else:
@@ -389,7 +389,7 @@ async def startup_event():
             daemon_client = FdoDaemonClient(base_url=daemon_manager.base_url, token=token)
 
             # Confirm health
-            health = daemon_client.health()
+            health = await daemon_client.health()
             logger.info(f"📡 Single daemon health: {health}")
 
     except Exception as e:
@@ -404,7 +404,7 @@ async def health_check():
     """Health check endpoint with pool mode support"""
     try:
         release_info = fdo_tools_manager.get_release_info()
-        health = daemon_client.health()
+        health = await daemon_client.health()
 
         response = {
             "service": "atomforge-fdo-api",
@@ -487,9 +487,33 @@ async def pool_health_check():
         )
 
 
+def get_container_memory_limit() -> Optional[int]:
+    """
+    Detect Docker container memory limit from cgroup files.
+    Returns memory limit in bytes, or None if not in a container or limit not set.
+    """
+    cgroup_paths = [
+        '/sys/fs/cgroup/memory/memory.limit_in_bytes',  # cgroup v1
+        '/sys/fs/cgroup/memory.max',  # cgroup v2
+    ]
+
+    for path in cgroup_paths:
+        try:
+            with open(path, 'r') as f:
+                limit = int(f.read().strip())
+                # cgroup v1 uses a very large number (9223372036854771712) when unlimited
+                # cgroup v2 uses "max" string for unlimited (already handled by int() raising ValueError)
+                if limit < 9000000000000000:  # Reasonable upper bound
+                    return limit
+        except (FileNotFoundError, ValueError, PermissionError):
+            continue
+
+    return None
+
+
 @app.get("/health/pool/memory")
 async def pool_memory_metrics():
-    """Get per-daemon memory usage metrics"""
+    """Get per-daemon memory usage metrics and system memory status"""
     if execution_mode != "daemon_pool":
         return JSONResponse(
             status_code=400,
@@ -561,6 +585,20 @@ async def pool_memory_metrics():
                 'total_memory_mb': round(daemon_mem + avg_starter_mem + wine_infra_per_daemon, 1)
             })
 
+        # Get system memory metrics
+        vm = psutil.virtual_memory()
+        system_memory = {
+            'system_memory_total_mb': round(vm.total / 1024 / 1024, 1),
+            'system_memory_used_mb': round(vm.used / 1024 / 1024, 1),
+            'system_memory_available_mb': round(vm.available / 1024 / 1024, 1),
+            'system_memory_percent': round(vm.percent, 1)
+        }
+
+        # Get container memory limit if in Docker
+        container_limit = get_container_memory_limit()
+        if container_limit:
+            system_memory['container_memory_limit_mb'] = round(container_limit / 1024 / 1024, 1)
+
         return {
             'pool_size': pool_size,
             'avg_daemon_memory_mb': round(avg_daemon_mem, 1),
@@ -568,7 +606,8 @@ async def pool_memory_metrics():
             'wine_infra_total_mb': round(total_wine_infra, 1),
             'wine_infra_per_daemon_mb': round(wine_infra_per_daemon, 1),
             'per_daemon_total_mb': round(per_daemon_total, 1),
-            'instances': instances_memory
+            'instances': instances_memory,
+            **system_memory
         }
 
     except Exception as e:

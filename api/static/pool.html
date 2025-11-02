@@ -324,6 +324,32 @@
         </div>
     </div>
 
+    <div class="pool-summary" id="system-memory-summary">
+        <h2>System Memory</h2>
+        <div class="metrics">
+            <div class="metric">
+                <h3>Total RAM</h3>
+                <div class="value" id="system-memory-total">-</div>
+            </div>
+            <div class="metric">
+                <h3>Used RAM</h3>
+                <div class="value" id="system-memory-used">-</div>
+            </div>
+            <div class="metric">
+                <h3>Available RAM</h3>
+                <div class="value" id="system-memory-available">-</div>
+            </div>
+            <div class="metric">
+                <h3>Memory Usage</h3>
+                <div class="value" id="system-memory-percent">-</div>
+            </div>
+            <div class="metric" id="container-limit-metric" style="display: none;">
+                <h3>Container Limit</h3>
+                <div class="value" id="container-memory-limit">-</div>
+            </div>
+        </div>
+    </div>
+
     <div class="instances-table">
         <h2>Daemon Instances</h2>
         <table>
@@ -452,6 +478,45 @@
                 `Last updated: ${now.toLocaleTimeString()}`;
         }
 
+        function updateSystemMemoryUI(data) {
+            if (!data) return;
+
+            // Update system memory metrics
+            if (data.system_memory_total_mb !== undefined) {
+                document.getElementById('system-memory-total').textContent =
+                    `${data.system_memory_total_mb.toLocaleString()} MB`;
+            }
+            if (data.system_memory_used_mb !== undefined) {
+                document.getElementById('system-memory-used').textContent =
+                    `${data.system_memory_used_mb.toLocaleString()} MB`;
+            }
+            if (data.system_memory_available_mb !== undefined) {
+                document.getElementById('system-memory-available').textContent =
+                    `${data.system_memory_available_mb.toLocaleString()} MB`;
+            }
+            if (data.system_memory_percent !== undefined) {
+                const percentElem = document.getElementById('system-memory-percent');
+                percentElem.textContent = `${data.system_memory_percent}%`;
+
+                // Color code based on usage
+                if (data.system_memory_percent >= 90) {
+                    percentElem.style.color = '#da3633';
+                } else if (data.system_memory_percent >= 75) {
+                    percentElem.style.color = '#d29922';
+                } else {
+                    percentElem.style.color = '#3fb950';
+                }
+            }
+
+            // Show container limit if available
+            if (data.container_memory_limit_mb !== undefined) {
+                const limitMetric = document.getElementById('container-limit-metric');
+                limitMetric.style.display = 'block';
+                document.getElementById('container-memory-limit').textContent =
+                    `${data.container_memory_limit_mb.toLocaleString()} MB`;
+            }
+        }
+
         function showError(message) {
             const errorContainer = document.getElementById('error-container');
             errorContainer.innerHTML = `
@@ -471,6 +536,7 @@
 
                 if (memData) {
                     memoryData = memData;
+                    updateSystemMemoryUI(memData);
                 }
 
                 updateUI(poolData);

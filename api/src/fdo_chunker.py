@@ -285,13 +285,16 @@ class FdoChunker:
             logger.error(f"Compilation failed for unit: {unit['content'][:100]}...")
             raise
 
-    async def _compile_units_parallel(self, units: List[Dict[str, Any]], batch_size: int = 5) -> List[bytes]:
+    async def _compile_units_parallel(self, units: List[Dict[str, Any]], batch_size: int = None) -> List[bytes]:
         """
-        Compile multiple atom units in parallel using daemon pool.
+        Compile multiple atom units in parallel using daemon pool with continuous streaming.
+
+        Uses semaphore-based parallelism to maintain constant pool utilization rather than
+        batch-wait-batch-wait pattern. This keeps all daemons busy at all times.
 
         Args:
             units: List of atom units to compile
-            batch_size: Number of units to compile concurrently (default: 5 for pool size)
+            batch_size: Maximum concurrent compilations (default: pool size or 30)
 
         Returns:
             List of compiled binary data in same order as input units
@@ -302,33 +305,54 @@ class FdoChunker:
         if not units:
             return []
 
-        logger.info(f"Parallel compilation: {len(units)} units in batches of {batch_size}")
+        # Auto-detect max concurrency from pool if not specified
+        max_concurrent = batch_size
+        if max_concurrent is None:
+            if hasattr(self.daemon_client, 'pool_manager'):
+                max_concurrent = self.daemon_client.pool_manager.pool_size
+                logger.debug(f"Using pool size for max_concurrent: {max_concurrent}")
+            else:
+                max_concurrent = 30  # Default for single daemon or unknown
+                logger.debug(f"No pool detected, using default max_concurrent: {max_concurrent}")
 
+        logger.info(f"Parallel compilation: {len(units)} units with max_concurrent={max_concurrent}")
+
+        # Use semaphore to limit concurrent tasks while maintaining continuous streaming
+        semaphore = asyncio.Semaphore(max_concurrent)
+
+        async def compile_with_semaphore(unit: Dict[str, Any], index: int) -> tuple:
+            """Compile unit with semaphore limiting concurrency."""
+            async with semaphore:
+                try:
+                    compiled = await self._compile_unit(unit)
+                    return (index, compiled, None)
+                except Exception as e:
+                    # Capture exception with context for better error messages
+                    return (index, None, e)
+
+        # Create all tasks at once (semaphore prevents overwhelming the pool)
+        tasks = [compile_with_semaphore(unit, i) for i, unit in enumerate(units)]
+
+        # Gather all results (semaphore ensures only max_concurrent run at a time)
+        # This provides continuous streaming: as soon as one daemon finishes, the next task starts
+        indexed_results = await asyncio.gather(*tasks, return_exceptions=False)
+
+        # Check for errors and sort by original index to maintain order
         results = []
+        for index, compiled, error in indexed_results:
+            if error is not None:
+                # Re-raise first error with context
+                failed_unit = units[index]
+                logger.error(f"Parallel compilation failed for unit at line {failed_unit['line_start']}: {error}")
+                raise error
+            results.append((index, compiled))
 
-        # Process in batches to avoid overwhelming the pool
-        for i in range(0, len(units), batch_size):
-            batch = units[i:i+batch_size]
+        # Sort by index and extract compiled data
+        results.sort(key=lambda x: x[0])
+        compiled_units = [compiled for _, compiled in results]
 
-            # Compile batch concurrently using asyncio.gather()
-            # gather() maintains order and waits for all tasks
-            try:
-                batch_results = await asyncio.gather(
-                    *[self._compile_unit(unit) for unit in batch],
-                    return_exceptions=False  # Raise first exception immediately
-                )
-                results.extend(batch_results)
-
-                logger.debug(f"Compiled batch {i//batch_size + 1}: {len(batch)} units")
-
-            except Exception as e:
-                # If any unit in batch fails, re-raise with context
-                failed_unit = batch[0]  # Approximate - gather doesn't tell us which failed
-                logger.error(f"Parallel compilation failed in batch starting at line {failed_unit['line_start']}")
-                raise
-
-        logger.info(f"Parallel compilation complete: {len(results)} units compiled")
-        return results
+        logger.info(f"Parallel compilation complete: {len(compiled_units)} units compiled")
+        return compiled_units
 
     def _compile_raw_data_to_chunks(self, unit: Dict[str, Any], stream_id: int, token: str) -> List[bytes]:
         """

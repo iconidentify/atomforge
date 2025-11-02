@@ -663,7 +663,7 @@ class JsonlProcessor:
                     })
 
                     # Attempt daemon restart for true process crashes only
-                    if daemon_manager and cls._restart_daemon_if_needed(daemon_manager, daemon_client):
+                    if daemon_manager and await cls._restart_daemon_if_needed(daemon_manager, daemon_client):
                         daemon_restarts += 1
                         logger.info(f"Daemon restarted after process crash at frame {i}, continuing...")
                     else:
@@ -769,10 +769,10 @@ class JsonlProcessor:
         }
 
     @classmethod
-    def _check_daemon_health(cls, daemon_client, frame_index: int) -> bool:
+    async def _check_daemon_health(cls, daemon_client, frame_index: int) -> bool:
         """Check if daemon is alive and responding."""
         try:
-            daemon_client.health()
+            await daemon_client.health()
             return True
         except Exception as e:
             logger.debug(f"Daemon health check failed at frame {frame_index}: {e}")
@@ -792,7 +792,7 @@ class JsonlProcessor:
         return any(indicator in error_str for indicator in crash_indicators)
 
     @classmethod
-    def _restart_daemon_if_needed(cls, daemon_manager, daemon_client) -> bool:
+    async def _restart_daemon_if_needed(cls, daemon_manager, daemon_client) -> bool:
         """Attempt to restart crashed daemon."""
         try:
             logger.info("Stopping crashed daemon...")
@@ -802,7 +802,7 @@ class JsonlProcessor:
             daemon_manager.start()
 
             # Verify daemon is responsive
-            daemon_client.health()
+            await daemon_client.health()
             logger.info("Daemon successfully restarted and verified healthy")
             return True
         except Exception as e:
