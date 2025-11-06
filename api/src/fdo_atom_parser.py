@@ -30,26 +30,26 @@ class FdoAtomParser:
     }
 
     # Maximum text length before splitting man_append_data (conservative estimate for 255-byte limit)
-    MAX_APPEND_DATA_TEXT_LENGTH = 200
+    MAX_APPEND_DATA_TEXT_LENGTH = 118
 
     # Maximum hex pairs before splitting man_append_data hex format
-    # Each pair compiles to 1 byte, so 150 pairs = 150 bytes compiled
+    # Each pair compiles to 1 byte, so 118 pairs = 118 bytes compiled
     # Conservative to stay under 255-byte limit with overhead
-    MAX_MAN_APPEND_DATA_HEX_PAIRS = 150
+    MAX_MAN_APPEND_DATA_HEX_PAIRS = 118
 
     # Maximum hex data length before splitting idb_append_data (hex chars are 2 per byte, so ~100 hex chars = 50 bytes)
-    MAX_IDB_APPEND_DATA_HEX_LENGTH = 400
+    MAX_IDB_APPEND_DATA_HEX_LENGTH = 236
 
     # Maximum hex pairs before splitting idb_append_data hex-pair format (PREFERRED over continuous hex)
-    # Each pair = 1 byte, so 200 pairs = 200 bytes compiled
-    MAX_IDB_APPEND_DATA_HEX_PAIRS = 200
+    # Each pair = 1 byte, so 118 pairs = 118 bytes compiled
+    MAX_IDB_APPEND_DATA_HEX_PAIRS = 118
 
     # Maximum hex data length before splitting dod_data (same as idb_append_data - ~200 bytes when compiled)
-    MAX_DOD_DATA_HEX_LENGTH = 400
+    MAX_DOD_DATA_HEX_LENGTH = 236
 
     # Maximum hex pairs before splitting dod_data hex-pair format (PREFERRED over continuous hex)
-    # Each pair = 1 byte, so 200 pairs = 200 bytes compiled
-    MAX_DOD_DATA_HEX_PAIRS = 200
+    # Each pair = 1 byte, so 118 pairs = 118 bytes compiled
+    MAX_DOD_DATA_HEX_PAIRS = 118
 
     # Maximum hex data length for raw_data (112 bytes = 224 hex chars, max for AT token NON-FDO frames)
     MAX_RAW_DATA_HEX_LENGTH = 224
